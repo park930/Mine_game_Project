@@ -154,13 +154,14 @@ public class SubmarineClient {
 				System.out.println("   멤버 재설정 완료");
 				// 새로운 방 멤버 users를 화면에 반영해야함
 				mainScreen.roomScreen.setRoomUserList(users);
-
+				System.out.println("   아마 막힘");
 
 				break;
 
 			case "updateClient":
 				JsonArray userListJsonArray = jsonObject.getAsJsonArray("userList");
 				System.out.println("서버한테 유저 목록 받음");
+				userList.clear();
 				for (int i = 0; i < userListJsonArray.size(); i++) {
 					JsonObject userObject = userListJsonArray.get(i).getAsJsonObject();
 					User user = gson.fromJson(userObject, User.class);
@@ -172,6 +173,11 @@ public class SubmarineClient {
 					System.out.println("유저 : "+user.getUserName());
 				}
 				mainScreen.setUserList(userList);
+				break;
+
+			case "joinedRoomDelete":
+				//todo. 화면 전환하는 과정 필요
+
 				break;
 		}
 	}
@@ -197,11 +203,22 @@ public class SubmarineClient {
 		out.println(json);
 	}
 
-	public static void sendJoinRoomCommand(GameRoom gameRoom, User user){
+	public static void sendRoomCommand(String command,GameRoom gameRoom, User user){
 		java.util.Map<String, Object> commandMap = new HashMap<>();
-		commandMap.put("command", "joinRoom");
-		commandMap.put("GameRoom", gameRoom);
-		commandMap.put("User", user);
+		commandMap.put("command", command);
+
+		switch (command){
+			case "joinRoom", "deleteRoomClient":
+				commandMap.put("GameRoom", gameRoom);
+				commandMap.put("User", user);
+				break;
+
+//			case "deleteRoomUser":
+//				commandMap.put("GameRoom", gameRoom);
+//				commandMap.put("User", user);
+//				break;
+
+		}
 
 		Gson gson = new Gson();
 		String json = gson.toJson(commandMap);

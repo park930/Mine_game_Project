@@ -92,13 +92,16 @@ public class MainScreen extends JFrame{
         gameRoomList.addMouseListener(new DoubleClickListener(() -> {
             System.out.println("111111111 방 더블 클릭 함");
             GameRoom selectedRoom = gameRoomList.getSelectedValue();
+            System.out.println(" 선택한 방 정보:"+selectedRoom);
             if (selectedRoom != null) {
                 System.out.println(selectedRoom);
 
-                // 해당 클라이언트가 방에 들어갔다는 메세지 서버한테 보내야함
-                SubmarineClient.sendJoinRoomCommand(selectedRoom,myUser);
-
                 roomScreen = new RoomScreen(myUser,MainScreen.this, selectedRoom);
+                System.out.println("    main화면에서 room에 대한 객체 설정");
+
+                // 해당 클라이언트가 방에 들어갔다는 메세지 서버한테 보내야함
+                SubmarineClient.sendRoomCommand("joinRoom",selectedRoom,myUser);
+
                 roomScreen.setVisible(true);
                 
                 ///////////////roomScreen에서 방 참가자 목록 나오게 해야함
@@ -181,6 +184,7 @@ public class MainScreen extends JFrame{
 
                     roomScreen = new RoomScreen(MainScreen.this,newRoom);// 새로운 창 생성
                     roomScreen.setVisible(true);
+                    roomScreen.addUser(myUser);
                 }
             });
 

@@ -18,6 +18,7 @@ public class RoomScreen extends JFrame {
     private User myUser;
 
     public RoomScreen(MainScreen mainScreen,GameRoom gameRoom) {
+        System.out.println(" 방 주인으로써 생성");
         this.mainScreen = mainScreen;
         this.gameRoom = gameRoom;
 
@@ -60,7 +61,10 @@ public class RoomScreen extends JFrame {
             }
         });
 
+        
         JButton exitButton = new JButton("나가기"); // 나가기 버튼 추가
+        
+        // 방장이 방을 나갔으므로, 서버에게 방을 삭제하겠다고 말해야함.
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -91,9 +95,10 @@ public class RoomScreen extends JFrame {
 
     public RoomScreen(User user,MainScreen mainScreen,GameRoom gameRoom) {
         // 방장이 아닌 제 3자가 참여한 경우
-        System.out.println("0000000000참가하는 방 화면 생성");
+        System.out.println("-------- 참가하는 방 화면 생성");
         this.mainScreen = mainScreen;
         this.gameRoom = gameRoom;
+        System.out.println("   방 정보 : "+gameRoom);
         this.myUser = user;
 
         mainScreen.setVisible(false); // MainScreen 숨기기
@@ -133,7 +138,7 @@ public class RoomScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose(); // RoomScreen 닫기
                 mainScreen.setVisible(true); // MainScreen 표시
-                SubmarineClient.sendCommand("deleteRoomUser",myUser);
+                SubmarineClient.sendRoomCommand("deleteRoomClient",gameRoom,myUser);
             }
         });
 
@@ -166,8 +171,14 @@ public class RoomScreen extends JFrame {
     }
 
     public void setRoomUserList(ArrayList<User> users) {
+        System.out.println("    화면의 방 참여자 목록 재설정");
+        userListModel.clear();
         for(User user : users){
             userListModel.addElement(user);
         }
+    }
+
+    public void addUser(User myUser) {
+        userListModel.addElement(myUser);
     }
 }

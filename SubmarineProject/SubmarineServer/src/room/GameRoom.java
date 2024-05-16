@@ -96,6 +96,10 @@ public class GameRoom {
         playerList.add(user);
     }
 
+    public void deletePlayer(long userId){
+        playerList.removeIf(u -> u.getId() == userId);
+    }
+
     public long getChairmanId() {
         return chairmanId;
     }
