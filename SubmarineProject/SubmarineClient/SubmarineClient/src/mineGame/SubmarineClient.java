@@ -23,6 +23,7 @@ public class SubmarineClient {
 	static int num_mine=10;
 	static int width=9;
 	static ArrayList<GameRoom> roomList;
+	static long userId;
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineClient().createClient();
@@ -43,11 +44,11 @@ public class SubmarineClient {
 			System.out.println("여기서 " +msg);
 			System.out.println("dddd");
 
-			mainScreen = new MainScreen();
-			roomList = new ArrayList<>();
-			
 			//초기 방 목록 받았을 때의 설정
 			processCommand(msg);
+
+			mainScreen = new MainScreen(userId);
+			roomList = new ArrayList<>();
 
 			while (true) {
 				System.out.println("메세지 받길 대기 중");
@@ -128,18 +129,33 @@ public class SubmarineClient {
 				mainScreen.setRoomList(roomList);
 				break;
 
+			case "userId":
+				userId = jsonObject.get("userId").getAsInt();
+				System.out.println("userId = " + userId);
+				break;
 		}
 	}
 
 
-	public static void sendCommand(String command, GameRoom gameRoom) {
+	public static <T> void sendCommand(String command, T sendObject) {
 		java.util.Map<String, Object> commandMap = new HashMap<>();
 		commandMap.put("command", command);
-		commandMap.put("GameRoom", gameRoom);
+
+		switch (command){
+			case "createRoom", "deleteRoom":
+				commandMap.put("GameRoom", sendObject);
+				break;
+
+            case "deleteClient":
+				commandMap.put("userId", sendObject);
+				break;
+		}
 
 		Gson gson = new Gson();
 		String json = gson.toJson(commandMap);
 		out.println(json);
 	}
+
+
 
 }

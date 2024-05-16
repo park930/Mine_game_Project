@@ -28,15 +28,15 @@ public class SubmarineServer {
 	static ArrayList<GameRoom> roomList;
 	static int userCnt=0;
 
-	
+
 	public static void main(String[] args) throws Exception {
-		new SubmarineServer().createServer();		
+		new SubmarineServer().createServer();
 	}
-	
-	
-	public void createServer() throws Exception {		
+
+
+	public void createServer() throws Exception {
 		System.out.println("Server start running ..");
-	    ServerSocket server = new ServerSocket(inPort); 
+	    ServerSocket server = new ServerSocket(inPort);
 		roomList = new ArrayList<>();
 
 		mainScreen = new MainScreen();
@@ -46,7 +46,8 @@ public class SubmarineServer {
 		//서버 허용 인원 넘기지 않을 때까지
         while (userCnt<maxUser) {
         	Socket socket = server.accept();
-            Client c = new Client(socket,userCnt+1);
+            Client c = new Client(socket);
+			System.out.println("---clinet id = "+c.getId());
 			clients.add(c);
 			mainScreen.addClientList(c);
 			sendRoomList(c);
@@ -63,10 +64,10 @@ public class SubmarineServer {
         	c.turn = true;
         	System.out.println("  - "+c.userName);
         }
-                
+
         map = new Map(width, num_mine);
         sendtoall("Start Game");
-                
+
         while(true) {
         	if (allTurn()) {
         		System.out.println();
@@ -79,18 +80,31 @@ public class SubmarineServer {
         			}
         			else
         				System.out.println(c.userName + " miss at (" + c.x+" , "+c.y+")");
-        					
+
         			c.send(""+check);
         			c.turn=true;
         		}
 
         	}
-        } 
-                
+        }
+
+	}
+
+	private void deleteClient(long clientId) {
+		int index=0;
+		for(Client c : clients){
+			if (c.getId() == clientId) break;
+			index++;
+		}
+		clients.remove(index);
+
+		//1. 화면의 유저 목록 갱신 필요
+		//2. 클라이언트들에게 갱신된 유저 목록 전송
+
 	}
 
 	public void sendtoall(String msg) {
-		for(Client c : clients) 
+		for(Client c : clients)
 			c.send(msg);
 	}
 
@@ -104,15 +118,15 @@ public class SubmarineServer {
 	public void sendRoomList(Client c) {
 		c.sendRoomList(roomList);
 	}
-	
+
 	public boolean allTurn() {
 		int i=0;
 		for(Client c:clients)
 			if (c.turn == false)
 				i++;
-		
+
 		if (i==clients.size()) return true;
-		else return false;		
+		else return false;
 	}
 
 
@@ -126,7 +140,6 @@ public class SubmarineServer {
 	}
 
 
-
 	class Client extends Thread {
 		Socket socket;
 		PrintWriter out = null;
@@ -136,13 +149,12 @@ public class SubmarineServer {
 		int x, y;
 		public boolean turn=false;
 		boolean inGame=false;
-		private int id;
 
-		public Client(Socket socket, int id) throws Exception {
-			this.id = id;
-			System.out.println("---client id = " + id);
-            initial(socket);
+
+		public Client(Socket socket) throws Exception {
+			initial(socket);
             start();
+			sendUserId(getId());
 		}
 
 
@@ -184,17 +196,17 @@ public class SubmarineServer {
         }
 
 
-		private void sendRoomId(String roomId) {
+		public void send(String msg) {
+			out.println(msg);
+		}
+
+		private void sendUserId(long userId) {
 			java.util.Map<String, Object> commandMap = new HashMap<>();
-			commandMap.put("command", "roomId");
-			commandMap.put("roomId", roomId);
+			commandMap.put("command", "userId");
+			commandMap.put("userId", userId);
 			Gson gson = new Gson();
 			String json = gson.toJson(commandMap);
 			out.println(json); // 클라이언트에 전송
-		}
-
-        public void send(String msg) {
-			out.println(msg);
 		}
 
 		public void sendRoomList(ArrayList<GameRoom> roomList){
@@ -235,6 +247,10 @@ public class SubmarineServer {
 					mainScreen.updateRoomList(roomList);
 					break;
 
+				case "deleteClient":
+					long clientId = commandJson.get("userId").getAsInt();
+					deleteClient(clientId);
+					break;
 
 			}
 		}

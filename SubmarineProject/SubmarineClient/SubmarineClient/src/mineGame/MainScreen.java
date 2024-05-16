@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,7 +18,8 @@ public class MainScreen extends JFrame {
     private DefaultListModel<GameRoom> gameRoomListModel;
     public RoomScreen roomScreen;
 
-    public MainScreen() {
+    public MainScreen(long userId) {
+        System.out.println("screen의 userId = "+userId);
         System.out.println("main 생성");
         JPanel mainPanel = new JPanel();
         JPanel centerPanel = new JPanel();
@@ -64,6 +67,18 @@ public class MainScreen extends JFrame {
         setBounds(200,200,600,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // 창이 닫히기 전에 수행할 작업 작성
+                SubmarineClient.sendCommand("deleteClient",userId);
+            }
+        });
+
+
+
+
     }
 
     private void initalToolBar(JToolBar toolBar) {
