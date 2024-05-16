@@ -1,7 +1,9 @@
-package mineGame;
+package mineGame.Screen;
 
-import com.google.gson.Gson;
+import mineGame.GameRoom;
 import mineGame.Listener.DoubleClickListener;
+import mineGame.SubmarineClient;
+import mineGame.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainScreen extends JFrame{
     private JList<User> userList;

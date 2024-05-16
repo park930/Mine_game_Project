@@ -1,6 +1,8 @@
-package mineGame;
+package mineGame.Screen;
 
-import com.sun.tools.javac.Main;
+import mineGame.GameRoom;
+import mineGame.SubmarineClient;
+import mineGame.User;
 
 import javax.swing.*;
 import java.awt.*;

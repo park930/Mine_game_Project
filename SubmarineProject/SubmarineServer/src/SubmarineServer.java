@@ -54,6 +54,7 @@ public class SubmarineServer {
             Client c = new Client(socket);
 			System.out.println("---clinet id = "+c.getId());
 			c.sendCommand("User",c.ClientToUser());
+			sendAllUserList();
 			clients.add(c);
 			mainScreen.addClientList(c);
 			sendRoomList(c);

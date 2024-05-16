@@ -1,4 +1,6 @@
-package mineGame;
+package mineGame.Screen;
+
+import mineGame.User;
 
 import javax.swing.*;
 import java.awt.*;
