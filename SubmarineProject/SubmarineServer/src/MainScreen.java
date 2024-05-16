@@ -70,4 +70,10 @@ public class MainScreen extends JFrame {
     public void addClientList(SubmarineServer.Client c) {
         clientListModel.addElement(c);
     }
+
+    public void removeClientList(int index){
+        clientListModel.remove(index);
+    }
+
+
 }

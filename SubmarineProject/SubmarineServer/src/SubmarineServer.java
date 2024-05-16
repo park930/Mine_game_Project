@@ -10,9 +10,11 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 import com.google.gson.Gson;
+import room.User;
 
 
 public class SubmarineServer {
@@ -51,6 +53,7 @@ public class SubmarineServer {
 			clients.add(c);
 			mainScreen.addClientList(c);
 			sendRoomList(c);
+			sendClientList(c);
 			numPlayer++;
 			userCnt++;
 
@@ -98,8 +101,10 @@ public class SubmarineServer {
 		}
 		clients.remove(index);
 
-		//1. 화면의 유저 목록 갱신 필요
-		//2. 클라이언트들에게 갱신된 유저 목록 전송
+		//화면의 유저 목록 갱신 필요
+		mainScreen.removeClientList(index);
+		//클라이언트들에게 갱신된 유저 목록 전송
+		sendAllUserList();
 
 	}
 
@@ -109,15 +114,25 @@ public class SubmarineServer {
 	}
 
 
-	public void sendAllRoomList() {
-		for(Client c : clients)
-			c.sendRoomList(roomList);
-	}
-
 
 	public void sendRoomList(Client c) {
-		c.sendRoomList(roomList);
+		c.sendCommand("updateRoom",roomList);
 	}
+
+	public void sendClientList(Client c) {
+		c.sendCommand("updateClient",clients);
+	}
+
+	public void sendAllRoomList() {
+		for(Client c : clients)
+			sendRoomList(c);
+	}
+
+	public void sendAllUserList() {
+		for(Client c : clients)
+			c.sendCommand("updateClient",clients);
+	}
+
 
 	public boolean allTurn() {
 		int i=0;
@@ -150,11 +165,14 @@ public class SubmarineServer {
 		public boolean turn=false;
 		boolean inGame=false;
 
+		private int total,win,lose;
+		private int rating;
+
 
 		public Client(Socket socket) throws Exception {
 			initial(socket);
             start();
-			sendUserId(getId());
+			sendCommand("userId",getId());
 		}
 
 
@@ -200,25 +218,34 @@ public class SubmarineServer {
 			out.println(msg);
 		}
 
-		private void sendUserId(long userId) {
+
+		public <T> void sendCommand(String command, T sendObject) {
 			java.util.Map<String, Object> commandMap = new HashMap<>();
-			commandMap.put("command", "userId");
-			commandMap.put("userId", userId);
+			commandMap.put("command", command);
+
+			switch (command){
+				case "updateRoom":
+					commandMap.put("roomList", sendObject);
+					break;
+
+				case "userId":
+					commandMap.put("userId", sendObject);
+					break;
+
+				case "updateClient":
+					ArrayList<User> userList = new ArrayList<>();
+					for(Client c : clients){
+						userList.add(c.ClientToUser());
+					}
+					commandMap.put("userList", userList);
+					break;
+            }
+
 			Gson gson = new Gson();
 			String json = gson.toJson(commandMap);
-			out.println(json); // 클라이언트에 전송
+			out.println(json);
 		}
 
-		public void sendRoomList(ArrayList<GameRoom> roomList){
-
-			java.util.Map<String, Object> commandMap = new HashMap<>();
-			commandMap.put("command", "updateRoom");
-			commandMap.put("roomList", roomList);
-
-			Gson gson = new Gson();
-			String json = gson.toJson(commandMap);
-			out.println(json); // 클라이언트에 전송
-		}
 
 		private void processCommand(String msg) {
 			Gson gson = new Gson();
@@ -233,6 +260,7 @@ public class SubmarineServer {
 
 					//모든 클라이언트에게 갱신된 roomList전송
 					sendAllRoomList();
+					//메인 화면의 방 목록 갱신
 					mainScreen.updateRoomList(roomList);
 
 					break;
@@ -256,16 +284,67 @@ public class SubmarineServer {
 		}
 
 
+		public User ClientToUser(){
+			User user = new User();
+			user.setUserName(getUserName());
+			user.setId(getId());
+			user.setTotal(getTotal());
+			user.setWin(getWin());
+			user.setLose(getLose());
+			user.setRating(getRating());
+			return user;
+		}
+
+
 
 		@Override
 		public String toString() {
-			String res="";
-			res+= userName+"\t";
-			if (inGame) res+="inGame";
-			else res+="notinGame";
+			String res =  userName+" | "+total+"전 "+ win+"승 "+lose+"패 ("+rating+"%)";
+			if (inGame) res += " | 게임 중";
+			else res += " | 대기 중";
 			return res;
 		}
 
+
+		public int getTotal() {
+			return total;
+		}
+
+		public void setTotal(int total) {
+			this.total = total;
+		}
+
+		public int getWin() {
+			return win;
+		}
+
+		public void setWin(int win) {
+			this.win = win;
+		}
+
+		public int getLose() {
+			return lose;
+		}
+
+		public void setLose(int lose) {
+			this.lose = lose;
+		}
+
+		public int getRating() {
+			return rating;
+		}
+
+		public void setRating(int rating) {
+			this.rating = rating;
+		}
+
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
 	}
 
 

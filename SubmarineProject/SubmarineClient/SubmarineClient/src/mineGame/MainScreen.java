@@ -36,6 +36,10 @@ public class MainScreen extends JFrame {
         gameRoomListModel = new DefaultListModel<>();
         gameRoomList = new JList<>(gameRoomListModel);
 
+        //접속 중인 유저 목록 세팅
+        userListModel = new DefaultListModel<>();
+        userList = new JList<>(userListModel);
+
 
         //컴포넌트 생성
         JButton jb1 = new JButton("North");
@@ -97,6 +101,13 @@ public class MainScreen extends JFrame {
         gameRoomListModel.clear();
         for(GameRoom gameRoom : roomList){
             gameRoomListModel.addElement(gameRoom);
+        }
+    }
+
+    public void setUserList(ArrayList<User> userList) {
+        userListModel.clear();
+        for(User user : userList){
+            userListModel.addElement(user);
         }
     }
 

@@ -24,6 +24,7 @@ public class SubmarineClient {
 	static int width=9;
 	static ArrayList<GameRoom> roomList;
 	static long userId;
+	static ArrayList<User> userList;
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineClient().createClient();
@@ -44,17 +45,17 @@ public class SubmarineClient {
 			System.out.println("여기서 " +msg);
 			System.out.println("dddd");
 
-			//초기 방 목록 받았을 때의 설정
+			// 해당 클라이언트의 id 받음
 			processCommand(msg);
 
 			mainScreen = new MainScreen(userId);
 			roomList = new ArrayList<>();
+			userList = new ArrayList<>();
 
 			while (true) {
 				System.out.println("메세지 받길 대기 중");
-				msg = in.readLine();        // start message
+				msg = in.readLine();
 				processCommand(msg);
-//				mainScreen.setRoomList(roomList);
 				System.out.println("여기까지");
 			}
 
@@ -132,6 +133,19 @@ public class SubmarineClient {
 			case "userId":
 				userId = jsonObject.get("userId").getAsInt();
 				System.out.println("userId = " + userId);
+				break;
+
+			case "updateClient":
+				JsonArray userListJsonArray = jsonObject.getAsJsonArray("userList");
+				gson = new Gson();
+				System.out.println("서버한테 유저 목록 받음");
+				for (int i = 0; i < userListJsonArray.size(); i++) {
+					JsonObject userObject = userListJsonArray.get(i).getAsJsonObject();
+					User user = gson.fromJson(userObject, User.class);
+					userList.add(user);
+					System.out.println("유저 : "+user.getUserName());
+				}
+				mainScreen.setUserList(userList);
 				break;
 		}
 	}
