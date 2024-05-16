@@ -142,6 +142,22 @@ public class SubmarineClient {
 				System.out.println("받은 내 정보 = " + myUser);
 				break;
 
+			case "updateRoomUser":
+				System.out.println("-------현재 방 참가한 상태");
+				JsonArray roomUserJsonArray = jsonObject.getAsJsonArray("userList");
+				ArrayList<User> users = new ArrayList<>();
+				for (int i = 0; i < roomUserJsonArray.size(); i++) {
+					JsonObject roomObject = roomUserJsonArray.get(i).getAsJsonObject();
+					User user = gson.fromJson(roomObject, User.class);
+					users.add(user);
+				}
+				System.out.println("   멤버 재설정 완료");
+				// 새로운 방 멤버 users를 화면에 반영해야함
+				mainScreen.roomScreen.setRoomUserList(users);
+
+
+				break;
+
 			case "updateClient":
 				JsonArray userListJsonArray = jsonObject.getAsJsonArray("userList");
 				System.out.println("서버한테 유저 목록 받음");
@@ -173,11 +189,24 @@ public class SubmarineClient {
             case "deleteClient":
 				commandMap.put("UserId", sendObject);
 				break;
+
 		}
 
 		Gson gson = new Gson();
 		String json = gson.toJson(commandMap);
 		out.println(json);
+	}
+
+	public static void sendJoinRoomCommand(GameRoom gameRoom, User user){
+		java.util.Map<String, Object> commandMap = new HashMap<>();
+		commandMap.put("command", "joinRoom");
+		commandMap.put("GameRoom", gameRoom);
+		commandMap.put("User", user);
+
+		Gson gson = new Gson();
+		String json = gson.toJson(commandMap);
+		out.println(json);
+
 	}
 
 

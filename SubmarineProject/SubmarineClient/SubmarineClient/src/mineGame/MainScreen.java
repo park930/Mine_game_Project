@@ -1,6 +1,7 @@
 package mineGame;
 
 import com.google.gson.Gson;
+import mineGame.Listener.DoubleClickListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +12,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MainScreen extends JFrame {
+public class MainScreen extends JFrame{
     private JList<User> userList;
     private DefaultListModel<User> userListModel;
     private JList<GameRoom> gameRoomList;
@@ -39,6 +40,8 @@ public class MainScreen extends JFrame {
         //게임 방 목록 세팅
         gameRoomListModel = new DefaultListModel<>();
         gameRoomList = new JList<>(gameRoomListModel);
+        gameRoomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 
         //접속 중인 유저 목록 세팅
         userListModel = new DefaultListModel<>();
@@ -84,7 +87,23 @@ public class MainScreen extends JFrame {
             }
         });
 
+        // 게임 방 목록 더블 클릭 이벤트 처리
+        gameRoomList.addMouseListener(new DoubleClickListener(() -> {
+            System.out.println("111111111 방 더블 클릭 함");
+            GameRoom selectedRoom = gameRoomList.getSelectedValue();
+            if (selectedRoom != null) {
+                System.out.println(selectedRoom);
 
+                // 해당 클라이언트가 방에 들어갔다는 메세지 서버한테 보내야함
+                SubmarineClient.sendJoinRoomCommand(selectedRoom,myUser);
+
+                roomScreen = new RoomScreen(myUser,MainScreen.this, selectedRoom);
+                roomScreen.setVisible(true);
+                
+                ///////////////roomScreen에서 방 참가자 목록 나오게 해야함
+
+            }
+        }));
 
 
     }
@@ -174,6 +193,5 @@ public class MainScreen extends JFrame {
 
         }
     }
-
 
 }

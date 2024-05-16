@@ -17,6 +17,8 @@ public class GameRoom {
         this.maxPlayer = maxPlayer;
         this.visible = visible;
         this.id = roomId;
+        this.chairmanId = user.getId();
+        System.out.println("chairmanId 설정 = "+chairmanId);
         playerList = new ArrayList<>();
         playerList.add(user);
         System.out.println("방 인원 중 방장 추가 : "+user);
@@ -25,11 +27,18 @@ public class GameRoom {
 
     @Override
     public String toString() {
-        String res="";
-        res+= roomName+"|";
-        res+="/"+maxPlayer+"|";
+        String res= id+" | "+roomName+" | "+"/"+maxPlayer+" | 맵:"+mapSize+" | 마인:"+mineNum;
         return res;
     }
+
+    public long getChairmanId() {
+        return chairmanId;
+    }
+
+    public void setChairmanId(long chairmanId) {
+        this.chairmanId = chairmanId;
+    }
+
 
     public long getId() {
         return id;

@@ -13,6 +13,8 @@ public class GameRoom {
     private long chairmanId;
 
 
+
+
     public GameRoom(String roomName, int maxPlayer, boolean visible, long roomId, long chairmanId){
         this.roomName = roomName;
         this.maxPlayer = maxPlayer;
@@ -90,4 +92,15 @@ public class GameRoom {
     }
 
 
+    public void addPlayer(User user) {
+        playerList.add(user);
+    }
+
+    public long getChairmanId() {
+        return chairmanId;
+    }
+
+    public void setChairmanId(long chairmanId) {
+        this.chairmanId = chairmanId;
+    }
 }
