@@ -17,10 +17,14 @@ public class MainScreen extends JFrame {
     private JList<GameRoom> gameRoomList;
     private DefaultListModel<GameRoom> gameRoomListModel;
     public RoomScreen roomScreen;
+    private long userId;
+    private User myUser;
 
-    public MainScreen(long userId) {
-        System.out.println("screen의 userId = "+userId);
+    public MainScreen(User myUser) {
+        System.out.println("내 정보 = "+myUser);
         System.out.println("main 생성");
+        this.myUser = myUser;
+
         JPanel mainPanel = new JPanel();
         JPanel centerPanel = new JPanel();
         JPanel centerNorthPanel = new JPanel();
@@ -76,7 +80,7 @@ public class MainScreen extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 // 창이 닫히기 전에 수행할 작업 작성
-                SubmarineClient.sendCommand("deleteClient",userId);
+                SubmarineClient.sendCommand("deleteClient",myUser.getId());
             }
         });
 
@@ -149,7 +153,7 @@ public class MainScreen extends JFrame {
                     long roomId = System.currentTimeMillis();
 
                     // GameRoom 객체 생성 및 gameRoomListModel에 추가
-                    GameRoom newRoom = new GameRoom(roomName, playerCount, visible,roomId);
+                    GameRoom newRoom = new GameRoom(roomName, playerCount, visible,roomId,myUser);
                     if (visible) gameRoomListModel.addElement(newRoom);
 
                     createRoomDialog.dispose();
@@ -170,10 +174,6 @@ public class MainScreen extends JFrame {
 
         }
     }
-
-
-
-
 
 
 }

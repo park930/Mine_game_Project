@@ -5,6 +5,17 @@ public class User {
     private int total,win,lose;
     private long id;
     private int rating;
+    private long roomId;
+
+
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
 
     public String getUserName() {
         return userName;

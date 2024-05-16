@@ -25,6 +25,7 @@ public class SubmarineClient {
 	static ArrayList<GameRoom> roomList;
 	static long userId;
 	static ArrayList<User> userList;
+	private User myUser;
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineClient().createClient();
@@ -48,7 +49,11 @@ public class SubmarineClient {
 			// 해당 클라이언트의 id 받음
 			processCommand(msg);
 
-			mainScreen = new MainScreen(userId);
+			System.out.println("1구역");
+			// 접속 중인 유저 목록 받음
+			processCommand(msg);
+
+			mainScreen = new MainScreen(myUser);
 			roomList = new ArrayList<>();
 			userList = new ArrayList<>();
 
@@ -110,6 +115,7 @@ public class SubmarineClient {
     }
 
 	private void processCommand(String msg) {
+		Gson gson = new Gson();
 		System.out.println("msg : "+msg);
 		JsonObject jsonObject = JsonParser.parseString(msg).getAsJsonObject();
 		String command = jsonObject.get("command").getAsString();
@@ -120,7 +126,6 @@ public class SubmarineClient {
 
 				// roomListJsonArray를 ArrayList<GameRoom>으로 변환
 				roomList.clear();
-				Gson gson = new Gson();
 				for (int i = 0; i < roomListJsonArray.size(); i++) {
 					JsonObject roomObject = roomListJsonArray.get(i).getAsJsonObject();
 					GameRoom room = gson.fromJson(roomObject, GameRoom.class);
@@ -130,19 +135,24 @@ public class SubmarineClient {
 				mainScreen.setRoomList(roomList);
 				break;
 
-			case "userId":
-				userId = jsonObject.get("userId").getAsInt();
-				System.out.println("userId = " + userId);
+			case "User":
+				System.out.println("00000000000000000");
+				JsonObject userJson = jsonObject.getAsJsonObject("User");
+				myUser = gson.fromJson(userJson, User.class);
+				System.out.println("받은 내 정보 = " + myUser);
 				break;
 
 			case "updateClient":
 				JsonArray userListJsonArray = jsonObject.getAsJsonArray("userList");
-				gson = new Gson();
 				System.out.println("서버한테 유저 목록 받음");
 				for (int i = 0; i < userListJsonArray.size(); i++) {
 					JsonObject userObject = userListJsonArray.get(i).getAsJsonObject();
 					User user = gson.fromJson(userObject, User.class);
 					userList.add(user);
+
+					//본인이 누군지 찾는 과정
+					if (user.getId()==userId) myUser = user;
+
 					System.out.println("유저 : "+user.getUserName());
 				}
 				mainScreen.setUserList(userList);
@@ -161,7 +171,7 @@ public class SubmarineClient {
 				break;
 
             case "deleteClient":
-				commandMap.put("userId", sendObject);
+				commandMap.put("UserId", sendObject);
 				break;
 		}
 

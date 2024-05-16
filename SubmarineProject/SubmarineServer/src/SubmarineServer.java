@@ -50,6 +50,7 @@ public class SubmarineServer {
         	Socket socket = server.accept();
             Client c = new Client(socket);
 			System.out.println("---clinet id = "+c.getId());
+			c.sendCommand("User",c.ClientToUser());
 			clients.add(c);
 			mainScreen.addClientList(c);
 			sendRoomList(c);
@@ -168,11 +169,12 @@ public class SubmarineServer {
 		private int total,win,lose;
 		private int rating;
 
+		private long roomId;
+
 
 		public Client(Socket socket) throws Exception {
 			initial(socket);
             start();
-			sendCommand("userId",getId());
 		}
 
 
@@ -228,8 +230,8 @@ public class SubmarineServer {
 					commandMap.put("roomList", sendObject);
 					break;
 
-				case "userId":
-					commandMap.put("userId", sendObject);
+				case "User":
+					commandMap.put("User", sendObject);
 					break;
 
 				case "updateClient":
@@ -276,7 +278,7 @@ public class SubmarineServer {
 					break;
 
 				case "deleteClient":
-					long clientId = commandJson.get("userId").getAsInt();
+					long clientId = commandJson.get("UserId").getAsInt();
 					deleteClient(clientId);
 					break;
 

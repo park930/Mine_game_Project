@@ -10,13 +10,16 @@ public class GameRoom {
     private ArrayList<User> playerList;
     private int mapSize=10;
     private int mineNum = 10;
+    private long chairmanId;
 
-    public GameRoom(String roomName, int maxPlayer, boolean visible,long roomId){
+    public GameRoom(String roomName, int maxPlayer, boolean visible,long roomId, User user){
         this.roomName = roomName;
         this.maxPlayer = maxPlayer;
         this.visible = visible;
         this.id = roomId;
         playerList = new ArrayList<>();
+        playerList.add(user);
+        System.out.println("방 인원 중 방장 추가 : "+user);
     }
 
 
