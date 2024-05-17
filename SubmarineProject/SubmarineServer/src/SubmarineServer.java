@@ -54,8 +54,10 @@ public class SubmarineServer {
             Client c = new Client(socket);
 			System.out.println("---clinet id = "+c.getId());
 			c.sendCommand("User",c.ClientToUser());
-			sendAllUserList();
 			clients.add(c);
+			
+			// 모두에게 새로 접속한 인원 정보 넘김
+			sendAllUserList();
 			mainScreen.addClientList(c);
 			sendRoomList(c);
 			sendClientList(c);
@@ -219,6 +221,7 @@ public class SubmarineServer {
 
 		private long roomId;
 		private boolean isReady;
+		private long id;
 
 
 		public Client(Socket socket) throws Exception {
@@ -234,7 +237,10 @@ public class SubmarineServer {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             userName = in.readLine();
-            System.out.println(userName+" joins from  "+socket.getInetAddress());
+//            System.out.println(userName+" joins from  "+socket.getInetAddress());
+
+			setId(System.currentTimeMillis());
+            System.out.println(userName+" joins from  "+getId());
 //            send("Wait for other player..");
 		}
 
@@ -592,6 +598,15 @@ public class SubmarineServer {
 
 		public void setReady(boolean ready) {
 			isReady = ready;
+		}
+
+		@Override
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
 		}
 	}
 
