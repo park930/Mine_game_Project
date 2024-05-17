@@ -5,7 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import mineGame.Screen.GameScreen;
 import mineGame.Screen.MainScreen;
+import mineGame.Screen.RoomScreen;
 
 import java.io.*;
 import java.net.*; 
@@ -26,6 +28,7 @@ public class SubmarineClient {
 	static long userId;
 	static ArrayList<User> userList;
 	private User myUser;
+	private GameScreen gameScreen;
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineClient().createClient();
@@ -189,6 +192,10 @@ public class SubmarineClient {
 				GameStart gameStart = gson.fromJson(jsonObject, GameStart.class);
 				System.out.println("------ 게임 정보 받음");
 				System.out.println(gameStart);
+
+				//게임 화면 생성
+				gameScreen = new GameScreen(gameStart, mainScreen.roomScreen);
+				gameScreen.setVisible(true);
 				break;
 		}
 
