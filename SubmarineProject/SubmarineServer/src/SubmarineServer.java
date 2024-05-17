@@ -547,7 +547,7 @@ public class SubmarineServer {
 				case "startGame":
 					targetRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
 
-					// 진행한 게임들에 대해 정보를 저장함
+					// 진행하는 게임들에 대해 정보를 저장함
 					ArrayList<Client> gameClientList = gameRoomClientsMap.get(targetRoom.getId());
 					if(checkGameReady(gameClientList,targetRoom)){
 						GameStart gameStart = new GameStart(true,gameClientList,System.currentTimeMillis(),targetRoom,0);

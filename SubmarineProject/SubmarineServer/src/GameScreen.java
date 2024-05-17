@@ -15,6 +15,7 @@ public class GameScreen extends JFrame {
     public GameScreen(GameStart gameStart) {
         this.gameStart = gameStart;
 
+        Map map = gameStart.getMap();
 
         setTitle("Game Screen");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,8 +38,9 @@ public class GameScreen extends JFrame {
 
         createTablePanel(gameStart.getGameUserList());
 
-        // 10x10 버튼인 마인 맵이 들어갈 패널
-        mineMapPanel = createButtonGridPanel(10, 10);
+        // W x W 버튼인 마인 맵이 들어갈 패널
+        mineMapPanel = createButtonGridPanel(map);
+
 
         // 패널 추가
         mainPanel.add(userInfoTableList.get(0)); // 1
@@ -89,11 +91,20 @@ public class GameScreen extends JFrame {
     }
 
     // 10x10 버튼 그리드를 생성하는 메소드
-    private JPanel createButtonGridPanel(int rows, int cols) {
+    private JPanel createButtonGridPanel(Map map) {
+        int rows = map.width,cols=map.width;
+
         JPanel panel = new JPanel(new GridLayout(rows, cols, 1, 1)); // 간격을 거의 없도록 설정
-        for (int i = 0; i < rows * cols; i++) {
-            JButton button = new JButton();
-            panel.add(button);
+        for(int i=0;i<rows;i++){
+            for(int j=0;j<rows;j++){
+                JButton button = new JButton();
+                button.setText(map.mineMap[i][j]+"");
+                button.setMargin(new Insets(0, 0, 0, 0)); // 버튼 여백 제거
+                button.setFont(new Font("Arial", Font.BOLD, 9)); // 폰트 크기 줄이고 Bold로 설정
+                button.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                panel.add(button);
+
+            }
         }
         return panel;
     }

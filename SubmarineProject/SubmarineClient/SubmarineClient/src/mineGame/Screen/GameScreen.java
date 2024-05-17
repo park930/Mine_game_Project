@@ -45,7 +45,7 @@ public class GameScreen extends JFrame {
         createTablePanel(gameStart.getGameUserList());
 
         // 10x10 버튼인 마인 맵이 들어갈 패널
-        mineMapPanel = createButtonGridPanel(10, 10);
+        mineMapPanel = createButtonGridPanel(gameStart.getGameRoom().getMapSize(), gameStart.getGameRoom().getMapSize());
 
         // 패널 추가
         mainPanel.add(userInfoTableList.get(0)); // 1
