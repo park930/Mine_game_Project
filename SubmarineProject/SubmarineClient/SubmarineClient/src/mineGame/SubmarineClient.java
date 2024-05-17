@@ -177,7 +177,9 @@ public class SubmarineClient {
 
 			case "joinedRoomDelete":
 				//todo. 화면 전환하는 과정 필요
-
+				mainScreen.roomScreen.dispose();
+				mainScreen.setVisible(true);
+				mainScreen.showInfo("방장이 방을 닫았습니다.");
 				break;
 
 			case "acceptJoinRoom":

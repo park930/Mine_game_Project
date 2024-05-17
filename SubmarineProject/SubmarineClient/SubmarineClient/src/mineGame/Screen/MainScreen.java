@@ -147,6 +147,10 @@ public class MainScreen extends JFrame{
         roomScreen.setVisible(true);
     }
 
+    public void showInfo(String s) {
+        JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 
     private class CreateRoomListener implements ActionListener {
 
