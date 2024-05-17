@@ -136,6 +136,7 @@ public class MainScreen extends JFrame{
     public void setUserList(ArrayList<User> userList) {
         userListModel.clear();
         for(User user : userList){
+            System.out.println("    다시 유저 채워 넣음");
             userListModel.addElement(user);
         }
     }

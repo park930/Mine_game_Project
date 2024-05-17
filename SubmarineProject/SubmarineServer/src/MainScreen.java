@@ -7,9 +7,9 @@ public class MainScreen extends JFrame {
     private JList<SubmarineServer.Client> clientList;
     private DefaultListModel<SubmarineServer.Client> clientListModel;
 
-    private JList<GameRecord> gameRecordList;
+    private JList<GameStart> gameRecordList;
 
-    private DefaultListModel<GameRecord> gameRecordListModel;
+    private DefaultListModel<GameStart> gameRecordListModel;
 
     private JList<GameRoom> gameRoomList;
     private DefaultListModel<GameRoom> gameRoomListModel;

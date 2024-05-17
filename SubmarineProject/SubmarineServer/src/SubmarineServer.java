@@ -31,6 +31,7 @@ public class SubmarineServer {
 	static int userCnt=0;
 
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
+	private ArrayList<GameStart> gameStartList;
 
 
 	public static void main(String[] args) throws Exception {
@@ -45,6 +46,7 @@ public class SubmarineServer {
 		roomList = new ArrayList<>();
 		gameRoomClientsMap = new HashMap<>();
 		mainScreen = new MainScreen();
+		gameStartList = new ArrayList<>();
 
 	    numPlayer=0;
 
@@ -181,6 +183,11 @@ public class SubmarineServer {
 		}
 	}
 
+	private void sendGameStartCommand(ArrayList<Client> gameClientList, GameStart gameStart) {
+		for(Client c : gameClientList)
+			c.sendCommand("startGame",gameStart);
+	}
+
 	public void sendAllUserList() {
 		for(Client c : clients)
 			c.sendCommand("updateClient",clients);
@@ -207,6 +214,14 @@ public class SubmarineServer {
 		return -1;
 	}
 
+	private boolean checkGameReady(ArrayList<Client> clients, GameRoom gameRoom) {
+		System.out.println("   게임 시작하려는 방 정보:"+gameRoom);
+		if (clients.size()!=gameRoom.getMaxPlayer()) return false;
+		for(Client c : clients){
+			if(!c.isReady) return false;
+		}
+		return true;
+	}
 
 	class Client extends Thread {
 		Socket socket;
@@ -216,13 +231,15 @@ public class SubmarineServer {
 		String userName = null;
 		int x, y;
 		public boolean turn=false;
-		boolean inGame=false;
 
+		boolean inGame=false;
 		private int total,win,lose;
 		private int rating;
 
+		private int inGameTotal,inGameWin,inGameLose;
 		private long roomId;
 		private boolean isReady;
+
 		private long id;
 
 
@@ -288,6 +305,7 @@ public class SubmarineServer {
 					break;
 
 				case "User":
+					System.out.println("User라는 클라한테 메세지 보냄");
 					commandMap.put("User", sendObject);
 					break;
 
@@ -308,6 +326,10 @@ public class SubmarineServer {
 
 				case "acceptJoinRoom":
 					commandMap.put("joinRoom", sendObject);
+					break;
+
+				case "startGame":
+					commandMap.put("gameStart", sendObject);
 					break;
             }
 
@@ -340,7 +362,7 @@ public class SubmarineServer {
 					JsonObject gameRoomJson = commandJson.getAsJsonObject("GameRoom");
 					GameRoom gameRoom = gson.fromJson(gameRoomJson, GameRoom.class);
 					roomList.add(gameRoom);
-					
+
 					//서버의 게임방 목록 관리 위해 추가함
 					System.out.println("방장 = "+gameRoom.getChairmanId());
 					for(Client c : clients) {
@@ -372,13 +394,13 @@ public class SubmarineServer {
 
 				case "deleteRoom":
 					long roomId = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class).getId();
-					
+
 					//ArrayList<GameRoom>에서 게임방 제거
 					int index = findRoomIndex(roomId);
 					if(index!=-1) {
 						System.out.println(" 방제거함:"+index);
 						roomList.remove(index);
-						
+
 						//////////////////////임시
 						System.out.println(" 방삭제한 결과");
 						for(GameRoom gameRoom1 : roomList){
@@ -386,7 +408,7 @@ public class SubmarineServer {
 						}
 						System.out.println("222222222222");
 						//////////////////////////
-						
+
 					} else System.out.println("이미 없는 방");
 
 					// 게임방의 참가자들에게 방 삭제됐다고 알림
@@ -395,7 +417,7 @@ public class SubmarineServer {
 					}
 					//gameRoomMap에서 gameRoom 제거해야함
 					gameRoomClientsMap.remove(roomId);
-					
+
 					sendAllRoomList();
 					mainScreen.updateRoomList(roomList);
 					break;
@@ -433,7 +455,7 @@ public class SubmarineServer {
 						joinRoomClient(user, joinRoom);
 						ArrayList<Client> roomClientList = gameRoomClientsMap.get(joinRoomId);
 						roomClientList.add(joinClient);
-						
+
 						// 새로운 참여자에게 승인 명령 내림
 						joinClient.sendCommand("acceptJoinRoom",joinRoom);
 
@@ -442,7 +464,7 @@ public class SubmarineServer {
 					}
 
 					mainScreen.updateRoomList(roomList);
-					
+
 					///////////////////////// 임시 ///////////////////////////////
 					for(int i=0;i<roomList.size();i++){
 						GameRoom g = roomList.get(i);
@@ -460,7 +482,7 @@ public class SubmarineServer {
 				case "deleteRoomClient":
 					User deleteUser = gson.fromJson(commandJson.getAsJsonObject("User"), User.class);
 					GameRoom targetRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
-					
+
 					// 방의 해당 인원 제거
 					deleteRoomClient(deleteUser,targetRoom);
 
@@ -519,6 +541,22 @@ public class SubmarineServer {
 
 					sendAllRoomUser(cs,targetRoom.getId());
 					break;
+
+				case "startGame":
+					targetRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
+
+					// 진행한 게임들에 대해 정보를 저장함
+					ArrayList<Client> gameClientList = gameRoomClientsMap.get(targetRoom.getId());
+					if(checkGameReady(gameClientList,targetRoom)){
+						GameStart gameStart = new GameStart(true,gameClientList,System.currentTimeMillis(),targetRoom,0);
+						gameStartList.add(gameStart);
+						sendGameStartCommand(gameClientList,gameStart);
+					}
+
+
+					break;
+
+
 			}
 		}
 
@@ -606,10 +644,10 @@ public class SubmarineServer {
 		public long getId() {
 			return id;
 		}
-
 		public void setId(long id) {
 			this.id = id;
 		}
+
 	}
 
 

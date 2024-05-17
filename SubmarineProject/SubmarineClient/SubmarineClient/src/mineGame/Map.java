@@ -2,14 +2,14 @@ package mineGame;
 
 import java.util.HashMap;
 
-public class MineMap {
+public class Map {
 	int width;	
 	int num_mine;
 	int[][] mineMap;
 	int[][] displayMap;
 	HashMap<Integer, Integer> minePosition;  
 	
-	public MineMap(int width, int num_mine) {
+	public Map(int width, int num_mine) {
 		this.width = width;
 		this.num_mine = num_mine;
 		

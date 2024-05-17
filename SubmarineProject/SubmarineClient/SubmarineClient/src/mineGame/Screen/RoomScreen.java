@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class RoomScreen extends JFrame {
@@ -44,6 +46,14 @@ public class RoomScreen extends JFrame {
         userScrollPane.setPreferredSize(new Dimension(400, 300)); // Set desired width and height
 
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // 창이 닫히기 전에 수행할 작업 작성
+                SubmarineClient.sendCommand("deleteRoom",gameRoom);
+                SubmarineClient.sendCommand("deleteClient",myUser.getId());
+            }
+        });
 
         //컴포넌트 생성
         JButton jb1 = new JButton("North");
@@ -77,6 +87,7 @@ public class RoomScreen extends JFrame {
                     System.out.println(" 모두 준비 완료");
                     
                     // 서버에게 게임 시작할거라고 메세지 보내기
+                    SubmarineClient.sendCommand("startGame",gameRoom);
                     
 //                    GameScreen gameScreen = new GameScreen();
 //                    RoomScreen.this.setVisible(false); // MainScreen 숨기기
@@ -150,6 +161,14 @@ public class RoomScreen extends JFrame {
         JScrollPane userScrollPane = new JScrollPane(userList);
         userScrollPane.setPreferredSize(new Dimension(400, 300)); // Set desired width and height
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // 창이 닫히기 전에 수행할 작업 작성
+                SubmarineClient.sendRoomCommand("deleteRoomClient",gameRoom,myUser);
+                SubmarineClient.sendCommand("deleteClient",myUser.getId());
+            }
+        });
 
         //컴포넌트 생성
         JButton jb1 = new JButton("North");

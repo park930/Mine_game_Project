@@ -19,7 +19,7 @@ public class SubmarineClient {
 	static public PrintWriter out;
     static public BufferedReader in;
     static String userName = "Alice";
-	static MineMap map;
+	static Map map;
 	static int num_mine=10;
 	static int width=9;
 	static ArrayList<GameRoom> roomList;
@@ -166,10 +166,6 @@ public class SubmarineClient {
 					JsonObject userObject = userListJsonArray.get(i).getAsJsonObject();
 					User user = gson.fromJson(userObject, User.class);
 					userList.add(user);
-
-					//본인이 누군지 찾는 과정
-					if (user.getId()==userId) myUser = user;
-
 					System.out.println("유저 : "+user.getUserName());
 				}
 				mainScreen.setUserList(userList);
@@ -187,6 +183,13 @@ public class SubmarineClient {
 				GameRoom gameRoom = gson.fromJson(roomJson, GameRoom.class);
 				mainScreen.createJoinRoomScreen(gameRoom);
 				break;
+
+			case "startGame":
+				jsonObject = jsonObject.getAsJsonObject("gameStart");
+				GameStart gameStart = gson.fromJson(jsonObject, GameStart.class);
+				System.out.println("------ 게임 정보 받음");
+				System.out.println(gameStart);
+				break;
 		}
 
 
@@ -198,7 +201,7 @@ public class SubmarineClient {
 		commandMap.put("command", command);
 
 		switch (command){
-			case "createRoom", "deleteRoom":
+			case "createRoom", "deleteRoom", "startGame":
 				commandMap.put("GameRoom", sendObject);
 				break;
 
@@ -206,7 +209,7 @@ public class SubmarineClient {
 				commandMap.put("UserId", sendObject);
 				break;
 
-		}
+        }
 
 		Gson gson = new Gson();
 		String json = gson.toJson(commandMap);
