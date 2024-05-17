@@ -23,4 +23,55 @@ public class GameStart {
             gameUserList.add(c.ClientToUser());
         }
     }
+
+
+
+    public boolean isDoing() {
+        return doing;
+    }
+
+    public void setDoing(boolean doing) {
+        this.doing = doing;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public GameRoom getGameRoom() {
+        return gameRoom;
+    }
+
+    public void setGameRoom(GameRoom gameRoom) {
+        this.gameRoom = gameRoom;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+    }
+
+    public ArrayList<User> getGameUserList() {
+        return gameUserList;
+    }
+
+    public void setGameUserList(ArrayList<User> gameUserList) {
+        this.gameUserList = gameUserList;
+    }
+
 }

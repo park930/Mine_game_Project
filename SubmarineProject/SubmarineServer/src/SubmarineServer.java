@@ -32,6 +32,7 @@ public class SubmarineServer {
 
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
 	private ArrayList<GameStart> gameStartList;
+	private ArrayList<GameScreen> gameScreenList;
 
 
 	public static void main(String[] args) throws Exception {
@@ -47,6 +48,7 @@ public class SubmarineServer {
 		gameRoomClientsMap = new HashMap<>();
 		mainScreen = new MainScreen();
 		gameStartList = new ArrayList<>();
+		gameScreenList = new ArrayList<>();
 
 	    numPlayer=0;
 
@@ -551,8 +553,12 @@ public class SubmarineServer {
 						GameStart gameStart = new GameStart(true,gameClientList,System.currentTimeMillis(),targetRoom,0);
 						gameStartList.add(gameStart);
 						sendGameStartCommand(gameClientList,gameStart);
-					}
 
+						//게임 화면 생성
+						GameScreen gameScreen = new GameScreen(gameStart);
+						gameScreenList.add(gameScreen);
+						gameScreen.setVisible(true);
+					}
 
 					break;
 
