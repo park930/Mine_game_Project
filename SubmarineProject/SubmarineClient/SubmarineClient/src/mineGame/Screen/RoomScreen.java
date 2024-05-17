@@ -74,6 +74,7 @@ public class RoomScreen extends JFrame {
             }
         });
 
+        BottomToolBar.add(startButton);
         BottomToolBar.add(exitButton);
 
         //컨테이너에 컴포넌트 추가
@@ -142,6 +143,7 @@ public class RoomScreen extends JFrame {
             }
         });
 
+        BottomToolBar.add(readyButton);
         BottomToolBar.add(exitButton);
 
         //컨테이너에 컴포넌트 추가

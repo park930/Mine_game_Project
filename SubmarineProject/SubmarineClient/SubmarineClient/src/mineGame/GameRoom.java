@@ -12,22 +12,23 @@ public class GameRoom {
     private int mineNum = 10;
     private long chairmanId;
 
-    public GameRoom(String roomName, int maxPlayer, boolean visible,long roomId, User user){
+    public GameRoom(String roomName, int maxPlayer, boolean visible,long roomId, int mapSize, int mineNum,User user){
         this.roomName = roomName;
         this.maxPlayer = maxPlayer;
         this.visible = visible;
         this.id = roomId;
         this.chairmanId = user.getId();
-        System.out.println("chairmanId 설정 = "+chairmanId);
+        this.mapSize = mapSize;
+        this.mineNum = mineNum;
+
         playerList = new ArrayList<>();
         playerList.add(user);
-        System.out.println("방 인원 중 방장 추가 : "+user);
     }
 
 
     @Override
     public String toString() {
-        String res= id+" | "+roomName+" | "+"/"+maxPlayer+" | 맵:"+mapSize+" | 마인:"+mineNum;
+        String res= roomName+" | "+playerList.size()+"/"+maxPlayer+" | 맵:"+mapSize+"X"+mapSize+" | 마인:"+mineNum;
         return res;
     }
 

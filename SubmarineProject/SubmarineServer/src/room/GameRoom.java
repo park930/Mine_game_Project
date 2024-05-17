@@ -27,9 +27,7 @@ public class GameRoom {
 
     @Override
     public String toString() {
-        String res="";
-        res+= roomName+"|";
-        res+="/"+maxPlayer+"|";
+        String res= id+" | "+roomName+" | "+playerList.size()+"/"+maxPlayer+" | 맵:"+mapSize+"X"+mapSize+" | 마인:"+mineNum;
         return res;
     }
 

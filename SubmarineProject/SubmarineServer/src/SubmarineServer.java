@@ -117,12 +117,14 @@ public class SubmarineServer {
 	private void joinRoomClient(User user,GameRoom gameRoom) {
 		
 		//서버의 사용자가 어느 방에 들어갔는지 표시해야함
+		System.out.println(" 기존 인원 = "+gameRoom.getPlayerList().size());
 		for(GameRoom g : roomList){
 			if (g.getId()==gameRoom.getId()){
 				g.addPlayer(user);
 			}
 		}
 
+		System.out.println(" 수정 인원 = "+gameRoom.getPlayerList().size());
 		//화면의 유저 목록 갱신 필요
 
 	}
@@ -166,7 +168,6 @@ public class SubmarineServer {
 	public void sendAllRoomUser(ArrayList<Client> clients,long roomId) {
 		ArrayList<User> userList = new ArrayList<>();
 		for(Client c : clients) {
-			System.out.println("   방 참여자 중, "+c.userName);
 			userList.add(c.ClientToUser());
 			c.setRoomId(roomId);
 		}
@@ -295,6 +296,10 @@ public class SubmarineServer {
 
 				case "joinedRoomDelete":
 					break;
+
+				case "acceptJoinRoom":
+					commandMap.put("joinRoom", sendObject);
+					break;
             }
 
 			Gson gson = new Gson();
@@ -330,7 +335,6 @@ public class SubmarineServer {
 					//서버의 게임방 목록 관리 위해 추가함
 					System.out.println("방장 = "+gameRoom.getChairmanId());
 					for(Client c : clients) {
-						System.out.println(" client = "+c.getId());
 						if (c.getId() == gameRoom.getChairmanId()){
 							ArrayList<Client> roomClients = gameRoomClientsMap.get(gameRoom.getId());
 							if (roomClients == null) {
@@ -399,27 +403,63 @@ public class SubmarineServer {
 				case "joinRoom":
 					User user = gson.fromJson(commandJson.getAsJsonObject("User"), User.class);
 					GameRoom joinRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
-					joinRoomClient(user,joinRoom);
 
-					System.out.println(" 방문하려는 방 번호:"+joinRoom.getId());
+					long joinRoomId = joinRoom.getId();
 					long userId = user.getId();
-					for(Client c : clients ) {
+					System.out.println(" 방문하려는 방 번호:"+joinRoomId);
+
+					Client joinClient=null;
+					for(Client c : clients){
 						if (c.getId() == userId){
-							ArrayList<Client> roomClientList = gameRoomClientsMap.get(joinRoom.getId());
-							roomClientList.add(c);
-							
-							// 방 참가자들에게 수정된 참여자 목록 전송
-							sendAllRoomUser(roomClientList,joinRoom.getId());
+							joinClient = c;
 						}
 					}
+
+					// 방 인원 초과할 경우,
+					if (joinRoom.getPlayerList().size()>=joinRoom.getMaxPlayer()){
+                        assert joinClient != null;
+                        joinClient.sendCommand("maxPlayer",null);
+						return;
+					}
+
+					// 방 인원 초과 X
+					// 방에 인원 추가
+					if (joinClient != null) {
+						joinRoomClient(user, joinRoom);
+						ArrayList<Client> roomClientList = gameRoomClientsMap.get(joinRoomId);
+						roomClientList.add(joinClient);
+						
+						// 새로운 참여자에게 승인 명령 내림
+						joinClient.sendCommand("acceptJoinRoom",joinRoom);
+
+						// 방 참가자들에게 수정된 참여자 목록 전송
+						sendAllRoomUser(roomClientList, joinRoom.getId());
+					}
+
+					mainScreen.updateRoomList(roomList);
+					
+					///////////////////////// 임시 ///////////////////////////////
+					for(int i=0;i<roomList.size();i++){
+						GameRoom g = roomList.get(i);
+						if (g.getId() == joinRoomId){
+							for(User u : g.getPlayerList()){
+								System.out.println("    현재 방의 참여자 : "+u.getUserName()+" | "+u.getId());
+							}
+
+						}
+					}
+					/////////////////////////////////////////////////////////
+
 					break;
 
 				case "deleteRoomClient":
 					User deleteUser = gson.fromJson(commandJson.getAsJsonObject("User"), User.class);
 					GameRoom targetRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
+					
+					// 방의 해당 인원 제거
 					deleteRoomClient(deleteUser,targetRoom);
 
-					System.out.println(" 방문하려는 방 번호:"+targetRoom.getId());
+					System.out.println(" 인원 제거하려는 방 번호:"+targetRoom.getId());
 					long deleteId = deleteUser.getId();
 					long targetRoomId = targetRoom.getId();
 
@@ -438,16 +478,16 @@ public class SubmarineServer {
 
 					ArrayList<Client> roomClientList = gameRoomClientsMap.get(targetRoomId);
 					if (roomClientList!=null) {
-						System.out.println(" 방 참여자 null 아님");
 						Client removeClient=null;
 						for(Client c : roomClientList) {
 							if (c.getId() == deleteId) {
-								System.out.println(" 삭제할 멤버 찾아서 제거함");
+								System.out.println(" 삭제할 멤버 찾기");
 								removeClient = c;
 							}
 						}
 						if(removeClient!=null) roomClientList.remove(removeClient);
 						sendAllRoomUser(roomClientList,targetRoom.getId());
+						mainScreen.updateRoomList(roomList);
 					} else {
 						System.out.println(" 방 참여자 null임");
 					}

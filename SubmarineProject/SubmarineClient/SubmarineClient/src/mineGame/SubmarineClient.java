@@ -179,7 +179,15 @@ public class SubmarineClient {
 				//todo. 화면 전환하는 과정 필요
 
 				break;
+
+			case "acceptJoinRoom":
+				JsonObject roomJson = jsonObject.getAsJsonObject("joinRoom");
+				GameRoom gameRoom = gson.fromJson(roomJson, GameRoom.class);
+				mainScreen.createJoinRoomScreen(gameRoom);
+				break;
 		}
+
+
 	}
 
 
