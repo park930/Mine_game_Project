@@ -101,12 +101,14 @@ public class SubmarineServer {
 	}
 
 	private void deleteClient(long clientId) {
-		int index=0;
-		for(Client c : clients){
-			if (c.getId() == clientId) break;
-			index++;
+		int index=-1;
+		for(int i=0;i<clients.size();i++){
+			if (clients.get(i).getId() == clientId) {
+				index = i;
+			}
 		}
-		clients.remove(index);
+		System.out.println("제거하려는 클라이언트 인덱스 : "+index);
+		if (index!=-1) clients.remove(index);
 
 		//화면의 유저 목록 갱신 필요
 		mainScreen.removeClientList(index);
@@ -399,7 +401,7 @@ public class SubmarineServer {
 					break;
 
 				case "deleteClient":
-					long clientId = commandJson.get("UserId").getAsInt();
+					long clientId = commandJson.get("UserId").getAsLong();
 					deleteClient(clientId);
 					break;
 
