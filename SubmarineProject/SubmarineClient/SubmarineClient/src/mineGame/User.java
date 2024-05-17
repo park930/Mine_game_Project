@@ -6,6 +6,7 @@ public class User {
     private long id;
     private int rating;
     private long roomId;
+    private boolean isReady=false;
 
 
     public long getRoomId() {
@@ -64,8 +65,22 @@ public class User {
         this.rating = rating;
     }
 
+    public boolean isReady() {
+        return isReady;
+    }
+
+    public void setReady(boolean ready) {
+        isReady = ready;
+    }
+
     @Override
     public String toString() {
-        return userName+" | "+total+"전 "+ win+"승 "+lose+"패 ("+rating+"%)";
+        return userName+" | "+total+"전 "+ win+"승 "+lose+"패 ("+rating+"%)"+" ### ";
+    }
+
+    public String getDisplayName() {
+        String res = userName+" | "+total+"전 "+ win+"승 "+lose+"패 ("+rating+"%)"+" | ";
+        if(isReady) res += "준비완료";
+        return res;
     }
 }

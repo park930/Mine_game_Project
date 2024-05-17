@@ -248,6 +248,10 @@ public class MainScreen extends JFrame{
 
                     roomScreen = new RoomScreen(MainScreen.this,newRoom);// 새로운 창 생성
                     roomScreen.setVisible(true);
+                    
+                    // 방 생성자 준비상태 완료로 전환
+                    System.out.println(" 준비상태 true로 전환");
+                    myUser.setReady(true);
                     roomScreen.addUser(myUser);
                 }
             });

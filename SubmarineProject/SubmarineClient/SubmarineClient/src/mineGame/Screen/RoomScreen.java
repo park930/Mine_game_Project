@@ -1,6 +1,7 @@
 package mineGame.Screen;
 
 import mineGame.GameRoom;
+import mineGame.ListCallRenderer.UserListCellRenderer;
 import mineGame.SubmarineClient;
 import mineGame.User;
 
@@ -16,11 +17,13 @@ public class RoomScreen extends JFrame {
     private MainScreen mainScreen;
     private GameRoom gameRoom;
     private User myUser;
+    private ArrayList<User> users;
 
     public RoomScreen(MainScreen mainScreen,GameRoom gameRoom) {
         System.out.println(" 방 주인으로써 생성");
         this.mainScreen = mainScreen;
         this.gameRoom = gameRoom;
+        users = new ArrayList<>();
 
         mainScreen.setVisible(false); // MainScreen 숨기기
 
@@ -35,6 +38,11 @@ public class RoomScreen extends JFrame {
 
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
+        userList.setCellRenderer(new UserListCellRenderer()); // 사용자 정의 렌더러 설정
+
+        JScrollPane userScrollPane = new JScrollPane(userList);
+        userScrollPane.setPreferredSize(new Dimension(400, 300)); // Set desired width and height
+
 
 
         //컴포넌트 생성
@@ -44,7 +52,7 @@ public class RoomScreen extends JFrame {
 
         //Center 구성
         initalToolBar(topToolBar);
-        centerPanel.add(new JScrollPane(userList), BorderLayout.CENTER);
+        centerPanel.add(userScrollPane, BorderLayout.CENTER);
 
         //South 구성
         JButton startButton = new JButton("시작");
@@ -54,10 +62,32 @@ public class RoomScreen extends JFrame {
 //                String roomName = roomNameField.getText();
 //                int playerCount = (int) playerCountSpinner.getValue();
 //                boolean visible = visibleCheckBox.isSelected();
+                if (users.size() == gameRoom.getMaxPlayer()){
+                    for(User u : users){
+                        if (!u.isReady()){
+                            // 플레이어가 다 준비하지 않았다고 알림 띄우기
+                            System.out.println(" 플레이어 다 준비하지 않음");
+                            showInfo("준비하지 않은 플레이어가 있습니다.");
+                            return;
+                        }
 
-                GameScreen gameScreen = new GameScreen();
-                RoomScreen.this.setVisible(false); // MainScreen 숨기기
+                    }
 
+                    //모두 준비 완료하고, 플레이어 수가 다 채워진 경우, 게임 시작
+                    System.out.println(" 모두 준비 완료");
+                    
+                    // 서버에게 게임 시작할거라고 메세지 보내기
+                    
+//                    GameScreen gameScreen = new GameScreen();
+//                    RoomScreen.this.setVisible(false); // MainScreen 숨기기
+
+                } else {
+                    // 플레이어가 다 채워지지 않았다고 알림
+                    System.out.println(" 플레이어 부족");
+                    showInfo("플레이어가 부족합니다.");
+                }
+                
+                
             }
         });
 
@@ -114,6 +144,12 @@ public class RoomScreen extends JFrame {
 
         userListModel = new DefaultListModel<>();
         userList = new JList<>(userListModel);
+        userList.setCellRenderer(new UserListCellRenderer()); // 사용자 정의 렌더러 설정
+
+
+        JScrollPane userScrollPane = new JScrollPane(userList);
+        userScrollPane.setPreferredSize(new Dimension(400, 300)); // Set desired width and height
+
 
         //컴포넌트 생성
         JButton jb1 = new JButton("North");
@@ -121,14 +157,20 @@ public class RoomScreen extends JFrame {
 
         //Center 구성
         initalToolBar(topToolBar);
-        centerPanel.add(new JScrollPane(userList), BorderLayout.CENTER);
+        centerPanel.add(userScrollPane, BorderLayout.CENTER);
 
         //South 구성
         JButton readyButton = new JButton("준비");
         readyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //서버에게 해당 유저가 준비됐다는 메세지 보내야함
+                // 준비상태 flip함
+                myUser.setReady(!myUser.isReady());
+                
+                //서버에게 해당 유저의 준비상태 메세지 보내야함
+                SubmarineClient.sendRoomCommand("updateReadyState",gameRoom,myUser);
+                
+                // 화면 갱신
 
             }
         });
@@ -173,6 +215,7 @@ public class RoomScreen extends JFrame {
     }
 
     public void setRoomUserList(ArrayList<User> users) {
+        this.users = users;
         System.out.println("    화면의 방 참여자 목록 재설정");
         userListModel.clear();
         for(User user : users){
@@ -181,6 +224,11 @@ public class RoomScreen extends JFrame {
     }
 
     public void addUser(User myUser) {
+        users.add(myUser);
         userListModel.addElement(myUser);
+    }
+
+    public void showInfo(String s) {
+        JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
     }
 }

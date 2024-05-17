@@ -6,6 +6,7 @@ public class User {
     private long id;
     private int rating;
     private long roomId;
+    private boolean isReady=false;
 
 
     public long getRoomId() {
@@ -63,5 +64,13 @@ public class User {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public boolean isReady() {
+        return isReady;
+    }
+
+    public void setReady(boolean ready) {
+        isReady = ready;
     }
 }

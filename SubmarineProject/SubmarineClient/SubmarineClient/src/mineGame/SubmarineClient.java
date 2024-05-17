@@ -218,7 +218,7 @@ public class SubmarineClient {
 		commandMap.put("command", command);
 
 		switch (command){
-			case "joinRoom", "deleteRoomClient":
+			case "joinRoom", "deleteRoomClient","updateReadyState":
 				commandMap.put("GameRoom", gameRoom);
 				commandMap.put("User", user);
 				break;

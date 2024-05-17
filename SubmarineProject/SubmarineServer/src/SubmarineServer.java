@@ -218,6 +218,7 @@ public class SubmarineServer {
 		private int rating;
 
 		private long roomId;
+		private boolean isReady;
 
 
 		public Client(Socket socket) throws Exception {
@@ -336,14 +337,10 @@ public class SubmarineServer {
 					System.out.println("방장 = "+gameRoom.getChairmanId());
 					for(Client c : clients) {
 						if (c.getId() == gameRoom.getChairmanId()){
-							ArrayList<Client> roomClients = gameRoomClientsMap.get(gameRoom.getId());
-							if (roomClients == null) {
-								System.out.println("   방에 대한 멤버 리스트 새로 생성");
-								// 해당 룸 ID에 대한 ArrayList가 없으면 새로 생성하여 맵에 추가
-								roomClients = new ArrayList<>();
-								gameRoomClientsMap.put(gameRoom.getId(), roomClients);
-							}
-							// 클라이언트를 해당 룸 ID의 ArrayList에 추가
+							c.setReady(true);
+							// 해당 룸 ID에 대한 ArrayList가 없으면 새로 생성하여 value로 추가
+							ArrayList<Client> roomClients = gameRoomClientsMap.computeIfAbsent(gameRoom.getId(), k -> new ArrayList<>());
+                            // 클라이언트를 해당 룸 ID의 ArrayList에 추가
 							roomClients.add(c);
 							System.out.println("   멤버 추가"+c.getId());
 						}
@@ -493,6 +490,27 @@ public class SubmarineServer {
 					}
 					break;
 
+				case "updateReadyState":
+					user = gson.fromJson(commandJson.getAsJsonObject("User"), User.class);
+					targetRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
+
+					userId = user.getId();
+
+					for(Client c : clients){
+						if (c.getId() == userId){
+							c.setReady(user.isReady());
+						}
+					}
+
+					ArrayList<Client> cs = gameRoomClientsMap.get(targetRoom.getId());
+					for(Client c : cs){
+						if (c.getId() == userId){
+							c.setReady(user.isReady());
+						}
+					}
+
+					sendAllRoomUser(cs,targetRoom.getId());
+					break;
 			}
 		}
 
@@ -505,6 +523,7 @@ public class SubmarineServer {
 			user.setWin(getWin());
 			user.setLose(getLose());
 			user.setRating(getRating());
+			if (isReady) user.setReady(true);
 			return user;
 		}
 
@@ -565,6 +584,14 @@ public class SubmarineServer {
 
 		public void setRoomId(long roomId) {
 			this.roomId = roomId;
+		}
+
+		public boolean isReady() {
+			return isReady;
+		}
+
+		public void setReady(boolean ready) {
+			isReady = ready;
 		}
 	}
 
