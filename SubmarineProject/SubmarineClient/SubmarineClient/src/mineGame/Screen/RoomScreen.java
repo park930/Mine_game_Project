@@ -21,10 +21,11 @@ public class RoomScreen extends JFrame {
     private User myUser;
     private ArrayList<User> users;
 
-    public RoomScreen(MainScreen mainScreen,GameRoom gameRoom) {
+    public RoomScreen(MainScreen mainScreen,GameRoom gameRoom,User myUser) {
         System.out.println(" 방 주인으로써 생성");
         this.mainScreen = mainScreen;
         this.gameRoom = gameRoom;
+        this.myUser = myUser;
         users = new ArrayList<>();
 
         mainScreen.setVisible(false); // MainScreen 숨기기

@@ -247,7 +247,7 @@ public class MainScreen extends JFrame{
                     createRoomDialog.dispose();
                     SubmarineClient.sendCommand("createRoom",newRoom);
 
-                    roomScreen = new RoomScreen(MainScreen.this,newRoom);// 새로운 창 생성
+                    roomScreen = new RoomScreen(MainScreen.this,newRoom,myUser);// 새로운 창 생성
                     roomScreen.setVisible(true);
                     
                     // 방 생성자 준비상태 완료로 전환
