@@ -98,7 +98,10 @@ public class GameScreen extends JFrame {
         for(int i=0;i<rows;i++){
             for(int j=0;j<rows;j++){
                 JButton button = new JButton();
-                button.setText(map.mineMap[i][j]+"");
+
+                if(map.mineMap[i][j]==1) button.setText("O");
+                else button.setText("X");
+
                 button.setMargin(new Insets(0, 0, 0, 0)); // 버튼 여백 제거
                 button.setFont(new Font("Arial", Font.BOLD, 9)); // 폰트 크기 줄이고 Bold로 설정
                 button.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
