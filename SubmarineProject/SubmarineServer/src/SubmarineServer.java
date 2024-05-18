@@ -333,6 +333,12 @@ public class SubmarineServer {
 				case "startGame":
 					commandMap.put("gameStart", sendObject);
 					break;
+				case "yourTurn":
+					commandMap.put("",sendObject);
+					break;
+				case "updateGameInfo":
+					commandMap.put("gameStart",sendObject);
+					break;
             }
 
 			Gson gson = new Gson();
@@ -547,14 +553,22 @@ public class SubmarineServer {
 				case "startGame":
 					targetRoom = gson.fromJson(commandJson.getAsJsonObject("GameRoom"), GameRoom.class);
 
-					// 진행하는 게임들에 대해 정보를 저장함
+					// 해당 게임방의 유저들 목록
 					ArrayList<Client> gameClientList = gameRoomClientsMap.get(targetRoom.getId());
-					if(checkGameReady(gameClientList,targetRoom)){
-						GameStart gameStart = new GameStart(true,gameClientList,System.currentTimeMillis(),targetRoom,0);
-						gameStartList.add(gameStart);
-						sendGameStartCommand(gameClientList,gameStart);
 
-						//게임 화면 생성
+					// 게임 시작 조건 달성했는지 체크
+					if(checkGameReady(gameClientList,targetRoom)){
+						// 게임 시작에 필요한 객체 만듦 (맵,유저정보 등등 포함함)
+						GameStart gameStart = new GameStart(true,gameClientList,targetRoom.getId(),targetRoom,0);
+						gameStartList.add(gameStart);
+
+						// 게임방의 유저들에게 게임 시작하는 메세지 보냄
+						sendGameStartCommand(gameClientList,gameStart);
+						
+						// 게임방의 유저 중 첫번째 유저(방장)에게 자신의 차례라는 것을 알림
+						sendCommand("yourTurn",null);
+
+						// 서버의 게임 화면 생성
 						GameScreen gameScreen = new GameScreen(gameStart);
 						gameScreenList.add(gameScreen);
 						gameScreen.setVisible(true);
@@ -562,6 +576,80 @@ public class SubmarineServer {
 
 					break;
 
+				case "choiceButton":
+					long gameId = commandJson.get("GameId").getAsLong();
+					int choice = commandJson.get("Choice").getAsInt();
+					userId = commandJson.get("UserId").getAsLong();
+
+					GameStart gameStart=null;
+					for(GameStart g : gameStartList){
+						if (g.getId()==gameId){
+							gameStart = g;
+						}
+					}
+
+					if (gameStart!=null){
+						System.out.println("게임방 아이디 : "+gameStart.getId());
+						user = null;
+						ArrayList<User> gamerList = gameStart.getGameUserList();
+						for(User u : gamerList){
+							if (u.getId()==userId){
+								user=u;
+							}
+						}
+
+						if (user != null) {
+							Map map = gameStart.getMap();
+							//해당 게임에서 마인을 찾았는지 확인
+							if (map.checkMine(choice) > 0){
+								// 마인을 찾음
+								System.out.println("마인 찾음");
+								map.getFindMineList().add(choice);
+								user.setRight(user.getRight()+1);
+							}
+							user.setTotalChoice(user.getTotal()+1);
+
+							map.getDisableButton().add(choice);
+							ArrayList<Integer> enableButton = map.getEnableButton();
+							for(int i=0;i<enableButton.size();i++){
+								if (enableButton.get(i) == choice) enableButton.remove(i);
+							}
+
+						}
+
+						// 다른 차례의 유저 계산함
+						int turnIndex=0;
+						for(int i=0;i<gamerList.size();i++){
+							User u = gamerList.get(i);
+							if (u.isTurn()) {
+								u.setTurn(false);
+								turnIndex = (i+1)%gamerList.size();
+							}
+						}
+						User turnUser = gamerList.get(turnIndex);
+						turnUser.setTurn(true);
+
+
+						// 게임방의 모든 유저에게 이런 결과를 보냄
+						ArrayList<Client> clientList = gameRoomClientsMap.get(gameStart.getId());
+						Client turnClient=null;
+						for(Client c : clientList)  {
+							if (c.getId() == turnUser.getId()) turnClient = c;
+							c.sendCommand("updateGameInfo",gameStart);
+						}
+
+						if (turnClient!=null) {
+							turnClient.sendCommand("yourTurn",null);
+							System.out.println("얘한테 차례됐다고 보냄 : "+turnClient.getId());
+						}
+						else {
+							clientList.get(0).sendCommand("yourTurn",null);
+							System.out.println("얘한테 차례됐다고 보냄 : "+clientList.get(0).getId());
+						}
+
+					}
+
+					break;
 
 			}
 		}
@@ -654,6 +742,15 @@ public class SubmarineServer {
 			this.id = id;
 		}
 
+	}
+
+	private Client findClient(long userId) {
+		for( Client c : clients){
+			if (c.getId() == userId){
+				return c;
+			}
+		}
+		return null;
 	}
 
 

@@ -11,6 +11,8 @@ public class GameStart {
     private Map map;
     private ArrayList<User> gameUserList;
 
+
+
     public GameStart(boolean doing, ArrayList<SubmarineServer.Client> gamePlayerList, long id, GameRoom gameRoom, int total) {
         this.doing = doing;
         this.id = id;
@@ -22,6 +24,16 @@ public class GameStart {
         for(SubmarineServer.Client c :  gamePlayerList){
             gameUserList.add(c.ClientToUser());
         }
+
+        for(User u : gameUserList){
+            // 선택 횟수, 지뢰 찾은 수 등.. 초기화
+            u.setStartTotalChoice();
+            
+            // 방장 먼저 시작 차례로 설정
+            if (gameRoom.getChairmanId()==u.getId()) u.setTurn(true);
+            else u.setTurn(false);
+        }
+
     }
 
 

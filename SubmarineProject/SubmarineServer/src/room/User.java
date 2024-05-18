@@ -3,10 +3,14 @@ package room;
 public class User {
     private String userName;
     private int total,win,lose;
+    private int totalChoice,right,wrong;
     private long id;
     private int rating;
     private long roomId;
     private boolean isReady=false;
+    
+    // 게임 중 자신의 차례인지 나타냄
+    private boolean turn=false;
 
 
     public long getRoomId() {
@@ -72,5 +76,41 @@ public class User {
 
     public void setReady(boolean ready) {
         isReady = ready;
+    }
+
+    public void setStartTotalChoice() {
+        totalChoice=0; right=0;wrong=0;
+    }
+
+    public int getTotalChoice() {
+        return totalChoice;
+    }
+
+    public void setTotalChoice(int totalChoice) {
+        this.totalChoice = totalChoice;
+    }
+
+    public int getRight() {
+        return right;
+    }
+
+    public void setRight(int right) {
+        this.right = right;
+    }
+
+    public int getWrong() {
+        return wrong;
+    }
+
+    public void setWrong(int wrong) {
+        this.wrong = wrong;
+    }
+
+    public void setTurn(boolean b) {
+        turn = b;
+    }
+
+    public boolean isTurn(){
+        return turn;
     }
 }

@@ -105,6 +105,7 @@ public class GameScreen extends JFrame {
                 button.setMargin(new Insets(0, 0, 0, 0)); // 버튼 여백 제거
                 button.setFont(new Font("Arial", Font.BOLD, 9)); // 폰트 크기 줄이고 Bold로 설정
                 button.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                button.putClientProperty("id", (i*rows+j)+""); // 버튼에 고유 ID 설정
                 panel.add(button);
 
             }

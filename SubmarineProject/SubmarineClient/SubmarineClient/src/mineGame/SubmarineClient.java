@@ -28,19 +28,19 @@ public class SubmarineClient {
 	static long userId;
 	static ArrayList<User> userList;
 	private User myUser;
-	private GameScreen gameScreen;
+	private GameScreen gameScreen=null;
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineClient().createClient();
 	}
 
-    public void createClient() throws Exception {
+	public void createClient() throws Exception {
 		int score=0;
     	String msg;
     	boolean turn = true;
-    	    	
+
         try (Socket socket = new Socket(address, inPort)) {
-        	out = new PrintWriter(socket.getOutputStream(), true); 
+        	out = new PrintWriter(socket.getOutputStream(), true);
            	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 			System.out.println("시작");
@@ -84,11 +84,11 @@ public class SubmarineClient {
 //    			}
 //
 //    		}
-           	
+
 //        	in.close();
 //            out.close();
 //            socket.close();
-            
+
         }
         catch (Exception e) {}
     }
@@ -96,7 +96,7 @@ public class SubmarineClient {
 
 	public static String guess(BufferedReader in) throws IOException {
     	Scanner scan = new Scanner (System.in);
-		   	
+
     	System.out.print("\n Enter x coordinate:");
 		int x = scan.nextInt();
 		while ((x < 0) || (x >= width)) {
@@ -113,7 +113,7 @@ public class SubmarineClient {
 		System.out.println("wait for turn");
 		out.println(x+","+y);
 		String msg = in.readLine();
-		
+
     	return msg;
     }
 
@@ -194,13 +194,28 @@ public class SubmarineClient {
 				System.out.println(gameStart);
 
 				//게임 화면 생성
-				gameScreen = new GameScreen(gameStart, mainScreen.roomScreen);
+				gameScreen = new GameScreen(gameStart, mainScreen.roomScreen,myUser.getId());
 				gameScreen.setVisible(true);
+				break;
+
+			case "yourTurn":
+				if(gameScreen!=null){
+					gameScreen.start();
+				}
+				break;
+
+			case "updateGameInfo":
+				jsonObject = jsonObject.getAsJsonObject("gameStart");
+				GameStart updateGame = gson.fromJson(jsonObject, GameStart.class);
+				System.out.println("업데이트된것 : "+updateGame);
+				gameScreen.updateGameState(updateGame);
+				System.out.println("끝남");
 				break;
 		}
 
 
 	}
+
 
 
 	public static <T> void sendCommand(String command, T sendObject) {
@@ -237,6 +252,26 @@ public class SubmarineClient {
 //				commandMap.put("GameRoom", gameRoom);
 //				commandMap.put("User", user);
 //				break;
+
+		}
+
+		Gson gson = new Gson();
+		String json = gson.toJson(commandMap);
+		out.println(json);
+
+	}
+
+	public static void sendGameCommand(String command, long gameId, int choice, long userId) {
+		java.util.Map<String, Object> commandMap = new HashMap<>();
+		commandMap.put("command", command);
+
+		switch (command){
+			case "choiceButton":
+				commandMap.put("GameId", gameId);
+				commandMap.put("Choice", choice);
+				commandMap.put("UserId", userId);
+				break;
+
 
 		}
 

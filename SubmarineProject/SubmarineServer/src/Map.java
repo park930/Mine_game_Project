@@ -8,12 +8,20 @@ public class Map {
 	int num_mine;
 	int[][] mineMap;
 	int[][] displayMap;
-	HashMap<Integer, Integer> minePosition;  
-	
+	HashMap<Integer, Integer> minePosition;
+
+	private ArrayList<Integer> enableButton;
+	private ArrayList<Integer> disableButton;
+	private ArrayList<Integer> findMineList;
+
 	public Map(int width, int num_mine) {
 		this.width = width;
 		this.num_mine = num_mine;
-		
+
+		enableButton = new ArrayList<>();
+		disableButton = new ArrayList<>();
+		findMineList = new ArrayList<>();
+
 		// create map
 		System.out.println("Create  "+ width+" X "+ width + "  map");
 		mineMap = new int[width][width];
@@ -21,6 +29,7 @@ public class Map {
 		for (int i=0; i<width*width; i++) {
 			mineMap[i/width][i%width] = 0;
 			displayMap[i/width][i%width] = 0;
+			enableButton.add(i);
 		}
 		
 		// create mines
@@ -61,6 +70,19 @@ public class Map {
 		
 	}
 
+	public int checkMine(int pos) {
+		if (minePosition.containsValue(pos)) {
+			//System.out.println("   Find mine at ("+x+", "+y+")");
+			return pos;
+		}
+		else {
+			//System.out.println("   No mine at ("+x+", "+y+")");
+			return -1;
+		}
+
+	}
+
+
 	public void printMap(int[][] a) {
 		System.out.println();
         for (int i = 0; i < a.length; i++) {
@@ -75,6 +97,29 @@ public class Map {
 		displayMap[x][y]=1;
 //		printMap(displayMap);
 	}
-		
-	
+
+
+	public ArrayList<Integer> getEnableButton() {
+		return enableButton;
+	}
+
+	public void setEnableButton(ArrayList<Integer> enableButton) {
+		this.enableButton = enableButton;
+	}
+
+	public ArrayList<Integer> getDisableButton() {
+		return disableButton;
+	}
+
+	public void setDisableButton(ArrayList<Integer> disableButton) {
+		this.disableButton = disableButton;
+	}
+
+	public ArrayList<Integer> getFindMineList() {
+		return findMineList;
+	}
+
+	public void setFindMineList(ArrayList<Integer> findMineList) {
+		this.findMineList = findMineList;
+	}
 }
