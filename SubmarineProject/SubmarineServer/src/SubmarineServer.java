@@ -576,6 +576,8 @@ public class SubmarineServer {
 
 					break;
 
+
+
 				case "choiceButton":
 					long gameId = commandJson.get("GameId").getAsLong();
 					int choice = commandJson.get("Choice").getAsInt();
@@ -607,7 +609,8 @@ public class SubmarineServer {
 								map.getFindMineList().add(choice);
 								user.setRight(user.getRight()+1);
 							}
-							user.setTotalChoice(user.getTotal()+1);
+							user.setTotalChoice(user.getTotalChoice()+1);
+							user.setFindRate( ((user.getRight()*1.0)/user.getTotalChoice())*100 );
 
 							map.getDisableButton().add(choice);
 							ArrayList<Integer> enableButton = map.getEnableButton();
@@ -618,26 +621,19 @@ public class SubmarineServer {
 						}
 
 						// 다른 차례의 유저 계산함
-						int turnIndex=0;
+						ArrayList<Client> clientList = gameRoomClientsMap.get(gameStart.getId());
+						gameStart.setTurnIndex((gameStart.getTurnIndex()+1)%clientList.size());
 						for(int i=0;i<gamerList.size();i++){
-							User u = gamerList.get(i);
-							if (u.isTurn()) {
-								u.setTurn(false);
-								turnIndex = (i+1)%gamerList.size();
-							}
+							if (i==gameStart.getTurnIndex()) gamerList.get(i).setTurn(true);
+							else gamerList.get(i).setTurn(false);
 						}
-						User turnUser = gamerList.get(turnIndex);
-						turnUser.setTurn(true);
-
 
 						// 게임방의 모든 유저에게 이런 결과를 보냄
-						ArrayList<Client> clientList = gameRoomClientsMap.get(gameStart.getId());
-						Client turnClient=null;
 						for(Client c : clientList)  {
-							if (c.getId() == turnUser.getId()) turnClient = c;
 							c.sendCommand("updateGameInfo",gameStart);
 						}
 
+						Client turnClient=clientList.get(gameStart.getTurnIndex());
 						if (turnClient!=null) {
 							turnClient.sendCommand("yourTurn",null);
 							System.out.println("얘한테 차례됐다고 보냄 : "+turnClient.getId());

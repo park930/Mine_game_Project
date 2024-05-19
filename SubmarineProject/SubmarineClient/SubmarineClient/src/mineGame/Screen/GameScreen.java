@@ -6,10 +6,12 @@ import mineGame.SubmarineClient;
 import mineGame.User;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class GameScreen extends JFrame {
@@ -23,12 +25,19 @@ public class GameScreen extends JFrame {
     private boolean timerOn;
     private long userId;
     private JLabel timerLabel;
+    private JLabel remainMineLabel;
+    private JLabel turnLabel;
     private ArrayList<JButton> mineButtonList;
+    private HashMap<Long, JTable> userGameTableMap;
+    private HashMap<Long, JLabel> turnUserMap;
+
 
     public GameScreen(GameStart gameStart,RoomScreen roomScreen,long userId) {
         this.gameStart = gameStart;
         this.roomScreen = roomScreen;
         this.userId = userId;
+        userGameTableMap=new HashMap<>();
+        turnUserMap=new HashMap<>();
 
         roomScreen.setVisible(false);
 
@@ -50,9 +59,12 @@ public class GameScreen extends JFrame {
 
         // 타이머 라벨 초기화 및 emptyPanel1에 추가
         timerLabel = new JLabel("Time remaining: 10", SwingConstants.CENTER);
-        timerLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        remainMineLabel = new JLabel(gameStart.getGameRoom().getMineNum()+"", SwingConstants.CENTER);
+        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
         emptyPanel1.setLayout(new BorderLayout());
         emptyPanel1.add(timerLabel, BorderLayout.CENTER);
+        emptyPanel1.add(remainMineLabel, BorderLayout.SOUTH);
 
 
         // JTable이 들어갈 패널
@@ -82,28 +94,60 @@ public class GameScreen extends JFrame {
     private void createTablePanel(ArrayList<User> users) {
 
         for (User user : users){
+
+            System.out.println(user.getTotal()+" "+user.getWin()+" "+user.getLose()+" "+user.getRating());
+            System.out.println(user.getTotalChoice()+" "+user.getRight()+" "+user.getFindRate());
+
+
             JPanel panel = new JPanel(new BorderLayout());
-            String[] columnNames = {"총 판수", "숭리", "패배","승률"};
+
+            JLabel nameLabel = new JLabel(user.getUserName(), SwingConstants.CENTER);
+            JLabel userIdLabel = new JLabel("id:"+user.getId(), SwingConstants.CENTER);
+            JLabel userRatingLabel = new JLabel(user.getTotal()+"전 "+user.getWin()+"승 "+ user.getLose()+"패 ("+user.getRating()+"%)", SwingConstants.CENTER);
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            userRatingLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            userIdLabel.setFont(new Font("Arial", Font.BOLD, 10));
+
+            JPanel userNamePanel = new JPanel();
+            userNamePanel.setLayout(new BorderLayout());
+            userNamePanel.add(nameLabel, BorderLayout.NORTH);
+            userNamePanel.add(userRatingLabel, BorderLayout.CENTER);
+            userNamePanel.add(userIdLabel, BorderLayout.SOUTH);
+            panel.add(userNamePanel, BorderLayout.NORTH);
+
+
+            System.out.println(" 테이블 생성 1");
+            String[] columnNames = {"선택 횟수", "찾은 지뢰","성공률"};
             Object[][] data = {
-                    {"10", "8", "2","80.0%"}
+                    {user.getTotalChoice(), user.getRight(),String.format("%.2f",user.getFindRate())+"%"}
             };
-            JTable table = new JTable(data, columnNames);
+
+            DefaultTableModel model = new DefaultTableModel(data, columnNames);
+            JTable table = new JTable(model);
+
+//            JTable table = new JTable(data, columnNames);
             JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.setBorder(null);
             panel.add(scrollPane, BorderLayout.CENTER);
+
+
+            turnLabel = new JLabel("", SwingConstants.CENTER);
+            if (user.isTurn()) turnLabel.setText("Turn");
+            else turnLabel.setText("");
+            turnLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            panel.add(turnLabel, BorderLayout.SOUTH);
+
+
             userInfoTableList.add(panel);
+            userGameTableMap.put(user.getId(),table);
+            turnUserMap.put(user.getId(),turnLabel);
         }
 
+        System.out.println("빈 칸 고려");
         if (users.size()!=4){
             int now = users.size();
             while (now!=4){
                 JPanel emptypanel = new JPanel(new BorderLayout());
-                String[] columnNames = {"   ", "   ","   ","   "};
-                Object[][] data = {
-                        {"  ","  ","  ","  "}
-                };
-                JTable table = new JTable(data, columnNames);
-                JScrollPane scrollPane = new JScrollPane(table);
-                emptypanel.add(scrollPane, BorderLayout.CENTER);
                 userInfoTableList.add(emptypanel);
                 now++;
             }
@@ -133,6 +177,7 @@ public class GameScreen extends JFrame {
                         System.out.println("자신의 차례여서 타이머가 돌고 있는 것");
                         SubmarineClient.sendGameCommand("choiceButton",gameStart.getId(),choice,userId);
                         timerLabel.setText("");
+                        System.out.println("서버에 누른 버튼 정보 전달 완료-------");
                         timerOn=false;
                         myTurn=false;
                     } else {
@@ -158,17 +203,21 @@ public class GameScreen extends JFrame {
             private int timeRemaining = 10; // 초기 타이머 설정 시간과 동일하게 설정
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (timeRemaining > 0) {
-                    timerLabel.setText("Time remaining: " + timeRemaining);
-                    timeRemaining--;
+                if (timerOn) {
+                    if (timeRemaining > 0) {
+                        timerLabel.setText("Time remaining: " + timeRemaining);
+                        timeRemaining--;
+                    } else {
+                        ((Timer) e.getSource()).stop();
+                        // 타이머가 초과되었을 때 실행할 작업을 여기에 작성
+                        myTurn = false;
+                        timerOn = false;
+                        timerLabel.setText("");
+                        System.out.println("Timer has exceeded within start method!");
+                        timeOutRandomChoice();
+                    }
                 } else {
                     ((Timer) e.getSource()).stop();
-                    // 타이머가 초과되었을 때 실행할 작업을 여기에 작성
-                    myTurn = false;
-                    timerOn = false;
-                    timerLabel.setText("");
-                    System.out.println("Timer has exceeded within start method!");
-                    timeOutRandomChoice();
                 }
             }
         });
@@ -204,12 +253,29 @@ public class GameScreen extends JFrame {
                 } else {
                     button.setText("X");
                 }
-//                button.setEnabled(false);
                 button.setForeground(Color.red);
+                button.setEnabled(false);
+            }
+        }
+
+        System.out.println("문제 지점");
+        // 유저들의 정보도 업데이트 ( 총 몇번  눌렀고, 각 유저는 몇개의 지뢰를 찾았는지, 누구의 차례인지)
+        for (User u : gameStart.getGameUserList()) {
+            JTable table = userGameTableMap.get(u.getId());
+            JLabel turnLabel = turnUserMap.get(u.getId());
+            if (table != null) {
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                model.setValueAt(u.getTotalChoice(), 0, 0);
+                model.setValueAt(u.getRight(), 0, 1);
+                model.setValueAt(String.format("%.2f", u.getFindRate()) + "%", 0, 2);
+            }
+            if (turnLabel!= null) {
+                if (u.isTurn()) turnLabel.setText("Turn");
+                else turnLabel.setText("");
             }
         }
 
 
-        // 유저들의 정보도 업데이트 ( 총 몇번  눌렀고, 각 유저는 몇개의 지뢰를 찾았는지, 누구의 차례인지)
     }
+
 }

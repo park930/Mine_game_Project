@@ -10,7 +10,7 @@ public class GameStart {
     private int total;
     private Map map;
     private ArrayList<User> gameUserList;
-
+    private int turnIndex=0;
 
 
     public GameStart(boolean doing, ArrayList<SubmarineServer.Client> gamePlayerList, long id, GameRoom gameRoom, int total) {
@@ -84,6 +84,14 @@ public class GameStart {
 
     public void setGameUserList(ArrayList<User> gameUserList) {
         this.gameUserList = gameUserList;
+    }
+
+    public int getTurnIndex() {
+        return turnIndex;
+    }
+
+    public void setTurnIndex(int turnIndex) {
+        this.turnIndex = turnIndex;
     }
 
 }

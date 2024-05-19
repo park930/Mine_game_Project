@@ -4,8 +4,9 @@ public class User {
     private String userName;
     private int total,win,lose;
     private int totalChoice,right,wrong;
+    private double findRate;
     private long id;
-    private int rating;
+    private double rating;
     private long roomId;
     private boolean isReady=false;
     
@@ -62,11 +63,11 @@ public class User {
         this.id = id;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 
@@ -79,7 +80,7 @@ public class User {
     }
 
     public void setStartTotalChoice() {
-        totalChoice=0; right=0;wrong=0;
+        totalChoice=0; right=0;wrong=0;findRate=0.0;
     }
 
     public int getTotalChoice() {
@@ -112,5 +113,13 @@ public class User {
 
     public boolean isTurn(){
         return turn;
+    }
+
+    public double getFindRate() {
+        return findRate;
+    }
+
+    public void setFindRate(double findRate) {
+        this.findRate = findRate;
     }
 }
