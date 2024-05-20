@@ -30,6 +30,7 @@ public class GameScreen extends JFrame {
     private ArrayList<JButton> mineButtonList;
     private HashMap<Long, JTable> userGameTableMap;
     private HashMap<Long, JLabel> turnUserMap;
+    private Timer timer;
 
 
     public GameScreen(GameStart gameStart,RoomScreen roomScreen,long userId) {
@@ -58,7 +59,7 @@ public class GameScreen extends JFrame {
         JPanel emptyPanel4 = new JPanel();
 
         // 타이머 라벨 초기화 및 emptyPanel1에 추가
-        timerLabel = new JLabel("Time remaining: 10", SwingConstants.CENTER);
+        timerLabel = new JLabel("", SwingConstants.CENTER);
         timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
         remainMineLabel = new JLabel(gameStart.getGameRoom().getMineNum()+"", SwingConstants.CENTER);
         remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -103,7 +104,7 @@ public class GameScreen extends JFrame {
 
             JLabel nameLabel = new JLabel(user.getUserName(), SwingConstants.CENTER);
             JLabel userIdLabel = new JLabel("id:"+user.getId(), SwingConstants.CENTER);
-            JLabel userRatingLabel = new JLabel(user.getTotal()+"전 "+user.getWin()+"승 "+ user.getLose()+"패 ("+user.getRating()+"%)", SwingConstants.CENTER);
+            JLabel userRatingLabel = new JLabel(user.getTotal()+"전 "+user.getWin()+"승 "+ user.getLose()+"패 ("+String.format("%.2f", user.getFindRate()) + "%)", SwingConstants.CENTER);
             nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
             userRatingLabel.setFont(new Font("Arial", Font.BOLD, 14));
             userIdLabel.setFont(new Font("Arial", Font.BOLD, 10));
@@ -177,6 +178,7 @@ public class GameScreen extends JFrame {
                         System.out.println("자신의 차례여서 타이머가 돌고 있는 것");
                         SubmarineClient.sendGameCommand("choiceButton",gameStart.getId(),choice,userId);
                         timerLabel.setText("");
+                        timer.stop();
                         System.out.println("서버에 누른 버튼 정보 전달 완료-------");
                         timerOn=false;
                         myTurn=false;
@@ -199,7 +201,7 @@ public class GameScreen extends JFrame {
         timerOn = true;
 
         // 비동기 작업 이후 타이머가 초과되었는지 확인
-        Timer timer = new Timer(1000, new ActionListener() {
+        timer = new Timer(1000, new ActionListener() {
             private int timeRemaining = 10; // 초기 타이머 설정 시간과 동일하게 설정
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -32,7 +32,7 @@ public class SubmarineServer {
 
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
 	private ArrayList<GameStart> gameStartList;
-	private ArrayList<GameScreen> gameScreenList;
+	private java.util.Map<Long, GameScreen> gameScreenList;
 
 
 	public static void main(String[] args) throws Exception {
@@ -48,7 +48,7 @@ public class SubmarineServer {
 		gameRoomClientsMap = new HashMap<>();
 		mainScreen = new MainScreen();
 		gameStartList = new ArrayList<>();
-		gameScreenList = new ArrayList<>();
+		gameScreenList = new HashMap<>();
 
 	    numPlayer=0;
 
@@ -570,7 +570,7 @@ public class SubmarineServer {
 
 						// 서버의 게임 화면 생성
 						GameScreen gameScreen = new GameScreen(gameStart);
-						gameScreenList.add(gameScreen);
+						gameScreenList.put(targetRoom.getId(),gameScreen);
 						gameScreen.setVisible(true);
 					}
 
@@ -642,6 +642,7 @@ public class SubmarineServer {
 							clientList.get(0).sendCommand("yourTurn",null);
 							System.out.println("얘한테 차례됐다고 보냄 : "+clientList.get(0).getId());
 						}
+						gameScreenList.get(gameStart.getGameRoom().getId()).updateGameState(gameStart);
 
 					}
 
