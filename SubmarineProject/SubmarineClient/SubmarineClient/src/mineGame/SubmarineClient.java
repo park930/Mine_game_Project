@@ -223,6 +223,11 @@ public class SubmarineClient {
 				gameScreen.dispose();
 				mainScreen.setVisible(true);
 				break;
+
+			case "acceptGiveup":
+				gameScreen.dispose();
+				mainScreen.setVisible(true);
+				break;
 		}
 
 
@@ -284,6 +289,10 @@ public class SubmarineClient {
 				commandMap.put("UserId", userId);
 				break;
 
+			case "gameExitClient":
+				commandMap.put("GameId", gameId);
+				commandMap.put("UserId", userId);
+				break;
 
 		}
 

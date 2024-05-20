@@ -6,12 +6,15 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GameScreen extends JFrame {
 
-    private ArrayList<JPanel> userInfoTableList;
+    private LinkedHashMap<Long, JPanel> userInfoPanelMap;
+    private ArrayList<JPanel> userInfoPanelList;
 
     private JPanel mineMapPanel;
+    private JPanel gameInfoPanel;
     private GameStart gameStart;
 
     private ArrayList<JButton> mineButtonList;
@@ -21,6 +24,7 @@ public class GameScreen extends JFrame {
     private JLabel turnLabel;
     private HashMap<Long, JTable> userGameTableMap;
     private HashMap<Long, JLabel> turnUserMap;
+    private JPanel mainPanel;
 
     public GameScreen(GameStart gameStart) {
         this.gameStart = gameStart;
@@ -36,45 +40,46 @@ public class GameScreen extends JFrame {
 
         // 메인 패널 설정
         // 3x3으로 나눈다.
-        JPanel mainPanel = new JPanel(new GridLayout(3, 3, 0, 0));
+        mainPanel = new JPanel(new GridLayout(3, 3, 0, 0));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // 빈 패널
-        JPanel emptyPanel1 = new JPanel();
+        gameInfoPanel = new JPanel();
         JPanel emptyPanel2 = new JPanel();
         JPanel emptyPanel3 = new JPanel();
         JPanel emptyPanel4 = new JPanel();
 
 
         // 타이머 라벨 초기화 및 emptyPanel1에 추가
-        timerLabel = new JLabel("Time remaining: 10", SwingConstants.CENTER);
+        timerLabel = new JLabel("", SwingConstants.CENTER);
         timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
         remainMineLabel = new JLabel("remain Mine:"+gameStart.getGameRoom().getMineNum(), SwingConstants.CENTER);
         remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        emptyPanel1.setLayout(new BorderLayout());
-        emptyPanel1.add(timerLabel, BorderLayout.CENTER);
-        emptyPanel1.add(remainMineLabel, BorderLayout.SOUTH);
+        gameInfoPanel.setLayout(new BorderLayout());
+        gameInfoPanel.add(timerLabel, BorderLayout.CENTER);
+        gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
 
 
         // JTable이 들어갈 패널
-        userInfoTableList = new ArrayList<>();
-
+        userInfoPanelMap = new LinkedHashMap<>();
+        userInfoPanelList = new ArrayList<>();
         createTablePanel(gameStart.getGameUserList());
+
 
         // W x W 버튼인 마인 맵이 들어갈 패널
         mineMapPanel = createButtonGridPanel(map);
 
 
         // 패널 추가
-        mainPanel.add(userInfoTableList.get(0)); // 1
-        mainPanel.add(emptyPanel1); // 2
-        mainPanel.add(userInfoTableList.get(1)); // 3
+        mainPanel.add(userInfoPanelList.get(0)); // 1
+        mainPanel.add(gameInfoPanel); // 2
+        mainPanel.add(userInfoPanelList.get(1)); // 3
         mainPanel.add(emptyPanel2); // 4
         mainPanel.add(mineMapPanel); // 5
         mainPanel.add(emptyPanel3); // 6
-        mainPanel.add(userInfoTableList.get(2)); // 7
+        mainPanel.add(userInfoPanelList.get(2)); // 7
         mainPanel.add(emptyPanel4); // 8
-        mainPanel.add(userInfoTableList.get(3)); // 9
+        mainPanel.add(userInfoPanelList.get(3)); // 9
 
         add(mainPanel);
         setVisible(true);
@@ -122,8 +127,8 @@ public class GameScreen extends JFrame {
             turnLabel.setFont(new Font("Arial", Font.BOLD, 20));
             panel.add(turnLabel, BorderLayout.SOUTH);
 
-
-            userInfoTableList.add(panel);
+            userInfoPanelMap.put(user.getId(),panel);
+            userInfoPanelList.add(panel);
             userGameTableMap.put(user.getId(),table);
             turnUserMap.put(user.getId(),turnLabel);
 
@@ -132,15 +137,7 @@ public class GameScreen extends JFrame {
         if (users.size()!=4){
             int now = users.size();
             while (now!=4){
-                JPanel emptypanel = new JPanel(new BorderLayout());
-                String[] columnNames = {"   ", "   ","   ","   "};
-                Object[][] data = {
-                        {"  ","  ","  ","  "}
-                };
-                JTable table = new JTable(data, columnNames);
-                JScrollPane scrollPane = new JScrollPane(table);
-                emptypanel.add(scrollPane, BorderLayout.CENTER);
-                userInfoTableList.add(emptypanel);
+                userInfoPanelList.add(new JPanel(new BorderLayout()));
                 now++;
             }
         }
@@ -176,6 +173,35 @@ public class GameScreen extends JFrame {
         System.out.println("------게임 스크린 처리 과정 ------");
         this.gameStart = gameStart;
 
+        ArrayList<Long> tmp = new ArrayList<>();
+        for(java.util.Map.Entry<Long,JPanel> entry : userInfoPanelMap.entrySet()){
+            if (!validUser(gameStart,entry.getKey())){
+
+                tmp.add(entry.getKey());
+            }
+        }
+        for(long id : tmp){
+            System.out.println(" 제거하려는 유저 : "+id);
+            JPanel targetPanel = userInfoPanelMap.get(id);
+            userInfoPanelMap.remove(id);
+            userInfoPanelList.remove(targetPanel);
+            userInfoPanelList.add(new JPanel(new BorderLayout()));
+        }
+
+        mainPanel.removeAll(); // 기존 패널 모두 제거
+        mainPanel.add(userInfoPanelList.get(0)); // 1
+        mainPanel.add(gameInfoPanel); // 2
+        mainPanel.add(userInfoPanelList.get(1)); // 3
+        mainPanel.add(new JPanel(new BorderLayout())); // 4
+        mainPanel.add(mineMapPanel); // 5
+        mainPanel.add(new JPanel(new BorderLayout())); // 6
+        mainPanel.add(userInfoPanelList.get(2)); // 7
+        mainPanel.add(new JPanel(new BorderLayout())); // 8
+        mainPanel.add(userInfoPanelList.get(3)); // 9
+
+
+
+
         // 선택한 버튼들에 대해서 결과를 화면에 표시
         ArrayList<Integer> disableButton = gameStart.getMap().getDisableButton();
         for(JButton button : mineButtonList){
@@ -204,6 +230,13 @@ public class GameScreen extends JFrame {
         }
 
 
+    }
+
+    private boolean validUser(GameStart gameStart, Long key) {
+        for(User u : gameStart.getGameUserList()){
+            if (u.getId() == key) return true;
+        }
+        return false;
     }
 
 }

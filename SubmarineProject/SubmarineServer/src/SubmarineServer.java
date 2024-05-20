@@ -236,7 +236,7 @@ public class SubmarineServer {
 
 		boolean inGame=false;
 		private int total,win,lose;
-		private int rating;
+		private double rating;
 
 		private long roomId;
 		private boolean isReady;
@@ -387,15 +387,6 @@ public class SubmarineServer {
 							System.out.println("   멤버 추가"+c.getId());
 						}
 					}
-					///////////////////임시
-					System.out.println("              출력");
-					for (java.util.Map.Entry<Long, ArrayList<Client>> entry : gameRoomClientsMap.entrySet()) {
-						Long key = entry.getKey();
-						ArrayList<Client> value = entry.getValue();
-						System.out.println("GameRoom ID: " + key + " -> Clients: " + value);
-					}
-					System.out.println("               끝");
-					//////////////////////////////
 
 					//모든 클라이언트에게 갱신된 roomList전송
 					sendAllRoomList();
@@ -653,6 +644,7 @@ public class SubmarineServer {
 								if (c.getId() == winUser.getId()) c.setWin(c.getWin()+1);
 								else c.setLose(c.getLose()+1);
 								c.setTotal(c.getTotal()+1);
+								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
 							}
 
 
@@ -667,13 +659,10 @@ public class SubmarineServer {
 
 							// 게임방 목록에서 제거
 							long roomid = gameStart.getGameRoom().getId();
-							for(GameRoom g : roomList){
-								if (roomid == g.getId()){
-									roomList.remove(g);
-									break;
-								}
-							}
+							GameRoom g = findRoomById(roomid,roomList);
+							if (g != null) roomList.remove(g);
 							gameRoomClientsMap.remove(roomid);
+							mainScreen.updateRoomList(roomList);
 
 							// 전체 유저에게 업데이트 된 게임방 목록 전달
 							sendAllRoomList();
@@ -699,6 +688,71 @@ public class SubmarineServer {
 
 					}
 
+					break;
+
+
+				case "gameExitClient":
+					gameId = commandJson.get("GameId").getAsLong();
+					userId = commandJson.get("UserId").getAsLong();
+
+					gameStart=null;
+					for(GameStart g : gameStartList){
+						if (g.getId()==gameId){
+							gameStart = g;
+						}
+					}
+
+					if (gameStart!=null) {
+						System.out.println("게임방 아이디 : " + gameStart.getId());
+
+						ArrayList<User> gamerList = gameStart.getGameUserList();
+						User tmpUser=findUserById(userId,gamerList);
+						if(tmpUser!=null) {
+							gamerList.remove(tmpUser);
+							ArrayList<Client> clientList = gameRoomClientsMap.get(gameStart.getGameRoom().getId());
+							Client targetClient = findClientById(tmpUser.getId(), clientList);
+							if (targetClient != null) {
+								// 해당 유저에게 게임방 나가는거 승인하는 메세지 보냄
+								clientList.remove(targetClient);
+								targetClient.sendCommand("acceptGiveup", null);
+								// 탈주자 통계 변경 적용
+								targetClient.setLose(targetClient.getLose()+1);
+								targetClient.setTotal(targetClient.getTotal()+1);
+								targetClient.setRating( (targetClient.getWin()*1.0)/targetClient.getTotal()*100);
+							}
+
+							if (clientList.size()==1){
+								Client c = clientList.get(0);
+								c.sendCommand("endGame",c.ClientToUser());
+
+								// 승리자 통계 변경 적용
+								c.setWin(c.getWin()+1);
+								c.setTotal(c.getTotal()+1);
+								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
+
+								long roomid = gameStart.getGameRoom().getId();
+								GameRoom g = findRoomById(roomid,roomList);
+								if (g != null) roomList.remove(g);
+								gameRoomClientsMap.remove(roomid);
+								mainScreen.updateRoomList(roomList);
+								sendAllRoomList();
+
+								gameScreenList.get(roomid).dispose();
+								mainScreen.updateClientList(clients);
+
+							} else {
+								for (Client c : clientList) {
+									// 남은 유저에게 참여자 바뀌었다고 메세지 보냄
+									c.sendCommand("updateGameInfo", gameStart);
+								}
+							}
+
+							// 전체 유저에게 업데이트된 유저 정보 전달
+							sendAllUserList();
+						}
+						
+					}
+					
 					break;
 
 			}
@@ -752,11 +806,11 @@ public class SubmarineServer {
 			this.lose = lose;
 		}
 
-		public int getRating() {
+		public double getRating() {
 			return rating;
 		}
 
-		public void setRating(int rating) {
+		public void setRating(double rating) {
 			this.rating = rating;
 		}
 
@@ -792,6 +846,33 @@ public class SubmarineServer {
 			this.id = id;
 		}
 
+	}
+
+	private GameRoom findRoomById(long roomid, ArrayList<GameRoom> roomList) {
+		for(GameRoom g : roomList){
+			if (roomid == g.getId()){
+				return g;
+			}
+		}
+		return null;
+	}
+
+	private User findUserById(long userId, ArrayList<User> gamerList) {
+		for(User user : gamerList){
+			if (user.getId() == userId){
+				return user;
+			}
+		}
+		return null;
+	}
+
+	private Client findClientById(long id, ArrayList<Client> clientList) {
+		for(Client c : clientList){
+			if (c.getId() == id){
+				return c;
+			}
+		}
+		return null;
 	}
 
 	private Client findClient(long userId) {
