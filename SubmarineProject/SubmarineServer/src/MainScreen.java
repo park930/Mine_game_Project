@@ -2,6 +2,7 @@ import room.GameRoom;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Vector;
 import javax.swing.*;
 public class MainScreen extends JFrame {
     private JList<SubmarineServer.Client> clientList;
@@ -75,5 +76,10 @@ public class MainScreen extends JFrame {
         clientListModel.remove(index);
     }
 
-
+    public void updateClientList(Vector<SubmarineServer.Client> clients){
+        clientListModel.clear();
+        for(SubmarineServer.Client client : clients){
+            clientListModel.addElement(client);
+        }
+    }
 }

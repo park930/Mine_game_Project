@@ -212,6 +212,15 @@ public class SubmarineClient {
 				gameScreen.updateGameState(updateGame);
 				System.out.println("끝남");
 				break;
+
+			case "endGame":
+				jsonObject = jsonObject.getAsJsonObject("winUser");
+				User winUser = gson.fromJson(jsonObject, User.class);
+				// 승자 알림 및 게임 화면 종료
+				gameScreen.showInfo("Winner : "+winUser.getUserName()+"\n(id:"+winUser.getId()+")");
+				gameScreen.dispose();
+				mainScreen.setVisible(true);
+				break;
 		}
 
 

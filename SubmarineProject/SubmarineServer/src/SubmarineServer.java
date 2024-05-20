@@ -238,7 +238,6 @@ public class SubmarineServer {
 		private int total,win,lose;
 		private int rating;
 
-		private int inGameTotal,inGameWin,inGameLose;
 		private long roomId;
 		private boolean isReady;
 
@@ -262,6 +261,7 @@ public class SubmarineServer {
 
 			setId(System.currentTimeMillis());
             System.out.println(userName+" joins from  "+getId());
+			total=0;win=0;lose=0;
 //            send("Wait for other player..");
 		}
 
@@ -338,6 +338,10 @@ public class SubmarineServer {
 					break;
 				case "updateGameInfo":
 					commandMap.put("gameStart",sendObject);
+					break;
+
+				case "endGame":
+					commandMap.put("winUser",sendObject);
 					break;
             }
 
@@ -631,6 +635,41 @@ public class SubmarineServer {
 						// 게임방의 모든 유저에게 이런 결과를 보냄
 						for(Client c : clientList)  {
 							c.sendCommand("updateGameInfo",gameStart);
+						}
+
+						if (gameStart.getMap().getFindMineList().size() >= gameStart.getGameRoom().getMineNum()){
+							// 승자 도출
+							double max=0.0;
+							User winUser = null;
+							for(User u : gamerList){
+								if (u.getFindRate() > max){
+									winUser = u;
+									max = u.getFindRate();
+								}
+							}
+
+							// 참여자 통계 변경 적용
+							for(Client c : clientList){
+								if (c.getId() == winUser.getId()) c.setWin(c.getWin()+1);
+								else c.setLose(c.getLose()+1);
+								c.setTotal(c.getTotal()+1);
+							}
+
+
+							// 참여자에게 게임 종료 메세지 전송
+							for(Client c : clientList)  {
+								c.sendCommand("endGame",winUser);
+							}
+
+
+							// 전체 유저에게 업데이트된 유저 정보 전달
+							sendAllUserList();
+
+							// 서버의 게임 화면 닫음
+							gameScreenList.get(gameStart.getGameRoom().getId()).dispose();
+							mainScreen.updateClientList(clients);
+							break;
+
 						}
 
 						Client turnClient=clientList.get(gameStart.getTurnIndex());

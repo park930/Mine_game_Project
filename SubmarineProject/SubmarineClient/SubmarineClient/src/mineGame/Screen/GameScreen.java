@@ -61,7 +61,7 @@ public class GameScreen extends JFrame {
         // 타이머 라벨 초기화 및 emptyPanel1에 추가
         timerLabel = new JLabel("", SwingConstants.CENTER);
         timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        remainMineLabel = new JLabel(gameStart.getGameRoom().getMineNum()+"", SwingConstants.CENTER);
+        remainMineLabel = new JLabel("remain Mine:"+gameStart.getGameRoom().getMineNum(), SwingConstants.CENTER);
         remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
         emptyPanel1.setLayout(new BorderLayout());
         emptyPanel1.add(timerLabel, BorderLayout.CENTER);
@@ -239,6 +239,10 @@ public class GameScreen extends JFrame {
         SubmarineClient.sendGameCommand("choiceButton",gameStart.getId(),choice,userId);
     }
 
+    public void showInfo(String s) {
+        JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     public void updateGameState(GameStart gameStart) {
         System.out.println("------게임 스크린 처리 과정 ------");
         this.gameStart = gameStart;
@@ -260,7 +264,8 @@ public class GameScreen extends JFrame {
             }
         }
 
-        System.out.println("문제 지점");
+        remainMineLabel.setText("remain Mine:"+(gameStart.getGameRoom().getMineNum()-findMineList.size()));
+
         // 유저들의 정보도 업데이트 ( 총 몇번  눌렀고, 각 유저는 몇개의 지뢰를 찾았는지, 누구의 차례인지)
         for (User u : gameStart.getGameUserList()) {
             JTable table = userGameTableMap.get(u.getId());
