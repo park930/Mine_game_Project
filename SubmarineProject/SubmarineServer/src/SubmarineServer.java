@@ -665,9 +665,23 @@ public class SubmarineServer {
 							// 전체 유저에게 업데이트된 유저 정보 전달
 							sendAllUserList();
 
+							// 게임방 목록에서 제거
+							long roomid = gameStart.getGameRoom().getId();
+							for(GameRoom g : roomList){
+								if (roomid == g.getId()){
+									roomList.remove(g);
+									break;
+								}
+							}
+							gameRoomClientsMap.remove(roomid);
+
+							// 전체 유저에게 업데이트 된 게임방 목록 전달
+							sendAllRoomList();
+
 							// 서버의 게임 화면 닫음
 							gameScreenList.get(gameStart.getGameRoom().getId()).dispose();
 							mainScreen.updateClientList(clients);
+							mainScreen.updateRoomList(roomList);
 							break;
 
 						}
