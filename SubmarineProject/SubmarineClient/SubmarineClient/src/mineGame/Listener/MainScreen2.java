@@ -12,29 +12,25 @@ import java.util.ArrayList;
 import mineGame.GameRoom;
 import mineGame.SubmarineClient;
 import mineGame.User;
+import mineGame.ListCallRenderer.PanelListCellRenderer;
 import mineGame.Screen.RoomScreen;
-import mineGame.Screen.component.UserList;
-import mineGame.Screen.item.Item;
+import mineGame.Screen.component.RoundedBorder;
+import mineGame.Screen.component.UserPanel;
 
 import javax.swing.border.EmptyBorder;
 
 public class MainScreen2 extends JFrame {
-	private JList<User> userList;
-	private JList<User> userList_2;
-	private JList<User> userList_1;
-    private DefaultListModel<User> userListModel;
     private JList<GameRoom> gameRoomList;
     private DefaultListModel<GameRoom> gameRoomListModel;
     public RoomScreen roomScreen;
     private long userId;
     private User myUser;
-    
-    private UserList<Item> tmpUserList;
-
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
 	private JPanel menuPanel;
 
+	////////////////////////////////////////////
+    private JList<UserPanel> panelList;
+    private DefaultListModel<UserPanel> panelListModel;
+	////////////////////////////////////////////
 	
 	
 	/**
@@ -70,9 +66,18 @@ public class MainScreen2 extends JFrame {
         westPanel.setBounds(0, 0, 238, 518);
 
 
+
+        
+        /////////////////////////////////////////////////////////////
+        panelListModel = new DefaultListModel<>();
+        /////////////////////////////////////////////////////////////
+
+        
         
         menuPanel = new JPanel();
         menuPanel.setBounds(12, 68, 535, 33);
+
+
 
 
 
@@ -82,26 +87,9 @@ public class MainScreen2 extends JFrame {
         gameRoomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
-      //접속 중인 유저 목록 세팅
-        ///////////////////////////////////////////////////////
-        userListModel = new DefaultListModel<>();
-        userList = new JList<>(new AbstractListModel() {
-        	String[] values = new String[] {"asdasd | sadasds | dasdasd", "asdasd | sadasds | dasdasd", "asdasd | sadasds | dasdasd", "asdasd | sadasds | dasdasd"};
-        	public int getSize() {
-        		return values.length;
-        	}
-        	public Object getElementAt(int index) {
-        		return values[index];
-        	}
-        });
-        userList.setBorder(new EmptyBorder(0, 0, 0, 0));
-        userList.setOpaque(false);
-        DefaultListCellRenderer renderer = new DefaultListCellRenderer();
-        renderer.setOpaque( false );
-        userList.setCellRenderer( renderer );
-        ///////////////////////////////////////////////////////
 
         
+
         centerPanel.setLayout(null);
 
         //Center 구성
@@ -114,22 +102,38 @@ public class MainScreen2 extends JFrame {
         westPanel.setLayout(null);
 
         
-        //West 구성
-        JScrollPane scrollPane = new JScrollPane(userList);
-        scrollPane.setBounds(12, 144, 212, 147);
-        westPanel.add(scrollPane);
-
-
         mainPanel.add(westPanel);
-        
-        JLabel lblNewLabel = new JLabel("User List");
-        lblNewLabel.setBounds(12, 119, 57, 15);
-        westPanel.add(lblNewLabel);
         
         JLabel lblNewLabel_1 = new JLabel("New label");
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
-        lblNewLabel_1.setBounds(12, 22, 160, 51);
+        lblNewLabel_1.setBounds(12, 10, 160, 34);
         westPanel.add(lblNewLabel_1);
+           
+           JPanel userPanel = new JPanel();
+           userPanel.setBounds(12, 68, 212, 450);
+           westPanel.add(userPanel);
+           userPanel.setLayout(null);
+           userPanel.setBorder(new RoundedBorder(7, 0));
+           
+           JLabel lblNewLabel = new JLabel("User List");
+           lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
+           lblNewLabel.setBounds(12, 10, 97, 15);
+           userPanel.add(lblNewLabel);
+           
+//        for (int i = 0; i < 1; i++) {
+//            panelListModel.addElement(new UserPanel("User " + (i + 1), i));
+//        }
+           
+           panelList = new JList<>(panelListModel);
+           panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+           panelList.setOpaque(false);
+           panelList.setCellRenderer(new PanelListCellRenderer());
+           
+              JScrollPane panelListScrollPane = new JScrollPane(panelList);
+              panelListScrollPane.setBounds(12, 44, 188, 396);
+              panelListScrollPane.setOpaque(false);
+              panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+              userPanel.add(panelListScrollPane);
         mainPanel.add(centerPanel);
         
         
@@ -139,11 +143,11 @@ public class MainScreen2 extends JFrame {
         
         
         JPanel panel = new JPanel();
-        panel.setBounds(248, 10, 561, 37);
+        panel.setBounds(251, 10, 558, 37);
         mainPanel.add(panel);
         panel.setLayout(null);
         
-        JButton btnNewButton = new JButton("New button");
+        JButton btnNewButton = new JButton("");
         btnNewButton.setBounds(485, 10, 64, 23);
         panel.add(btnNewButton);
 

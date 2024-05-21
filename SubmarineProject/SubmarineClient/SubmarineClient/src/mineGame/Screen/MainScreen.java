@@ -2,10 +2,11 @@ package mineGame.Screen;
 
 import mineGame.GameRoom;
 import mineGame.Listener.DoubleClickListener;
-import mineGame.Screen.component.UserList;
-import mineGame.Screen.item.Item;
+import mineGame.Screen.component.RoundedBorder;
+import mineGame.Screen.component.UserPanel;
 import mineGame.SubmarineClient;
 import mineGame.User;
+import mineGame.ListCallRenderer.PanelListCellRenderer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,16 +19,20 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class MainScreen extends JFrame{
-    private JList<User> userList;
-    private DefaultListModel<User> userListModel;
     private JList<GameRoom> gameRoomList;
     private DefaultListModel<GameRoom> gameRoomListModel;
     public RoomScreen roomScreen;
     private long userId;
     private User myUser;
 	private JPanel menuPanel;
-	private UserList<Item> iconUserList;
 
+	////////////////////////////////////////////
+	private JList<UserPanel> panelList;
+    private DefaultListModel<UserPanel> panelListModel;
+	////////////////////////////////////////////
+
+	
+	
     public MainScreen(User myUser) {
         System.out.println("내 정보 = "+myUser);
         System.out.println("main 생성");
@@ -40,9 +45,12 @@ public class MainScreen extends JFrame{
         westPanel.setBounds(0, 0, 238, 518);
 
 
-        
+        panelListModel = new DefaultListModel<>();
+
+
         menuPanel = new JPanel();
         menuPanel.setBounds(12, 68, 535, 33);
+
 
 
 
@@ -55,15 +63,11 @@ public class MainScreen extends JFrame{
 
 
         //접속 중인 유저 목록 세팅
-        ///////////////////////////////////////////////////////
-        userListModel = new DefaultListModel<>();
-        userList = new JList<>(userListModel);
-        userList.setOpaque(false);
         DefaultListCellRenderer renderer = new DefaultListCellRenderer();
         renderer.setOpaque( false );
-        userList.setCellRenderer( renderer );
-        ///////////////////////////////////////////////////////
 
+        
+        
 
         centerPanel.setLayout(null);
 
@@ -78,51 +82,48 @@ public class MainScreen extends JFrame{
 
         
         
-        //West 구성
-        JScrollPane scrollPane = new JScrollPane(userList);
-        scrollPane.setBounds(12, 144, 212, 363);
-        westPanel.add(scrollPane);
-        
 
         mainPanel.add(westPanel);
-        
-        JLabel lblNewLabel = new JLabel("User List");
-        lblNewLabel.setBounds(12, 119, 57, 15);
-        westPanel.add(lblNewLabel);
+
         
         JLabel lblNewLabel_1 = new JLabel("New label");
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
-        lblNewLabel_1.setBounds(12, 22, 160, 51);
+        lblNewLabel_1.setBounds(12, 10, 160, 34);
         westPanel.add(lblNewLabel_1);
+
+        JPanel userPanel = new JPanel();
+        userPanel.setBounds(12, 68, 212, 450);
+        westPanel.add(userPanel);
+        userPanel.setLayout(null);
+        userPanel.setBorder(new RoundedBorder(7, 0));
+        
+        JLabel lblNewLabel = new JLabel("User List");
+        lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        lblNewLabel.setBounds(12, 10, 97, 15);
+        userPanel.add(lblNewLabel);
+
+        panelList = new JList<>(panelListModel);
+        panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panelList.setOpaque(false);
+        panelList.setCellRenderer(new PanelListCellRenderer());
+
+        JScrollPane panelListScrollPane = new JScrollPane(panelList);
+        panelListScrollPane.setBounds(12, 44, 188, 396);
+        panelListScrollPane.setOpaque(false);
+        panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        userPanel.add(panelListScrollPane);
         mainPanel.add(centerPanel);
-        
-        
-        //////////////////////////
-//        iconUserList = new UserList<>();
-//        Item tmpItem = new Item("person1",new ImageIcon(getClass().getResource("/mineGame/Screen/icon/person.png")));
-//        iconUserList.addItem(tmpItem);
-//        iconUserList.addItem(tmpItem);
-//        iconUserList.addItem(tmpItem);
-//
-//        JScrollPane newUserScrollPane = new JScrollPane(iconUserList);
-//        newUserScrollPane.setViewportBorder(new EmptyBorder(0, 0, 0, 0));
-//        newUserScrollPane.setBounds(12, 301, 212, 207);
-//        westPanel.add(newUserScrollPane);
-        ////////////////////////////
-        
-        
-        
         
         
         // 컨테이너를 프레임에 올림.
         add(mainPanel);
 
         JPanel panel = new JPanel();
-        panel.setBounds(248, 10, 561, 37);
+        panel.setBounds(251, 10, 558, 37);
         mainPanel.add(panel);
         panel.setLayout(null);
         
-        JButton btnNewButton = new JButton("New button");
+        JButton btnNewButton = new JButton("");
         btnNewButton.setBounds(485, 10, 64, 23);
         panel.add(btnNewButton);
 
@@ -190,10 +191,10 @@ public class MainScreen extends JFrame{
     }
 
     public void setUserList(ArrayList<User> userList) {
-        userListModel.clear();
+        panelListModel.clear();
         for(User user : userList){
             System.out.println("    다시 유저 채워 넣음");
-            userListModel.addElement(user);
+            panelListModel.addElement(new UserPanel(user));
         }
     }
 
