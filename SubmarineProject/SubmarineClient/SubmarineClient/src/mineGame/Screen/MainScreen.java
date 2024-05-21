@@ -39,16 +39,19 @@ public class MainScreen extends JFrame{
         this.myUser = myUser;
 
         JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(201, 197, 179));
         JPanel centerPanel = new JPanel();
+        centerPanel.setOpaque(false);
         centerPanel.setBounds(250, 46, 559, 472);
         JPanel westPanel = new JPanel();
-        westPanel.setBounds(0, 0, 238, 518);
+        westPanel.setBounds(0, 0, 238, 528);
 
 
         panelListModel = new DefaultListModel<>();
 
 
         menuPanel = new JPanel();
+        menuPanel.setOpaque(false);
         menuPanel.setBounds(12, 68, 535, 33);
 
 
@@ -95,9 +98,11 @@ public class MainScreen extends JFrame{
         userPanel.setBounds(12, 68, 212, 450);
         westPanel.add(userPanel);
         userPanel.setLayout(null);
+        userPanel.setOpaque(false);
         userPanel.setBorder(new RoundedBorder(7, 0));
         
         JLabel lblNewLabel = new JLabel("User List");
+        lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
         lblNewLabel.setBounds(12, 10, 97, 15);
         userPanel.add(lblNewLabel);
@@ -120,6 +125,7 @@ public class MainScreen extends JFrame{
 
         JPanel panel = new JPanel();
         panel.setBounds(251, 10, 558, 37);
+        panel.setOpaque(false);
         mainPanel.add(panel);
         panel.setLayout(null);
         

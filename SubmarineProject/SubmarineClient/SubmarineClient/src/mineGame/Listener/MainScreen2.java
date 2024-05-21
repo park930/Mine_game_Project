@@ -60,10 +60,10 @@ public class MainScreen2 extends JFrame {
         this.myUser = myUser;
 
         JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(201, 197, 179));
         JPanel centerPanel = new JPanel();
+        centerPanel.setOpaque(false);
         centerPanel.setBounds(250, 46, 559, 472);
-        JPanel westPanel = new JPanel();
-        westPanel.setBounds(0, 0, 238, 518);
 
 
 
@@ -75,6 +75,7 @@ public class MainScreen2 extends JFrame {
         
         
         menuPanel = new JPanel();
+        menuPanel.setOpaque(false);
         menuPanel.setBounds(12, 68, 535, 33);
 
 
@@ -99,41 +100,6 @@ public class MainScreen2 extends JFrame {
         scrollPane_1.setBounds(12, 111, 535, 173);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
-        westPanel.setLayout(null);
-
-        
-        mainPanel.add(westPanel);
-        
-        JLabel lblNewLabel_1 = new JLabel("New label");
-        lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
-        lblNewLabel_1.setBounds(12, 10, 160, 34);
-        westPanel.add(lblNewLabel_1);
-           
-           JPanel userPanel = new JPanel();
-           userPanel.setBounds(12, 68, 212, 450);
-           westPanel.add(userPanel);
-           userPanel.setLayout(null);
-           userPanel.setBorder(new RoundedBorder(7, 0));
-           
-           JLabel lblNewLabel = new JLabel("User List");
-           lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
-           lblNewLabel.setBounds(12, 10, 97, 15);
-           userPanel.add(lblNewLabel);
-           
-//        for (int i = 0; i < 1; i++) {
-//            panelListModel.addElement(new UserPanel("User " + (i + 1), i));
-//        }
-           
-           panelList = new JList<>(panelListModel);
-           panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
-           panelList.setOpaque(false);
-           panelList.setCellRenderer(new PanelListCellRenderer());
-           
-              JScrollPane panelListScrollPane = new JScrollPane(panelList);
-              panelListScrollPane.setBounds(12, 44, 188, 396);
-              panelListScrollPane.setOpaque(false);
-              panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-              userPanel.add(panelListScrollPane);
         mainPanel.add(centerPanel);
         
         
@@ -144,12 +110,46 @@ public class MainScreen2 extends JFrame {
         
         JPanel panel = new JPanel();
         panel.setBounds(251, 10, 558, 37);
+        panel.setOpaque(false);
         mainPanel.add(panel);
         panel.setLayout(null);
         
         JButton btnNewButton = new JButton("");
         btnNewButton.setBounds(485, 10, 64, 23);
         panel.add(btnNewButton);
+        
+        JLabel lblNewLabel_1 = new JLabel("New label");
+        lblNewLabel_1.setBounds(12, 10, 160, 34);
+        mainPanel.add(lblNewLabel_1);
+        lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
+        
+        JPanel userPanel = new JPanel();
+        userPanel.setBounds(12, 54, 212, 450);
+        mainPanel.add(userPanel);
+        userPanel.setBackground(new Color(104, 99, 74));
+        userPanel.setLayout(null);
+        userPanel.setBorder(new RoundedBorder(7, 0));
+        
+        JLabel lblNewLabel = new JLabel("User List");
+        lblNewLabel.setForeground(new Color(255, 255, 255));
+        lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        lblNewLabel.setBounds(12, 10, 97, 15);
+        userPanel.add(lblNewLabel);
+        
+//        for (int i = 0; i < 1; i++) {
+//            panelListModel.addElement(new UserPanel("User " + (i + 1), i));
+//        }
+        
+        panelList = new JList<>(panelListModel);
+        panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panelList.setOpaque(false);
+        panelList.setCellRenderer(new PanelListCellRenderer());
+        
+           JScrollPane panelListScrollPane = new JScrollPane(panelList);
+           panelListScrollPane.setBounds(12, 44, 188, 396);
+           panelListScrollPane.setOpaque(false);
+           panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+           userPanel.add(panelListScrollPane);
 
         setBounds(200,200,837,567);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
