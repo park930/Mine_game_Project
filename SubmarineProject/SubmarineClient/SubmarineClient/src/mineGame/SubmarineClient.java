@@ -21,6 +21,7 @@ public class SubmarineClient {
 	static String address ="192.168.35.173";
 //	static String address ="192.168.0.8";
 
+
 	static public PrintWriter out;
     static public BufferedReader in;
     static String userName = "Alice";

@@ -19,6 +19,8 @@ public class MainScreen extends JFrame {
 
     public MainScreen() {
         JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(null);
+
         JPanel centerPanel = new JPanel();
         JPanel westPanel = new JPanel();
         clientListModel = new DefaultListModel<>();
