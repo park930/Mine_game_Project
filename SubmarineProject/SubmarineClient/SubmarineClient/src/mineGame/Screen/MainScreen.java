@@ -43,8 +43,7 @@ public class MainScreen extends JFrame{
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
         centerPanel.setBounds(250, 46, 559, 472);
-        JPanel westPanel = new JPanel();
-        westPanel.setBounds(0, 0, 238, 528);
+        
 
 
         panelListModel = new DefaultListModel<>();
@@ -52,7 +51,7 @@ public class MainScreen extends JFrame{
 
         menuPanel = new JPanel();
         menuPanel.setOpaque(false);
-        menuPanel.setBounds(12, 68, 535, 33);
+        menuPanel.setBounds(12, 23, 535, 50);
 
 
 
@@ -77,28 +76,35 @@ public class MainScreen extends JFrame{
         //Center 구성
         initialMenuPanel(menuPanel);
         centerPanel.add(menuPanel);
+        
         JScrollPane scrollPane_1 = new JScrollPane(gameRoomList);
-        scrollPane_1.setBounds(12, 111, 535, 173);
+        scrollPane_1.setBounds(12, 73, 535, 173);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
-        westPanel.setLayout(null);
+        mainPanel.add(centerPanel);
 
         
-        
 
-        mainPanel.add(westPanel);
-
+        JPanel infoManagePanel = new JPanel();
+        infoManagePanel.setBounds(251, 10, 558, 37);
+        infoManagePanel.setOpaque(false);
+        mainPanel.add(infoManagePanel);
+        infoManagePanel.setLayout(null);
         
-        JLabel lblNewLabel_1 = new JLabel("New label");
-        lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
+        JButton infoButton = new JButton("");
+        infoButton.setBounds(485, 10, 64, 23);
+        infoManagePanel.add(infoButton);
+        
+        JLabel lblNewLabel_1 = new JLabel("Mine");
         lblNewLabel_1.setBounds(12, 10, 160, 34);
-        westPanel.add(lblNewLabel_1);
-
+        mainPanel.add(lblNewLabel_1);
+        lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
+        
         JPanel userPanel = new JPanel();
-        userPanel.setBounds(12, 68, 212, 450);
-        westPanel.add(userPanel);
+        userPanel.setBounds(12, 54, 212, 450);
+        mainPanel.add(userPanel);
+        userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
-        userPanel.setOpaque(false);
         userPanel.setBorder(new RoundedBorder(7, 0));
         
         JLabel lblNewLabel = new JLabel("User List");
@@ -122,16 +128,6 @@ public class MainScreen extends JFrame{
         
         // 컨테이너를 프레임에 올림.
         add(mainPanel);
-
-        JPanel panel = new JPanel();
-        panel.setBounds(251, 10, 558, 37);
-        panel.setOpaque(false);
-        mainPanel.add(panel);
-        panel.setLayout(null);
-        
-        JButton btnNewButton = new JButton("");
-        btnNewButton.setBounds(485, 10, 64, 23);
-        panel.add(btnNewButton);
 
         setBounds(200,200,837,567);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -174,17 +170,31 @@ public class MainScreen extends JFrame{
     }
 
     private void initialMenuPanel(JPanel panel) {
-        JButton createRoom = new JButton("방 생성");
-        createRoom.addActionListener(new CreateRoomListener());
-        createRoom.setBounds(0, 0, 167, 33);
-        JButton noUserRoom = new JButton("컴퓨터 대결");
-        noUserRoom.setBounds(189, 0, 167, 33);
-        JButton statistics = new JButton("통계");
-        statistics.setBounds(368, 0, 167, 33);
-        menuPanel.setLayout(null);
+        JLabel createRoom = new JLabel("");
+        createRoom.setBounds(35, 4, 153, 41);
+//        createRoom.addActionListener(new CreateRoomListener());
+        
+        createRoom.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                new CreateRoomListener().actionPerformed(null);
+            }
+        });
+        
+        
+        createRoom.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/createRoom.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(createRoom);
+        
+        JLabel noUserRoom = new JLabel("");
+        noUserRoom.setBounds(193, 4, 153, 41);
+        noUserRoom.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/practice.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(noUserRoom);
+        
+        JLabel statistics = new JLabel("");
+        statistics.setBounds(351, 4, 153, 41);
+        statistics.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/statistics.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(statistics);
+        
     }
 
 

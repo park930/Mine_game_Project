@@ -1,26 +1,32 @@
 package mineGame.Listener;
 
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Image;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 
 import mineGame.GameRoom;
-import mineGame.SubmarineClient;
 import mineGame.User;
 import mineGame.ListCallRenderer.PanelListCellRenderer;
 import mineGame.Screen.RoomScreen;
 import mineGame.Screen.component.RoundedBorder;
 import mineGame.Screen.component.UserPanel;
+import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-import javax.swing.border.EmptyBorder;
-
-public class MainScreen2 extends JFrame {
-    private JList<GameRoom> gameRoomList;
+public class mainScreen3 extends JFrame {
+	private JList<GameRoom> gameRoomList;
     private DefaultListModel<GameRoom> gameRoomListModel;
     public RoomScreen roomScreen;
     private long userId;
@@ -40,7 +46,7 @@ public class MainScreen2 extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainScreen2 frame = new MainScreen2(new User());
+					mainScreen3 frame = new mainScreen3(new User());
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,7 +60,7 @@ public class MainScreen2 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainScreen2(User myUser) {
+	public mainScreen3(User myUser) {
 		System.out.println("내 정보 = "+myUser);
         System.out.println("main 생성");
         this.myUser = myUser;
@@ -76,7 +82,7 @@ public class MainScreen2 extends JFrame {
         
         menuPanel = new JPanel();
         menuPanel.setOpaque(false);
-        menuPanel.setBounds(12, 68, 535, 33);
+        menuPanel.setBounds(12, 23, 535, 50);
 
 
 
@@ -96,8 +102,9 @@ public class MainScreen2 extends JFrame {
         //Center 구성
         initialMenuPanel(menuPanel);
         centerPanel.add(menuPanel);
+    
         JScrollPane scrollPane_1 = new JScrollPane(gameRoomList);
-        scrollPane_1.setBounds(12, 111, 535, 173);
+        scrollPane_1.setBounds(12, 73, 535, 173);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
         mainPanel.add(centerPanel);
@@ -108,17 +115,17 @@ public class MainScreen2 extends JFrame {
         getContentPane().add(mainPanel);
         
         
-        JPanel panel = new JPanel();
-        panel.setBounds(251, 10, 558, 37);
-        panel.setOpaque(false);
-        mainPanel.add(panel);
-        panel.setLayout(null);
+        JPanel infoManagePanel = new JPanel();
+        infoManagePanel.setBounds(251, 10, 558, 37);
+        infoManagePanel.setOpaque(false);
+        mainPanel.add(infoManagePanel);
+        infoManagePanel.setLayout(null);
         
-        JButton btnNewButton = new JButton("");
-        btnNewButton.setBounds(485, 10, 64, 23);
-        panel.add(btnNewButton);
+        JButton infoButton = new JButton("");
+        infoButton.setBounds(485, 10, 64, 23);
+        infoManagePanel.add(infoButton);
         
-        JLabel lblNewLabel_1 = new JLabel("New label");
+        JLabel lblNewLabel_1 = new JLabel("Mine");
         lblNewLabel_1.setBounds(12, 10, 160, 34);
         mainPanel.add(lblNewLabel_1);
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
@@ -160,15 +167,30 @@ public class MainScreen2 extends JFrame {
     }
 	
 	private void initialMenuPanel(JPanel panel) {
-        JButton createRoom = new JButton("방 생성");
-        createRoom.setBounds(0, 0, 167, 33);
-        JButton noUserRoom = new JButton("컴퓨터 대결");
-        noUserRoom.setBounds(189, 0, 167, 33);
-        JButton statistics = new JButton("통계");
-        statistics.setBounds(368, 0, 167, 33);
         menuPanel.setLayout(null);
+        
+        
+        
+        JLabel createRoom = new JLabel("");
+        createRoom.setBounds(35, 4, 153, 41);
+        createRoom.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/createRoom.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(createRoom);
+        
+        JLabel noUserRoom = new JLabel("");
+        noUserRoom.setBounds(193, 4, 153, 41);
+        noUserRoom.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/practice.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(noUserRoom);
+        
+        JLabel statistics = new JLabel("");
+        statistics.setBounds(351, 4, 153, 41);
+        statistics.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/statistics.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(statistics);
+        
+        
+        
+        
+        
+        
+        
     }
 }
