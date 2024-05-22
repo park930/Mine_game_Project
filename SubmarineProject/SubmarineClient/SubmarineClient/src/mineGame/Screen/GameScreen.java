@@ -70,14 +70,19 @@ public class GameScreen extends JFrame {
 
         // 메인 패널 설정
         // 3x3으로 나눈다.
-        mainPanel = new JPanel(new GridLayout(3, 3, 0, 0));
+        mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 빈 패널
+        // 각 유저의 정보 패널
+        userInfoPanelMap = new LinkedHashMap<>();
+        userInfoPanelList = new ArrayList<>();
+
+
+        // 타이머, 잔여 마인 등 패널
         gameInfoPanel = new JPanel();
-        JPanel emptyPanel2 = new JPanel();
-        JPanel emptyPanel3 = new JPanel();
-        JPanel emptyPanel4 = new JPanel();
+        gameInfoPanel.setBounds(51, 10, 308, 63);
+        mainPanel.add(gameInfoPanel);
+       
 
         // 타이머 라벨 초기화 및 emptyPanel1에 추가
         timerLabel = new JLabel("", SwingConstants.CENTER);
@@ -89,15 +94,12 @@ public class GameScreen extends JFrame {
         gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
 
 
-        // 각 유저의 정보 패널
-        userInfoPanelMap = new LinkedHashMap<>();
-        userInfoPanelList = new ArrayList<>();
 
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
         userPanel = new JPanel();
-        userPanel.setBounds(12, 54, 212, 450);
+        userPanel.setBounds(531, 10, 372, 515);
         userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
         userPanel.setBorder(new RoundedBorder(7, 0));
@@ -112,44 +114,40 @@ public class GameScreen extends JFrame {
         panelListModel = new DefaultListModel<>();
         panelList = new JList<>(panelListModel);
         panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panelList.setBackground(new Color(104, 99, 74));
         panelList.setOpaque(false);
         panelList.setCellRenderer(new InGamePanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 44, 322, 500);
+        panelListScrollPane.setBounds(12, 44, 322, 449);
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
-
-
         //////////////////////////////////////////////////////////////////////////////////////////
         System.out.println("여기까지1");
-
+        mainPanel.setLayout(null);
+        mainPanel.add(userPanel);
+        
+        
+        
+        
         createTablePanel(gameStart.getGameUserList());
-        System.out.println("여기까지8");
 
         // 10x10 버튼인 마인 맵이 들어갈 패널
         mineMapPanel = createButtonGridPanel(gameStart.getGameRoom().getMapSize(), gameStart.getGameRoom().getMapSize());
-
-
-        // 패널 추가
-//        mainPanel.add(userInfoPanelList.get(0)); // 1
-        mainPanel.add(gameInfoPanel); // 2
-//        mainPanel.add(userInfoPanelList.get(1)); // 3
-        mainPanel.add(emptyPanel2); // 4
         mainPanel.add(mineMapPanel); // 5
-        mainPanel.add(emptyPanel3); // 6
-//        mainPanel.add(userInfoPanelList.get(2)); // 7
-        mainPanel.add(userPanel); // 8
-//        mainPanel.add(userInfoPanelList.get(3)); // 9
 
 
 
         //////////////////////////// bottom 패널 생성 //////////////////
-        JPanel bottomPanel = new JPanel(new GridLayout(3, 0, 0, 0));
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBounds(76, 463, 280, 41);
+        mainPanel.add(bottomPanel);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        bottomPanel.setLayout(null);
         JButton giveupButton = new JButton("Give Up");
-        bottomPanel.add(giveupButton,BorderLayout.NORTH);
+        giveupButton.setBounds(10, 10, 260, 23);
+        bottomPanel.add(giveupButton);
         
         // 항복 버튼 구현
         // 항복 버튼 구현
@@ -221,6 +219,7 @@ public class GameScreen extends JFrame {
             mineButtonList.add(button);
             panel.add(button);
         }
+        panel.setBounds(21, 79, 376, 376);
         return panel;
     }
 

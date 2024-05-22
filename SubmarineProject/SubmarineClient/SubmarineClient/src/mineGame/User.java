@@ -129,4 +129,9 @@ public class User {
     public void setFindRate(double findRate) {
         this.findRate = findRate;
     }
+    
+    public void setTurn(boolean t) {
+    	this.turn = t;
+    }
+    
 }

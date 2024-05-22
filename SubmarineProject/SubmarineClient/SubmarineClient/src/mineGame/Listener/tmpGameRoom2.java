@@ -46,8 +46,6 @@ public class tmpGameRoom2 extends JFrame {
 
     private JPanel mineMapPanel;
     private JPanel mainPanel;
-    private GameStart gameStart;
-    private RoomScreen roomScreen;
     private boolean myTurn=false;
     private boolean timerOn;
     private long userId;
@@ -89,73 +87,53 @@ public class tmpGameRoom2 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public tmpGameRoom2(RoomScreen roomScreen) {
+	public tmpGameRoom2() {
 		//////////////////////////
 		User user = new User();
-		MainScreen mainScreen = new MainScreen(user);
-		GameRoom gameRoom = new GameRoom("room1",4,true,10L,9,20,user);
-		Map map = new Map(9,20);
-		roomScreen = new RoomScreen(mainScreen, gameRoom, user);
+		user.setTurn(true);
 		ArrayList<User> userList = new ArrayList<>();
 		userList.add(new User());
 		userList.add(new User());
 		userList.add(new User());
 		userList.add(new User());
-		GameStart gameStart = new GameStart(true, 10L, gameRoom, 1, map, userList);
 		userId = user.getId();
 		
 		//////////////////////////
 		
-		
-        this.gameStart = gameStart;
-        this.roomScreen = roomScreen;
         this.userId = userId;
         userGameTableMap=new HashMap<>();
         turnUserMap=new HashMap<>();
 
-        roomScreen.setVisible(false);
 
         setTitle("Game Screen");
         getContentPane().setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 800);
+        setSize(927, 582);
         setLocationRelativeTo(null);
 
         // 메인 패널 설정
         // 3x3으로 나눈다.
-        mainPanel = new JPanel(new GridLayout(3, 3, 0, 0));
+        mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // 빈 패널
-        gameInfoPanel = new JPanel();
-        JPanel emptyPanel2 = new JPanel();
-        JPanel emptyPanel3 = new JPanel();
-        JPanel emptyPanel4 = new JPanel();
-
-        // 타이머 라벨 초기화 및 emptyPanel1에 추가
-        timerLabel = new JLabel("", SwingConstants.CENTER);
-        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        remainMineLabel = new JLabel("remain Mine:"+gameStart.getGameRoom().getMineNum(), SwingConstants.CENTER);
-        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        gameInfoPanel.setLayout(new BorderLayout());
-        gameInfoPanel.add(timerLabel, BorderLayout.CENTER);
-        gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
 
 
         // 각 유저의 정보 패널
         userInfoPanelMap = new LinkedHashMap<>();
         userInfoPanelList = new ArrayList<>();
-        createTablePanel(gameStart.getGameUserList());
+        createTablePanel(userList);
 
         // 10x10 버튼인 마인 맵이 들어갈 패널
-        mineMapPanel = createButtonGridPanel(gameStart.getGameRoom().getMapSize(), gameStart.getGameRoom().getMapSize());
+        mineButtonList = new ArrayList<>();
+
+
+        mineMapPanel = createButtonGridPanel(10, 10);
 
 
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
         JPanel userPanel = new JPanel();
-        userPanel.setBounds(12, 54, 212, 450);
+        userPanel.setBounds(531, 10, 372, 515);
         userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
         userPanel.setBorder(new RoundedBorder(7, 0));
@@ -174,40 +152,79 @@ public class tmpGameRoom2 extends JFrame {
         panelList.setCellRenderer(new InGamePanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 44, 322, 500);
+        panelListScrollPane.setBounds(12, 44, 322, 449);
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
  
         panelListModel.addElement(new InGameUserPanel(user));
+        mainPanel.setLayout(null);
         
         //////////////////////////////////////////////////////////////////////////////////////////
 
 
         // 패널 추가
         mainPanel.add(userPanel);
-        mainPanel.add(userInfoPanelList.get(0)); // 1
-        mainPanel.add(gameInfoPanel); // 2
-        mainPanel.add(userInfoPanelList.get(1)); // 3
-        mainPanel.add(emptyPanel2); // 4
-        mainPanel.add(mineMapPanel); // 5
-        mainPanel.add(emptyPanel3); // 6
-        mainPanel.add(userInfoPanelList.get(2)); // 7
-        mainPanel.add(emptyPanel4); // 8
-        mainPanel.add(userInfoPanelList.get(3)); // 9
-
-        
-        
-
-        //////////////////////////// bottom 패널 생성 //////////////////
-        JPanel bottomPanel = new JPanel(new GridLayout(3, 0, 0, 0));
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JButton giveupButton = new JButton("Give Up");
-        bottomPanel.add(giveupButton,BorderLayout.NORTH);
         
 
         getContentPane().add(mainPanel, BorderLayout.CENTER);
-        getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+        
+                // 빈 패널
+                gameInfoPanel = new JPanel();
+                gameInfoPanel.setBounds(51, 10, 308, 63);
+                mainPanel.add(gameInfoPanel);
+                
+                        // 타이머 라벨 초기화 및 emptyPanel1에 추가
+                        timerLabel = new JLabel("Time : 100", SwingConstants.CENTER);
+                        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+                        remainMineLabel = new JLabel("remain Mine:"+30, SwingConstants.CENTER);
+                        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                        gameInfoPanel.setLayout(new BorderLayout());
+                        gameInfoPanel.add(timerLabel, BorderLayout.CENTER);
+                        gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
+                        JPanel panel = new JPanel(new GridLayout(3, 3, 1, 1));
+                        panel.setBounds(21, 79, 376, 376);
+                        mainPanel.add(panel);
+                        JButton button1 = new JButton();
+                        JButton button2 = new JButton();
+                        JButton button3 = new JButton();
+                        JButton button4 = new JButton();
+                        JButton button5 = new JButton();
+                        JButton button6 = new JButton();
+                        JButton button7 = new JButton();
+                        JButton button8 = new JButton();
+                        JButton button9 = new JButton();
+                        button1.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button2.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button3.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button4.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button5.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button6.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button7.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button8.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        button9.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        panel.add(button1);
+                        panel.add(button2);
+                        panel.add(button3);
+                        panel.add(button4);
+                        panel.add(button5);
+                        panel.add(button6);
+                        panel.add(button7);
+                        panel.add(button8);
+                        panel.add(button9);
+                        
+                                
+                                
+                        
+                                //////////////////////////// bottom 패널 생성 //////////////////
+                                JPanel bottomPanel = new JPanel();
+                                bottomPanel.setBounds(76, 463, 280, 41);
+                                mainPanel.add(bottomPanel);
+                                bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                                bottomPanel.setLayout(null);
+                                JButton giveupButton = new JButton("Give Up");
+                                giveupButton.setBounds(10, 10, 260, 23);
+                                bottomPanel.add(giveupButton);
         setVisible(true);
     }
 	
