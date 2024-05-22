@@ -17,8 +17,10 @@ import javax.swing.border.EmptyBorder;
 
 import mineGame.GameRoom;
 import mineGame.User;
+import mineGame.ListCallRenderer.InGamePanelListCellRenderer;
 import mineGame.ListCallRenderer.PanelListCellRenderer;
 import mineGame.Screen.RoomScreen;
+import mineGame.Screen.component.InGameUserPanel;
 import mineGame.Screen.component.RoundedBorder;
 import mineGame.Screen.component.UserPanel;
 import javax.swing.ImageIcon;
@@ -34,8 +36,8 @@ public class mainScreen3 extends JFrame {
 	private JPanel menuPanel;
 
 	////////////////////////////////////////////
-    private JList<UserPanel> panelList;
-    private DefaultListModel<UserPanel> panelListModel;
+    private JList<InGameUserPanel> panelList;
+    private DefaultListModel<InGameUserPanel> panelListModel;
 	////////////////////////////////////////////
 	
 	
@@ -150,7 +152,7 @@ public class mainScreen3 extends JFrame {
         panelList = new JList<>(panelListModel);
         panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
         panelList.setOpaque(false);
-        panelList.setCellRenderer(new PanelListCellRenderer());
+        panelList.setCellRenderer(new InGamePanelListCellRenderer());
         
            JScrollPane panelListScrollPane = new JScrollPane(panelList);
            panelListScrollPane.setBounds(12, 44, 188, 396);

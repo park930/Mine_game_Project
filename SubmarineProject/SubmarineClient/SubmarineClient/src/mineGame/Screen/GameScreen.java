@@ -2,11 +2,17 @@ package mineGame.Screen;
 
 import mineGame.GameStart;
 import mineGame.GameTimer;
+import mineGame.ListCallRenderer.InGamePanelListCellRenderer;
+import mineGame.ListCallRenderer.PanelListCellRenderer;
+import mineGame.Screen.component.InGameUserPanel;
+import mineGame.Screen.component.RoundedBorder;
+import mineGame.Screen.component.UserPanel;
 import mineGame.SubmarineClient;
 import mineGame.User;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,11 +21,12 @@ import java.util.*;
 
 public class GameScreen extends JFrame {
 
-    private LinkedHashMap<Long, JPanel> userInfoPanelMap;
+    private LinkedHashMap<Long, InGameUserPanel> userInfoPanelMap;
     private ArrayList<JPanel> userInfoPanelList;
 
     private JPanel mineMapPanel;
     private JPanel mainPanel;
+    private JPanel userPanel;
     private GameStart gameStart;
     private RoomScreen roomScreen;
     private boolean myTurn=false;
@@ -35,6 +42,17 @@ public class GameScreen extends JFrame {
     private JPanel gameInfoPanel;
 
 
+
+
+    //////////////////////////////////////////////////////
+    private JList<InGameUserPanel> panelList;
+    private DefaultListModel<InGameUserPanel> panelListModel;
+    //////////////////////////////////////////////////////
+
+
+
+
+
     public GameScreen(GameStart gameStart,RoomScreen roomScreen,long userId) {
         this.gameStart = gameStart;
         this.roomScreen = roomScreen;
@@ -47,7 +65,7 @@ public class GameScreen extends JFrame {
         setTitle("Game Screen");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 800);
+        setSize(1200, 1200);
         setLocationRelativeTo(null);
 
         // 메인 패널 설정
@@ -74,21 +92,56 @@ public class GameScreen extends JFrame {
         // 각 유저의 정보 패널
         userInfoPanelMap = new LinkedHashMap<>();
         userInfoPanelList = new ArrayList<>();
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        userPanel = new JPanel();
+        userPanel.setBounds(12, 54, 212, 450);
+        userPanel.setBackground(new Color(104, 99, 74));
+        userPanel.setLayout(null);
+        userPanel.setBorder(new RoundedBorder(7, 0));
+
+        JLabel lblNewLabel = new JLabel("User List");
+        lblNewLabel.setForeground(new Color(255, 255, 255));
+        lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        lblNewLabel.setBounds(12, 10, 97, 15);
+        userPanel.add(lblNewLabel);
+
+
+        panelListModel = new DefaultListModel<>();
+        panelList = new JList<>(panelListModel);
+        panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panelList.setOpaque(false);
+        panelList.setCellRenderer(new InGamePanelListCellRenderer());
+
+        JScrollPane panelListScrollPane = new JScrollPane(panelList);
+        panelListScrollPane.setBounds(12, 44, 322, 500);
+        panelListScrollPane.setOpaque(false);
+        panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        userPanel.add(panelListScrollPane);
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        System.out.println("여기까지1");
+
         createTablePanel(gameStart.getGameUserList());
+        System.out.println("여기까지8");
 
         // 10x10 버튼인 마인 맵이 들어갈 패널
         mineMapPanel = createButtonGridPanel(gameStart.getGameRoom().getMapSize(), gameStart.getGameRoom().getMapSize());
 
+
         // 패널 추가
-        mainPanel.add(userInfoPanelList.get(0)); // 1
+//        mainPanel.add(userInfoPanelList.get(0)); // 1
         mainPanel.add(gameInfoPanel); // 2
-        mainPanel.add(userInfoPanelList.get(1)); // 3
+//        mainPanel.add(userInfoPanelList.get(1)); // 3
         mainPanel.add(emptyPanel2); // 4
         mainPanel.add(mineMapPanel); // 5
         mainPanel.add(emptyPanel3); // 6
-        mainPanel.add(userInfoPanelList.get(2)); // 7
-        mainPanel.add(emptyPanel4); // 8
-        mainPanel.add(userInfoPanelList.get(3)); // 9
+//        mainPanel.add(userInfoPanelList.get(2)); // 7
+        mainPanel.add(userPanel); // 8
+//        mainPanel.add(userInfoPanelList.get(3)); // 9
 
 
 
@@ -118,67 +171,18 @@ public class GameScreen extends JFrame {
 
     // JTable이 들어갈 패널을 생성하는 메소드
     private void createTablePanel(ArrayList<User> users) {
-
+        System.out.println("여기까지2");
         for (User user : users){
-
-            System.out.println(user.getTotal()+" "+user.getWin()+" "+user.getLose()+" "+user.getRating());
-            System.out.println(user.getTotalChoice()+" "+user.getRight()+" "+user.getFindRate());
-
-
-            JPanel panel = new JPanel(new BorderLayout());
-
-            JLabel nameLabel = new JLabel(user.getUserName(), SwingConstants.CENTER);
-            JLabel userIdLabel = new JLabel("id:"+user.getId(), SwingConstants.CENTER);
-            JLabel userRatingLabel = new JLabel(user.getTotal()+"전 "+user.getWin()+"승 "+ user.getLose()+"패 ("+String.format("%.2f", user.getFindRate()) + "%)", SwingConstants.CENTER);
-            nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-            userRatingLabel.setFont(new Font("Arial", Font.BOLD, 14));
-            userIdLabel.setFont(new Font("Arial", Font.BOLD, 10));
-
-            JPanel userNamePanel = new JPanel();
-            userNamePanel.setLayout(new BorderLayout());
-            userNamePanel.add(nameLabel, BorderLayout.NORTH);
-            userNamePanel.add(userRatingLabel, BorderLayout.CENTER);
-            userNamePanel.add(userIdLabel, BorderLayout.SOUTH);
-            panel.add(userNamePanel, BorderLayout.NORTH);
-
-
-            System.out.println(" 테이블 생성 1");
-            String[] columnNames = {"선택 횟수", "찾은 지뢰","성공률"};
-            Object[][] data = {
-                    {user.getTotalChoice(), user.getRight(),String.format("%.2f",user.getFindRate())+"%"}
-            };
-
-            DefaultTableModel model = new DefaultTableModel(data, columnNames);
-            JTable table = new JTable(model);
-
-//            JTable table = new JTable(data, columnNames);
-            JScrollPane scrollPane = new JScrollPane(table);
-            scrollPane.setBorder(null);
-            panel.add(scrollPane, BorderLayout.CENTER);
-
-
-            turnLabel = new JLabel("", SwingConstants.CENTER);
-            if (user.isTurn()) turnLabel.setText("Turn");
-            else turnLabel.setText("");
-            turnLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            panel.add(turnLabel, BorderLayout.SOUTH);
-
-
-            userInfoPanelMap.put(user.getId(),panel);
-            userInfoPanelList.add(panel);
-            userGameTableMap.put(user.getId(),table);
-            turnUserMap.put(user.getId(),turnLabel);
+            InGameUserPanel inGameUserPanel = new InGameUserPanel(user);
+            System.out.println("여기까지3");
+            inGameUserPanel.showTurnLabel(user.isTurn());
+            System.out.println("여기까지4");
+            userInfoPanelMap.put(user.getId(),inGameUserPanel);
+            System.out.println("여기까지5");
+            panelListModel.addElement(inGameUserPanel);
+            System.out.println("여기까지6");
         }
-
-        System.out.println("빈 칸 고려");
-        if (users.size()!=4){
-            int now = users.size();
-            while (now!=4){
-                userInfoPanelList.add(new JPanel(new BorderLayout()));
-                now++;
-            }
-        }
-
+        System.out.println("여기까지7");
     }
 
     // 마인 맵 버튼 그리드를 생성하는 메소드
@@ -268,36 +272,22 @@ public class GameScreen extends JFrame {
         JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
     }
 
+
+
     public void updateGameState(GameStart gameStart) {
         System.out.println("------게임 스크린 처리 과정 ------");
         this.gameStart = gameStart;
 
-        // 유저 인원에 변동있는지 확인
-        ArrayList<Long> tmp = new ArrayList<>();
-        for(Map.Entry<Long,JPanel> entry : userInfoPanelMap.entrySet()){
-            if (!validUser(gameStart,entry.getKey())){
+        // 유저 인원에 변동 적용
+        panelListModel.clear();
+        for(User user : gameStart.getGameUserList()){
+            InGameUserPanel inGameUserPanel = new InGameUserPanel(user);
+            inGameUserPanel.showTurnLabel(user.isTurn());
 
-                tmp.add(entry.getKey());
-            }
-        }
-        for(long id : tmp){
-            System.out.println(" 제거하려는 유저 : "+id);
-            JPanel targetPanel = userInfoPanelMap.get(id);
-            userInfoPanelMap.remove(id);
-            userInfoPanelList.remove(targetPanel);
-            userInfoPanelList.add(new JPanel(new BorderLayout()));
+            userInfoPanelMap.put(user.getId(),inGameUserPanel);
+            panelListModel.addElement(inGameUserPanel);
         }
 
-        mainPanel.removeAll(); // 기존 패널 모두 제거
-        mainPanel.add(userInfoPanelList.get(0)); // 1
-        mainPanel.add(gameInfoPanel); // 2
-        mainPanel.add(userInfoPanelList.get(1)); // 3
-        mainPanel.add(new JPanel(new BorderLayout())); // 4
-        mainPanel.add(mineMapPanel); // 5
-        mainPanel.add(new JPanel(new BorderLayout())); // 6
-        mainPanel.add(userInfoPanelList.get(2)); // 7
-        mainPanel.add(new JPanel(new BorderLayout())); // 8
-        mainPanel.add(userInfoPanelList.get(3)); // 9
 
 
         // 선택한 버튼들에 대해서 결과를 화면에 표시
@@ -338,11 +328,5 @@ public class GameScreen extends JFrame {
 
     }
 
-    private boolean validUser(GameStart gameStart, Long key) {
-        for(User u : gameStart.getGameUserList()){
-            if (u.getId() == key) return true;
-        }
-        return false;
-    }
 
 }

@@ -18,8 +18,8 @@ public class SubmarineClient {
 	static int inPort = 9999;
 	public MainScreen mainScreen;
 
-//	static String address ="192.168.35.173";
-	static String address ="192.168.0.41";
+	static String address ="192.168.35.173";
+//	static String address ="192.168.0.41";
 
 
 	static public PrintWriter out;
