@@ -2,6 +2,7 @@ package mineGame.Screen;
 
 import mineGame.GameRoom;
 import mineGame.Listener.DoubleClickListener;
+import mineGame.Screen.component.RoundPanel;
 import mineGame.Screen.component.RoundedBorder;
 import mineGame.Screen.component.UserPanel;
 import mineGame.SubmarineClient;
@@ -39,11 +40,11 @@ public class MainScreen extends JFrame{
         this.myUser = myUser;
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(201, 197, 179));
+        mainPanel.setBackground(new Color(202, 190, 151));
         JPanel centerPanel = new JPanel();
-        centerPanel.setOpaque(false);
-        centerPanel.setBounds(250, 46, 559, 472);
-        
+        centerPanel.setBackground(new Color(201, 197, 179));
+        centerPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
+        centerPanel.setBounds(241, 87, 558, 438);
 
 
         panelListModel = new DefaultListModel<>();
@@ -51,7 +52,7 @@ public class MainScreen extends JFrame{
 
         menuPanel = new JPanel();
         menuPanel.setOpaque(false);
-        menuPanel.setBounds(12, 23, 535, 50);
+        menuPanel.setBounds(12, 5, 535, 50);
 
 
 
@@ -78,7 +79,7 @@ public class MainScreen extends JFrame{
         centerPanel.add(menuPanel);
         
         JScrollPane scrollPane_1 = new JScrollPane(gameRoomList);
-        scrollPane_1.setBounds(12, 73, 535, 173);
+        scrollPane_1.setBounds(12, 53, 535, 173);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
         mainPanel.add(centerPanel);
@@ -96,21 +97,23 @@ public class MainScreen extends JFrame{
         infoManagePanel.add(infoButton);
         
         JLabel lblNewLabel_1 = new JLabel("Mine");
-        lblNewLabel_1.setBounds(12, 10, 160, 34);
+        lblNewLabel_1.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/titleLogo.png"))).getImage().getScaledInstance(139, 59, Image.SCALE_SMOOTH)));
+        lblNewLabel_1.setBounds(16, 15, 139, 59);
         mainPanel.add(lblNewLabel_1);
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
-        
-        JPanel userPanel = new JPanel();
-        userPanel.setBounds(12, 54, 212, 450);
+
+        RoundPanel userPanel = new RoundPanel(15);
+        userPanel.setBounds(12, 87, 212, 438);
         mainPanel.add(userPanel);
-        userPanel.setBackground(new Color(104, 99, 74));
+        userPanel.setBackground(new Color(201, 197, 179));
         userPanel.setLayout(null);
-        userPanel.setBorder(new RoundedBorder(7, 0));
+        userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
         
         JLabel lblNewLabel = new JLabel("User List");
+        lblNewLabel.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/userLabelIcon.png"))).getImage().getScaledInstance(62, 23, Image.SCALE_SMOOTH)));
         lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        lblNewLabel.setBounds(12, 10, 97, 15);
+        lblNewLabel.setBounds(12, 5, 62, 23);
         userPanel.add(lblNewLabel);
 
         panelList = new JList<>(panelListModel);
@@ -119,7 +122,7 @@ public class MainScreen extends JFrame{
         panelList.setCellRenderer(new PanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 44, 188, 396);
+        panelListScrollPane.setBounds(12, 34, 188, 389);
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
@@ -129,7 +132,7 @@ public class MainScreen extends JFrame{
         // 컨테이너를 프레임에 올림.
         add(mainPanel);
 
-        setBounds(200,200,837,567);
+        setBounds(200,200,837,579);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 

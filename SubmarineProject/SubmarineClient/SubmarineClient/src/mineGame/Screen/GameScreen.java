@@ -5,6 +5,7 @@ import mineGame.GameTimer;
 import mineGame.ListCallRenderer.InGamePanelListCellRenderer;
 import mineGame.ListCallRenderer.PanelListCellRenderer;
 import mineGame.Screen.component.InGameUserPanel;
+import mineGame.Screen.component.RoundPanel;
 import mineGame.Screen.component.RoundedBorder;
 import mineGame.Screen.component.UserPanel;
 import mineGame.SubmarineClient;
@@ -26,7 +27,7 @@ public class GameScreen extends JFrame {
 
     private JPanel mineMapPanel;
     private JPanel mainPanel;
-    private JPanel userPanel;
+    private RoundPanel userPanel;
     private GameStart gameStart;
     private RoomScreen roomScreen;
     private boolean myTurn=false;
@@ -98,11 +99,11 @@ public class GameScreen extends JFrame {
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        userPanel = new JPanel();
+        userPanel = new RoundPanel(15);
         userPanel.setBounds(531, 10, 372, 515);
         userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
-        userPanel.setBorder(new RoundedBorder(7, 0));
+        userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
 
         JLabel lblNewLabel = new JLabel("User List");
         lblNewLabel.setForeground(new Color(255, 255, 255));
@@ -114,7 +115,7 @@ public class GameScreen extends JFrame {
         panelListModel = new DefaultListModel<>();
         panelList = new JList<>(panelListModel);
         panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
-        panelList.setBackground(new Color(104, 99, 74));
+        panelList.setBackground(new Color(104, 99, 74)); 
         panelList.setOpaque(false);
         panelList.setCellRenderer(new InGamePanelListCellRenderer());
 

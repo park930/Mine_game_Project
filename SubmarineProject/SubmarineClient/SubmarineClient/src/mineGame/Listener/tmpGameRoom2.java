@@ -75,8 +75,8 @@ public class tmpGameRoom2 extends JFrame {
 					ArrayList<User> userList = new ArrayList<>();
 					userList.add(user);
 					GameStart gameStart = new GameStart(true, 10L, gameRoom, 1, map, userList);
-					tmpGameRoom frame = new tmpGameRoom(roomScreen);
-					frame.setVisible(true);
+//					tmpGameRoom frame = new tmpGameRoom(roomScreen);
+//					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -136,7 +136,7 @@ public class tmpGameRoom2 extends JFrame {
         userPanel.setBounds(531, 10, 372, 515);
         userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
-        userPanel.setBorder(new RoundedBorder(7, 0));
+        userPanel.setBorder(new RoundedBorder(7, 2, Color.BLACK, 1));
 
         JLabel lblNewLabel = new JLabel("User List");
         lblNewLabel.setForeground(new Color(255, 255, 255));
@@ -147,13 +147,12 @@ public class tmpGameRoom2 extends JFrame {
 
         panelListModel = new DefaultListModel<>();
         panelList = new JList<>(panelListModel);
+        panelList.setBackground(new Color(104, 99, 74));
         panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
-        panelList.setOpaque(false);
         panelList.setCellRenderer(new InGamePanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
         panelListScrollPane.setBounds(12, 44, 322, 449);
-        panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
  

@@ -12,28 +12,36 @@ import javax.swing.border.AbstractBorder;
 public class RoundedBorder extends AbstractBorder {
     private int radius;
     private int padding;
-
-    public RoundedBorder(int radius, int padding) {
+    private Color borderColor;
+    private int thickness;
+    public RoundedBorder(int radius, int padding, Color borderColor, int thickness) {
         this.radius = radius;
         this.padding = padding;
+        this.borderColor = borderColor;
+        this.thickness = thickness;
     }
 
     @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(borderColor);
+        
+        g2d.setStroke(new java.awt.BasicStroke(thickness));
         g2d.drawRoundRect(x + padding, y + padding, width - 2 * padding - 1, height - 2 * padding - 1, radius, radius);
     }
 
+
     @Override
     public Insets getBorderInsets(Component c) {
-        return new Insets(padding, padding, padding, padding);
+        int totalPadding = padding + thickness;
+        return new Insets(totalPadding, totalPadding, totalPadding, totalPadding);
     }
 
     @Override
     public Insets getBorderInsets(Component c, Insets insets) {
-        insets.left = insets.right = insets.top = insets.bottom = padding;
+        int totalPadding = padding + thickness;
+        insets.left = insets.right = insets.top = insets.bottom = totalPadding;
         return insets;
     }
 }

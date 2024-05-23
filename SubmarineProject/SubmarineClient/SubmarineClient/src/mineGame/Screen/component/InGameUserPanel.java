@@ -36,10 +36,11 @@ public class InGameUserPanel extends JPanel {
         setPreferredSize(new Dimension(322, 121));
         
         JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(221, 211, 187));
         mainPanel.setBounds(0, 0, 250, 119);
         add(mainPanel);
         mainPanel.setLayout(null);
-        mainPanel.setBorder(new RoundedBorder(7, 2));
+        mainPanel.setBorder(new RoundedBorder(7, 2, Color.BLACK, 1));
         nameLabel = new JLabel(user.getUserName());
         nameLabel.setBounds(59, 5, 130, 23);
         mainPanel.add(nameLabel);
@@ -63,6 +64,7 @@ public class InGameUserPanel extends JPanel {
         mainPanel.add(lineSeparator);
         
         JPanel userGameInfoPanel = new JPanel();
+        userGameInfoPanel.setBackground(new Color(221, 211, 187));
         userGameInfoPanel.setBounds(11, 77, 227, 33);
         mainPanel.add(userGameInfoPanel);
         userGameInfoPanel.setLayout(null);

@@ -32,7 +32,7 @@ public class UserPanel extends JPanel {
 
         add(nameLabel);
         add(idLabel);
-        setBorder(new RoundedBorder(7, 2));
+        setBorder(new RoundedBorder(7, 2, Color.BLACK, 1));
         
         JLabel lblNewLabel = new JLabel();
         originalIcon = new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/person.png"));
