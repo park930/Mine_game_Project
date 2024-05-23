@@ -70,9 +70,9 @@ public class MainRoom4 extends JFrame {
 
         JPanel mainPanel = new JPanel();
         mainPanel.setBackground(new Color(202, 190, 151));
-        RoundPanel centerPanel = new RoundPanel(15);
+        RoundPanel centerPanel = new RoundPanel(15,"/mineGame/Screen/icon/background.png");
         centerPanel.setBackground(new Color(201, 197, 179));
-        centerPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
+        centerPanel.setBorder(new RoundedBorder(10, 0, new Color(217, 214, 200), 5));
         centerPanel.setBounds(241, 87, 558, 438);
 
 
@@ -135,12 +135,12 @@ public class MainRoom4 extends JFrame {
         mainPanel.add(lblNewLabel_1);
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
         
-        RoundPanel userPanel = new RoundPanel(15);
+        RoundPanel userPanel = new RoundPanel(100,"/mineGame/Screen/icon/background.png");
         userPanel.setBounds(12, 87, 212, 438);
         mainPanel.add(userPanel);
         userPanel.setBackground(new Color(201, 197, 179));
         userPanel.setLayout(null);
-        userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
+        userPanel.setBorder(new RoundedBorder(10, 0, new Color(217, 214, 200), 5));
         
         JLabel lblNewLabel = new JLabel("User List");
         lblNewLabel.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/userLabelIcon.png"))).getImage().getScaledInstance(62, 23, Image.SCALE_SMOOTH)));

@@ -99,7 +99,7 @@ public class GameScreen extends JFrame {
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        userPanel = new RoundPanel(15);
+        userPanel = new RoundPanel(15,"/mineGame/Screen/icon/background.png");
         userPanel.setBounds(531, 10, 372, 515);
         userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
