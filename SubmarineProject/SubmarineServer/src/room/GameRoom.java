@@ -11,9 +11,15 @@ public class GameRoom {
     private int mapSize=10;
     private int mineNum = 10;
     private long chairmanId;
+    private boolean isStart=false;
 
+    public boolean isStart() {
+        return isStart;
+    }
 
-
+    public void setStart(boolean start) {
+        isStart = start;
+    }
 
     public GameRoom(String roomName, int maxPlayer, boolean visible, long roomId, long chairmanId){
         this.roomName = roomName;

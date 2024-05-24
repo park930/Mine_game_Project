@@ -1,10 +1,9 @@
 package mineGame.Screen;
 
 import mineGame.GameRoom;
+import mineGame.ListCallRenderer.RoomListCellRenderer;
 import mineGame.Listener.DoubleClickListener;
-import mineGame.Screen.component.RoundPanel;
-import mineGame.Screen.component.RoundedBorder;
-import mineGame.Screen.component.UserPanel;
+import mineGame.Screen.component.*;
 import mineGame.SubmarineClient;
 import mineGame.User;
 import mineGame.ListCallRenderer.PanelListCellRenderer;
@@ -20,8 +19,8 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class MainScreen extends JFrame{
-    private JList<GameRoom> gameRoomList;
-    private DefaultListModel<GameRoom> gameRoomListModel;
+    private JList<GameRoomPanel> gameRoomList;
+    private DefaultListModel<GameRoomPanel> gameRoomListModel;
     public RoomScreen roomScreen;
     private long userId;
     private User myUser;
@@ -39,16 +38,18 @@ public class MainScreen extends JFrame{
         System.out.println("main 생성");
         this.myUser = myUser;
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(202, 190, 151));
-        RoundPanel centerPanel = new RoundPanel(15,"/mineGame/Screen/icon/background.png");
+        BackgroundPanel mainPanel = new BackgroundPanel("/mineGame/Screen/icon/backgroundIMG.png");
+        RoundPanel centerPanel = new RoundPanel(1,"/mineGame/Screen/icon/background.png");
         centerPanel.setBackground(new Color(201, 197, 179));
-        centerPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
-        centerPanel.setBounds(241, 87, 558, 438);
+        centerPanel.setBorder(new RoundedBorder(2, 0, new Color(217, 214, 200), 2));
+        centerPanel.setBounds(241, 69, 631, 456);
 
 
         panelListModel = new DefaultListModel<>();
+        panelList = new JList<>(panelListModel);
+        panelList.setCellRenderer(new PanelListCellRenderer());
 
+        
 
         menuPanel = new JPanel();
         menuPanel.setOpaque(false);
@@ -63,8 +64,7 @@ public class MainScreen extends JFrame{
         gameRoomListModel = new DefaultListModel<>();
         gameRoomList = new JList<>(gameRoomListModel);
         gameRoomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-
+        gameRoomList.setCellRenderer(new RoomListCellRenderer());
         //접속 중인 유저 목록 세팅
         DefaultListCellRenderer renderer = new DefaultListCellRenderer();
         renderer.setOpaque( false );
@@ -79,7 +79,7 @@ public class MainScreen extends JFrame{
         centerPanel.add(menuPanel);
         
         JScrollPane scrollPane_1 = new JScrollPane(gameRoomList);
-        scrollPane_1.setBounds(12, 53, 535, 173);
+        scrollPane_1.setBounds(12, 53, 606, 206);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
         mainPanel.add(centerPanel);
@@ -97,17 +97,17 @@ public class MainScreen extends JFrame{
         infoManagePanel.add(infoButton);
         
         JLabel lblNewLabel_1 = new JLabel("Mine");
-        lblNewLabel_1.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/titleLogo.png"))).getImage().getScaledInstance(139, 59, Image.SCALE_SMOOTH)));
-        lblNewLabel_1.setBounds(16, 15, 139, 59);
+        lblNewLabel_1.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/titleLogo.png"))).getImage().getScaledInstance(96, 44, Image.SCALE_SMOOTH)));
+        lblNewLabel_1.setBounds(16, 15, 96, 44);
         mainPanel.add(lblNewLabel_1);
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
 
-        RoundPanel userPanel = new RoundPanel(15,"/mineGame/Screen/icon/background.png");
-        userPanel.setBounds(12, 87, 212, 438);
+        RoundPanel userPanel = new RoundPanel(1,"/mineGame/Screen/icon/background.png");
+        userPanel.setBounds(12, 69, 212, 456);
         mainPanel.add(userPanel);
         userPanel.setBackground(new Color(201, 197, 179));
         userPanel.setLayout(null);
-        userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
+        userPanel.setBorder(new RoundedBorder(2, 0, new Color(217, 214, 200), 2));
         
         JLabel lblNewLabel = new JLabel("User List");
         lblNewLabel.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/userLabelIcon.png"))).getImage().getScaledInstance(62, 23, Image.SCALE_SMOOTH)));
@@ -116,13 +116,12 @@ public class MainScreen extends JFrame{
         lblNewLabel.setBounds(12, 5, 62, 23);
         userPanel.add(lblNewLabel);
 
-        panelList = new JList<>(panelListModel);
         panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
         panelList.setOpaque(false);
         panelList.setCellRenderer(new PanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 34, 188, 389);
+        panelListScrollPane.setBounds(12, 34, 188, 412);
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
@@ -132,7 +131,7 @@ public class MainScreen extends JFrame{
         // 컨테이너를 프레임에 올림.
         add(mainPanel);
 
-        setBounds(200,200,837,579);
+        setBounds(200,200,901,579);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
@@ -149,7 +148,7 @@ public class MainScreen extends JFrame{
         // 게임 방 목록 더블 클릭 이벤트 처리
         gameRoomList.addMouseListener(new DoubleClickListener(() -> {
             System.out.println("------- 방 더블 클릭 함");
-            GameRoom selectedRoom = gameRoomList.getSelectedValue();
+            GameRoom selectedRoom = gameRoomList.getSelectedValue().getGameRoom();
             if (selectedRoom != null) {
 
                 // 해당 클라이언트가 방에 들어가길 원한다는 메세지 서버한테 보내야함
@@ -205,7 +204,7 @@ public class MainScreen extends JFrame{
     {
         gameRoomListModel.clear();
         for(GameRoom gameRoom : roomList){
-            gameRoomListModel.addElement(gameRoom);
+            gameRoomListModel.addElement(new GameRoomPanel(gameRoom));
         }
     }
 
@@ -318,7 +317,7 @@ public class MainScreen extends JFrame{
 
                     // GameRoom 객체 생성 및 gameRoomListModel에 추가
                     GameRoom newRoom = new GameRoom(roomName, playerCount, visible,roomId,mapWidth,mineCount,myUser);
-                    if (visible) gameRoomListModel.addElement(newRoom);
+                    if (visible) gameRoomListModel.addElement(new GameRoomPanel(newRoom));
 
                     createRoomDialog.dispose();
                     SubmarineClient.sendCommand("createRoom",newRoom);
