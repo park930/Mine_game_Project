@@ -22,7 +22,7 @@ public class InGamePanelListCellRenderer implements ListCellRenderer<InGameUserP
             value.setForeground(list.getForeground());
         }
         value.setOpaque(true);  // Ensure the panel is opaque
-        value.setPreferredSize(new Dimension(322, 121));  // Set preferred size
+        value.setPreferredSize(new Dimension(322, 107));  // Set preferred size
         return value;
     }
 }

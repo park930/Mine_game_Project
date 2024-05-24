@@ -121,7 +121,7 @@ public class MainScreen extends JFrame{
         panelList.setCellRenderer(new PanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 34, 188, 412);
+        panelListScrollPane.setBounds(12, 34, 192, 412);
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);

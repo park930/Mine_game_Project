@@ -1,7 +1,10 @@
-package mineGame.Screen.component;
+package mineGame.Listener;
 
 import mineGame.User;
-import mineGame.Listener.tmpUserPanel;
+import mineGame.Screen.component.BackgroundPanel;
+import mineGame.Screen.component.InGameUserPanel;
+import mineGame.Screen.component.LineSeparator;
+import mineGame.Screen.component.RoundedBorder;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,14 +17,14 @@ import javax.swing.ImageIcon;
 import java.awt.Font;
 import java.awt.Image;
 
-public class UserPanel extends JPanel {
+public class tmpUserPanel extends JPanel {
 	private JLabel nameLabel;
     private JLabel idLabel;
     private ImageIcon originalIcon;
     private Image image;
     private BackgroundPanel bp;
     
-    public UserPanel(User user) {
+    public tmpUserPanel(User user) {
     	setForeground(new Color(255, 255, 255));
         setLayout(null);
         
@@ -37,7 +40,7 @@ public class UserPanel extends JPanel {
         nameLabel.setBounds(40, 7, 121, 21);
         bp.add(nameLabel);
         
-        idLabel = new JLabel("total:"+user.getTotal()+" win:"+user.getWin()+" lose:"+user.getLose()+" ("+ String.format("%.2f",user.getRating())+"%)");
+        idLabel = new JLabel("total:10 win:0 lose:0 (100.00%)");
         idLabel.setBounds(35, 28, 154, 12);
         idLabel.setForeground(new Color(255, 255, 255));
         idLabel.setFont(new Font("Arial", Font.BOLD, 10));
@@ -45,8 +48,6 @@ public class UserPanel extends JPanel {
         
         bp.add(idLabel);
         setLayout(null);
-
-        setBorder(new RoundedBorder(7, 2, Color.BLACK, 1));
         
 
         originalIcon = new ImageIcon(tmpUserPanel.class.getResource("/mineGame/Screen/icon/person.png"));
@@ -57,7 +58,7 @@ public class UserPanel extends JPanel {
         bp.add(lblNewLabel);
         lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setIcon(new ImageIcon(image));
-        setBorder(new RoundedBorder(7, 2, Color.white, 3));
+        setBorder(null);
         setOpaque(false);
         setPreferredSize(new Dimension(191, 47));
         

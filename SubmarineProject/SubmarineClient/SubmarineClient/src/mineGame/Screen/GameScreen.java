@@ -4,6 +4,7 @@ import mineGame.GameStart;
 import mineGame.GameTimer;
 import mineGame.ListCallRenderer.InGamePanelListCellRenderer;
 import mineGame.ListCallRenderer.PanelListCellRenderer;
+import mineGame.Screen.component.BackgroundPanel;
 import mineGame.Screen.component.InGameUserPanel;
 import mineGame.Screen.component.RoundPanel;
 import mineGame.Screen.component.RoundedBorder;
@@ -26,7 +27,7 @@ public class GameScreen extends JFrame {
     private ArrayList<JPanel> userInfoPanelList;
 
     private JPanel mineMapPanel;
-    private JPanel mainPanel;
+    private BackgroundPanel mainPanel;
     private RoundPanel userPanel;
     private GameStart gameStart;
     private RoomScreen roomScreen;
@@ -40,7 +41,9 @@ public class GameScreen extends JFrame {
     private HashMap<Long, JTable> userGameTableMap;
     private HashMap<Long, JLabel> turnUserMap;
     private Timer timer;
-    private JPanel gameInfoPanel;
+    
+    private BackgroundPanel gameInfoPanel;
+    private BackgroundPanel mineNumPanel;
 
 
 
@@ -66,12 +69,12 @@ public class GameScreen extends JFrame {
         setTitle("Game Screen");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 1200);
+        setSize(927, 582);
         setLocationRelativeTo(null);
 
         // 메인 패널 설정
         // 3x3으로 나눈다.
-        mainPanel = new JPanel();
+        mainPanel = new BackgroundPanel("/mineGame/Screen/icon/inGameBackground.png");
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // 각 유저의 정보 패널
@@ -80,23 +83,45 @@ public class GameScreen extends JFrame {
 
 
         // 타이머, 잔여 마인 등 패널
-        gameInfoPanel = new JPanel();
-        gameInfoPanel.setBounds(51, 10, 308, 63);
+        gameInfoPanel = new BackgroundPanel("/mineGame/Screen/icon/timerBackground.png");
+        gameInfoPanel.setBounds(64, 15, 186, 66);
+        gameInfoPanel.setOpaque(false);
         mainPanel.add(gameInfoPanel);
-       
-
-        // 타이머 라벨 초기화 및 emptyPanel1에 추가
+        
         timerLabel = new JLabel("", SwingConstants.CENTER);
-        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        remainMineLabel = new JLabel("remain Mine:"+gameStart.getGameRoom().getMineNum(), SwingConstants.CENTER);
-        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        gameInfoPanel.setLayout(new BorderLayout());
-        gameInfoPanel.add(timerLabel, BorderLayout.CENTER);
-        gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
-
-
-
-
+        timerLabel.setIcon(null);
+        timerLabel.setBounds(77, 13, 77, 42);
+        timerLabel.setForeground(new Color(255, 255, 255));
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 34));
+        gameInfoPanel.setLayout(null);
+        gameInfoPanel.add(timerLabel);
+        JLabel timerIcon = new JLabel("");
+        timerIcon.setForeground(new Color(255, 255, 255));
+        timerIcon.setIcon(new ImageIcon(new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/timer.png")).getImage().getScaledInstance(57, 42, Image.SCALE_SMOOTH)));
+        timerIcon.setBounds(21, 11, 57, 42);
+        gameInfoPanel.add(timerIcon);
+        
+        
+        mineNumPanel = new BackgroundPanel("/mineGame/Screen/icon/timerBackground.png");
+        mineNumPanel.setLayout(null);
+        mineNumPanel.setOpaque(false);
+        mineNumPanel.setBounds(262, 15, 178, 66);
+        mainPanel.add(mineNumPanel);
+        
+        JLabel lblMine = new JLabel("", SwingConstants.CENTER);
+        lblMine.setIcon(new ImageIcon(new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/mineImg.png")).getImage().getScaledInstance(57, 42, Image.SCALE_SMOOTH)));
+        lblMine.setForeground(Color.WHITE);
+        lblMine.setFont(new Font("Arial", Font.BOLD, 13));
+        lblMine.setBounds(25, 11, 57, 42);
+        mineNumPanel.add(lblMine);
+       
+        
+        remainMineLabel = new JLabel("30", SwingConstants.CENTER);
+        remainMineLabel.setForeground(Color.WHITE);
+        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 34));
+        remainMineLabel.setBounds(85, 13, 62, 42);
+        mineNumPanel.add(remainMineLabel);
+       
 
         //////////////////////////////////////////////////////////////////////////////////////////
         userPanel = new RoundPanel(15,"/mineGame/Screen/icon/background.png");
@@ -142,7 +167,7 @@ public class GameScreen extends JFrame {
 
         //////////////////////////// bottom 패널 생성 //////////////////
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBounds(76, 463, 280, 41);
+        bottomPanel.setBounds(116, 473, 280, 41);
         mainPanel.add(bottomPanel);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         bottomPanel.setLayout(null);
@@ -164,7 +189,6 @@ public class GameScreen extends JFrame {
 
 
         add(mainPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
         setVisible(true);
     }
 
@@ -220,7 +244,7 @@ public class GameScreen extends JFrame {
             mineButtonList.add(button);
             panel.add(button);
         }
-        panel.setBounds(21, 79, 376, 376);
+        panel.setBounds(64, 84, 376, 376);
         return panel;
     }
 
@@ -236,7 +260,7 @@ public class GameScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (timerOn) {
                     if (timeRemaining > 0) {
-                        timerLabel.setText("Time remaining: " + timeRemaining);
+                        timerLabel.setText(timeRemaining+"");
                         timeRemaining--;
                     } else {
                         ((Timer) e.getSource()).stop();
@@ -307,7 +331,7 @@ public class GameScreen extends JFrame {
             }
         }
 
-        remainMineLabel.setText("remain Mine:"+(gameStart.getGameRoom().getMineNum()-findMineList.size()));
+        remainMineLabel.setText((gameStart.getGameRoom().getMineNum()-findMineList.size())+"");
 
         // 유저들의 정보도 업데이트 ( 총 몇번  눌렀고, 각 유저는 몇개의 지뢰를 찾았는지, 누구의 차례인지)
         for (User u : gameStart.getGameUserList()) {

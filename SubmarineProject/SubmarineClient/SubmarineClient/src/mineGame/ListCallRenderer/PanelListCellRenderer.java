@@ -21,7 +21,7 @@ public class PanelListCellRenderer implements ListCellRenderer<UserPanel> {
             value.setForeground(list.getForeground());
         }
         value.setOpaque(true);  // Ensure the panel is opaque
-        value.setPreferredSize(new Dimension(183, 36));  // Set preferred size
+        value.setPreferredSize(new Dimension(191, 47));  // Set preferred size
         return value;
     }
 }

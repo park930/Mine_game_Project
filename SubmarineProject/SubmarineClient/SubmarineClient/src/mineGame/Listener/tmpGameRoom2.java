@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,8 +37,12 @@ import mineGame.User;
 import mineGame.ListCallRenderer.InGamePanelListCellRenderer;
 import mineGame.Screen.MainScreen;
 import mineGame.Screen.RoomScreen;
+import mineGame.Screen.component.BackgroundPanel;
 import mineGame.Screen.component.InGameUserPanel;
 import mineGame.Screen.component.RoundedBorder;
+import mineGame.Screen.component.UserPanel;
+
+import javax.swing.ImageIcon;
 
 public class tmpGameRoom2 extends JFrame {
 
@@ -45,18 +50,17 @@ public class tmpGameRoom2 extends JFrame {
     private ArrayList<JPanel> userInfoPanelList;
 
     private JPanel mineMapPanel;
-    private JPanel mainPanel;
+    private BackgroundPanel mainPanel;
     private boolean myTurn=false;
     private boolean timerOn;
     private long userId;
     private JLabel timerLabel;
-    private JLabel remainMineLabel;
     private JLabel turnLabel;
     private ArrayList<JButton> mineButtonList;
     private HashMap<Long, JTable> userGameTableMap;
     private HashMap<Long, JLabel> turnUserMap;
     private Timer timer;
-    private JPanel gameInfoPanel;
+    private BackgroundPanel gameInfoPanel;
 
     //////////////////////////////////////////////////////
     private JList<InGameUserPanel> panelList;
@@ -113,7 +117,7 @@ public class tmpGameRoom2 extends JFrame {
 
         // 메인 패널 설정
         // 3x3으로 나눈다.
-        mainPanel = new JPanel();
+        mainPanel = new BackgroundPanel("/mineGame/Screen/icon/inGameBackground.png");
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 
@@ -169,20 +173,28 @@ public class tmpGameRoom2 extends JFrame {
         getContentPane().add(mainPanel, BorderLayout.CENTER);
         
                 // 빈 패널
-                gameInfoPanel = new JPanel();
-                gameInfoPanel.setBounds(51, 10, 308, 63);
+        		gameInfoPanel = new BackgroundPanel("/mineGame/Screen/icon/timerBackground.png");
+                gameInfoPanel.setBounds(64, 15, 186, 66);
+                gameInfoPanel.setOpaque(false);
                 mainPanel.add(gameInfoPanel);
                 
                         // 타이머 라벨 초기화 및 emptyPanel1에 추가
-                        timerLabel = new JLabel("Time : 100", SwingConstants.CENTER);
-                        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
-                        remainMineLabel = new JLabel("remain Mine:"+30, SwingConstants.CENTER);
-                        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
-                        gameInfoPanel.setLayout(new BorderLayout());
-                        gameInfoPanel.add(timerLabel, BorderLayout.CENTER);
-                        gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
+                        timerLabel = new JLabel("10", SwingConstants.CENTER);
+                        timerLabel.setIcon(null);
+                        timerLabel.setBounds(77, 13, 77, 42);
+                        timerLabel.setForeground(new Color(255, 255, 255));
+//                        timerLabel.setIcon(new ImageIcon(tmpGameRoom2.class.getResource("/mineGame/Screen/icon/timer.png")));
+                        timerLabel.setFont(new Font("Arial", Font.BOLD, 34));
+                        gameInfoPanel.setLayout(null);
+                        gameInfoPanel.add(timerLabel);
+                        
+                        JLabel timerIcon = new JLabel("");
+                        timerIcon.setForeground(new Color(255, 255, 255));
+                        timerIcon.setIcon(new ImageIcon(new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/timer.png")).getImage().getScaledInstance(57, 42, Image.SCALE_SMOOTH)));
+                        timerIcon.setBounds(21, 11, 57, 42);
+                        gameInfoPanel.add(timerIcon);
                         JPanel panel = new JPanel(new GridLayout(3, 3, 1, 1));
-                        panel.setBounds(21, 79, 376, 376);
+                        panel.setBounds(64, 84, 376, 376);
                         mainPanel.add(panel);
                         JButton button1 = new JButton();
                         JButton button2 = new JButton();
@@ -217,13 +229,32 @@ public class tmpGameRoom2 extends JFrame {
                         
                                 //////////////////////////// bottom 패널 생성 //////////////////
                                 JPanel bottomPanel = new JPanel();
-                                bottomPanel.setBounds(76, 463, 280, 41);
+                                bottomPanel.setBounds(116, 473, 280, 41);
                                 mainPanel.add(bottomPanel);
                                 bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                                 bottomPanel.setLayout(null);
                                 JButton giveupButton = new JButton("Give Up");
                                 giveupButton.setBounds(10, 10, 260, 23);
                                 bottomPanel.add(giveupButton);
+                                
+                                BackgroundPanel mineNumPanel = new BackgroundPanel("/mineGame/Screen/icon/timerBackground.png");
+                                mineNumPanel.setLayout(null);
+                                mineNumPanel.setOpaque(false);
+                                mineNumPanel.setBounds(262, 15, 178, 66);
+                                mainPanel.add(mineNumPanel);
+                                
+                                JLabel lblMine = new JLabel("", SwingConstants.CENTER);
+                                lblMine.setIcon(new ImageIcon(new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/mineImg.png")).getImage().getScaledInstance(57, 42, Image.SCALE_SMOOTH)));
+                                lblMine.setForeground(Color.WHITE);
+                                lblMine.setFont(new Font("Arial", Font.BOLD, 13));
+                                lblMine.setBounds(25, 11, 57, 42);
+                                mineNumPanel.add(lblMine);
+                                
+                                JLabel remainMineLabel_1_1 = new JLabel("30", SwingConstants.CENTER);
+                                remainMineLabel_1_1.setForeground(Color.WHITE);
+                                remainMineLabel_1_1.setFont(new Font("Arial", Font.BOLD, 34));
+                                remainMineLabel_1_1.setBounds(85, 13, 62, 42);
+                                mineNumPanel.add(remainMineLabel_1_1);
         setVisible(true);
     }
 	
@@ -354,5 +385,4 @@ public class tmpGameRoom2 extends JFrame {
         }
         return panel;
     }
-
 }
