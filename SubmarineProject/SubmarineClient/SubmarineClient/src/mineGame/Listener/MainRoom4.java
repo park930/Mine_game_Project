@@ -43,24 +43,7 @@ public class MainRoom4 extends JFrame {
     private DefaultListModel<InGameUserPanel> panelListModel;
 	////////////////////////////////////////////
 	
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainRoom4 frame = new MainRoom4(new User());
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
-	
+
 
 	/**
 	 * Create the frame.
@@ -123,13 +106,14 @@ public class MainRoom4 extends JFrame {
         
         
         JPanel infoManagePanel = new JPanel();
-        infoManagePanel.setBounds(251, 10, 558, 37);
+        infoManagePanel.setBounds(566, 10, 303, 49);
         infoManagePanel.setOpaque(false);
         mainPanel.add(infoManagePanel);
         infoManagePanel.setLayout(null);
         
-        JButton infoButton = new JButton("");
-        infoButton.setBounds(485, 10, 64, 23);
+        JLabel infoButton = new JLabel("");
+        infoButton.setBounds(240, 6, 40, 40);
+        infoButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/roundUserImg.png"))).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
         infoManagePanel.add(infoButton);
         
         JLabel lblNewLabel_1 = new JLabel("");

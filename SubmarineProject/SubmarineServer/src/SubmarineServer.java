@@ -9,16 +9,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.*;
+
 import com.google.gson.Gson;
 import room.User;
 
 
 public class SubmarineServer {
-	public static int inPort = 9999;
+	public static int inPort = 9998;
 	public static Vector<Client> clients = new Vector<Client>();
 	public MainScreen mainScreen;
 	public static int maxPlayer=4;
@@ -33,6 +31,9 @@ public class SubmarineServer {
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
 	private ArrayList<GameStart> gameStartList;
 	private java.util.Map<Long, GameScreen> gameScreenList;
+
+	//닉네임 저장 배열
+	HashSet<String> nicknameSet = new HashSet<>();
 
 
 	public static void main(String[] args) throws Exception {
@@ -56,6 +57,7 @@ public class SubmarineServer {
         while (userCnt<maxUser) {
         	Socket socket = server.accept();
             Client c = new Client(socket);
+			nicknameSet.add(c.userName);
 			System.out.println("---clinet id = "+c.getId());
 			c.sendCommand("User",c.ClientToUser());
 			clients.add(c);
@@ -272,22 +274,16 @@ public class SubmarineServer {
 
         	try {
             	while(true) {
+					System.out.println("--------------대기중------------------");
             		msg = in.readLine();
 					if (msg != null){
 						System.out.println("서버가 받은것:"+msg);
 						processCommand(msg);
 					}
-
-            		if (turn) {
-            			String[] arr = msg.split(",");
-            			x = Integer.parseInt(arr[0]);
-            			y = Integer.parseInt(arr[1]);
-            			send("ok");
-            			turn=false;
-            		}
+					System.out.println("나와선 안될 곳");
 
             	}
-            }
+			}
         	catch (IOException e) { }
         }
 
@@ -342,6 +338,10 @@ public class SubmarineServer {
 
 				case "endGame":
 					commandMap.put("winUser",sendObject);
+					break;
+
+				case "acceptNickName":
+					commandMap.put("newNickName",sendObject);
 					break;
             }
 
@@ -719,9 +719,11 @@ public class SubmarineServer {
 								targetClient.setLose(targetClient.getLose()+1);
 								targetClient.setTotal(targetClient.getTotal()+1);
 								targetClient.setRating( (targetClient.getWin()*1.0)/targetClient.getTotal()*100);
+								System.out.println("ookokoko");
 							}
 
 							if (clientList.size()==1){
+								System.out.println(" 남은 인원 1명일 때, ");
 								Client c = clientList.get(0);
 								c.sendCommand("endGame",c.ClientToUser());
 
@@ -729,7 +731,8 @@ public class SubmarineServer {
 								c.setWin(c.getWin()+1);
 								c.setTotal(c.getTotal()+1);
 								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
-
+								
+								// 게임방 제거
 								long roomid = gameStart.getGameRoom().getId();
 								GameRoom g = findRoomById(roomid,roomList);
 								if (g != null) roomList.remove(g);
@@ -740,6 +743,24 @@ public class SubmarineServer {
 								gameScreenList.get(roomid).dispose();
 								mainScreen.updateClientList(clients);
 
+							} else if(clientList.isEmpty()) {
+								System.out.println("남은 인원 0명");
+								// 게임방 제거
+								long roomid = gameStart.getGameRoom().getId();
+								GameRoom g = findRoomById(roomid,roomList);
+								if (g != null) roomList.remove(g);
+								gameRoomClientsMap.remove(roomid);
+								mainScreen.updateRoomList(roomList);
+								System.out.println("여기2");
+								sendAllRoomList();
+								System.out.println("여기3");
+
+								gameScreenList.get(roomid).dispose();
+								System.out.println("여기4");
+								mainScreen.updateClientList(clients);
+								System.out.println("여기5");
+
+
 							} else {
 								for (Client c : clientList) {
 									// 남은 유저에게 참여자 바뀌었다고 메세지 보냄
@@ -749,10 +770,37 @@ public class SubmarineServer {
 
 							// 전체 유저에게 업데이트된 유저 정보 전달
 							sendAllUserList();
+							System.out.println("여기6");
 						}
 						
 					}
 					
+					break;
+
+
+				case "checkNewNickName":
+					commandJson = commandJson.getAsJsonObject("User");
+					User checkUser = gson.fromJson(commandJson, User.class);
+					Client c = findClient(checkUser.getId());
+					String newNickName = checkUser.getUserName();
+
+					if(checkNewNick(checkUser.getUserName())){
+						// 닉네임을 저장하는 hashSet에서 기존 닉네임을 제거
+						nicknameSet.remove(c.getUserName());
+
+
+						// 가능하면 해당 유저에게 허가된다는 메세지 보냄
+						c.setUserName(checkUser.getUserName());
+						c.sendCommand("acceptNickName",newNickName);
+
+						// 모든 유저에게 유저 정보바뀌었다고 바뀜
+						sendAllUserList();
+
+						// 서버의 유저 목록도 갱신 필요
+						mainScreen.updateClientList(clients);
+					} else {
+						c.sendCommand("rejectNickName",newNickName);
+					}
 					break;
 
 			}
@@ -847,6 +895,11 @@ public class SubmarineServer {
 		}
 
 	}
+
+	private boolean checkNewNick(String tmpUserName) {
+		return nicknameSet.add(tmpUserName);
+	}
+
 
 	private GameRoom findRoomById(long roomid, ArrayList<GameRoom> roomList) {
 		for(GameRoom g : roomList){

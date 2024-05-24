@@ -133,5 +133,12 @@ public class User {
     public void setTurn(boolean t) {
     	this.turn = t;
     }
-    
+
+    public User(String userName,long id){
+        this.userName = userName;
+        this.id = id;
+    }
+
+    public User(){}
+
 }

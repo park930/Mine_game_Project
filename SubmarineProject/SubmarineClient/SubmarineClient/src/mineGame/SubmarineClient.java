@@ -15,7 +15,7 @@ import java.util.*;
   
  
 public class SubmarineClient {
-	static int inPort = 9999;
+	static int inPort = 9998;
 	public MainScreen mainScreen;
 
 	static String address ="192.168.35.173";
@@ -229,6 +229,27 @@ public class SubmarineClient {
 				gameScreen.dispose();
 				mainScreen.setVisible(true);
 				break;
+
+			case "acceptNickName":
+				System.out.println("여기부터");
+				String newName = jsonObject.get("newNickName").getAsString();
+				System.out.println("바뀔 닉네임 = " + newName);
+				myUser.setUserName(newName);
+				mainScreen.myInfoUpdate(myUser);
+
+				System.out.println("여기 부분1");
+				// userinfoDialog에 알림창 띄우고, 해당 창 닫기
+				mainScreen.userInfoDialog.showInfo("변경이 완료되었습니다.");
+				System.out.println("여기 부분2");
+				mainScreen.userInfoDialog.dispose();
+				System.out.println("여기 부분3");
+				break;
+
+			case "rejectNickName":
+				// userinfoDialog에 거부 알림창 띄우기
+				mainScreen.userInfoDialog.showInfo("중복된 닉네임입니다.");
+				mainScreen.userInfoDialog.clearTextField();
+				break;
 		}
 
 
@@ -247,6 +268,10 @@ public class SubmarineClient {
 
             case "deleteClient":
 				commandMap.put("UserId", sendObject);
+				break;
+
+			case "checkNewNickName":
+				commandMap.put("User", sendObject);
 				break;
 
         }

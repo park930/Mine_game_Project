@@ -29,9 +29,12 @@ public class MainScreen extends JFrame{
 	////////////////////////////////////////////
 	private JList<UserPanel> panelList;
     private DefaultListModel<UserPanel> panelListModel;
-	////////////////////////////////////////////
+    public UserInfoDialog userInfoDialog;
+    ////////////////////////////////////////////
 
-	
+	public void myInfoUpdate(User myUser){
+        this.myUser = myUser;
+    }
 	
     public MainScreen(User myUser) {
         System.out.println("내 정보 = "+myUser);
@@ -87,15 +90,30 @@ public class MainScreen extends JFrame{
         
 
         JPanel infoManagePanel = new JPanel();
-        infoManagePanel.setBounds(251, 10, 558, 37);
+        infoManagePanel.setBounds(566, 10, 303, 49);
         infoManagePanel.setOpaque(false);
         mainPanel.add(infoManagePanel);
         infoManagePanel.setLayout(null);
         
-        JButton infoButton = new JButton("");
-        infoButton.setBounds(485, 10, 64, 23);
+        // 닉네임 변경 버튼//////////////////////////////////////////////////////////////////////////////////////////
+        JLabel infoButton = new JLabel("");
+        infoButton.setBounds(240, 6, 40, 40);
+        infoButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/roundUserImg.png"))).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
+        infoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                userInfoDialog = new UserInfoDialog(myUser);
+                userInfoDialog.setVisible(true);
+                userInfoDialog.setLocationRelativeTo(null);
+            }
+        });
         infoManagePanel.add(infoButton);
+
+
+
+
         
+
         JLabel lblNewLabel_1 = new JLabel("Mine");
         lblNewLabel_1.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/titleLogo.png"))).getImage().getScaledInstance(187, 42, Image.SCALE_SMOOTH)));
         lblNewLabel_1.setBounds(15, 7, 187, 42);

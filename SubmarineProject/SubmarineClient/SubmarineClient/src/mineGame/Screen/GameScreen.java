@@ -19,6 +19,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
 
 public class GameScreen extends JFrame {
@@ -190,6 +192,23 @@ public class GameScreen extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // 창이 닫히기 전에 수행할 작업 작성
+                int response = JOptionPane.showConfirmDialog(null, "프로그램을 종료하겠습니까?", "경고", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (response == JOptionPane.YES_OPTION) {
+                    SubmarineClient.sendGameCommand("gameExitClient", gameStart.getId(), -1,userId);
+                    SubmarineClient.sendCommand("deleteClient",userId);
+                    System.out.println("프로그램 나가겠다고 메세지 보냄");
+                }
+            }
+        });
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     }
 
     // JTable이 들어갈 패널을 생성하는 메소드
