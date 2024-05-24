@@ -132,9 +132,9 @@ public class MainRoom4 extends JFrame {
         infoButton.setBounds(485, 10, 64, 23);
         infoManagePanel.add(infoButton);
         
-        JLabel lblNewLabel_1 = new JLabel("Mine");
-        lblNewLabel_1.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/titleLogo.png"))).getImage().getScaledInstance(139, 59, Image.SCALE_SMOOTH)));
-        lblNewLabel_1.setBounds(16, 15, 96, 44);
+        JLabel lblNewLabel_1 = new JLabel("");
+        lblNewLabel_1.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/titleLogo.png"))).getImage().getScaledInstance(187, 42, Image.SCALE_SMOOTH)));
+        lblNewLabel_1.setBounds(15, 7, 187, 42);
         mainPanel.add(lblNewLabel_1);
         lblNewLabel_1.setFont(new Font("Arial", Font.BOLD, 18));
         
