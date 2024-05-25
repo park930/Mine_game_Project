@@ -67,26 +67,26 @@ public class InGameUserPanel extends JPanel {
         
         JPanel userGameInfoPanel = new JPanel();
     	userGameInfoPanel.setOpaque(false);
-    	userGameInfoPanel.setBounds(11, 77, 227, 26);
+    	userGameInfoPanel.setBounds(11, 77, 235, 26);
     	mainPanel.add(userGameInfoPanel);
     	userGameInfoPanel.setLayout(null);
         
         choiceTotalLabel = new JLabel("Trial:"+user.getTotalChoice());
     	choiceTotalLabel.setForeground(new Color(255, 255, 255));
     	choiceTotalLabel.setFont(new Font("Arial", Font.BOLD, 13));
-    	choiceTotalLabel.setBounds(12, 4, 57, 15);
+    	choiceTotalLabel.setBounds(4, 5, 57, 15);
     	userGameInfoPanel.add(choiceTotalLabel);
 
     	rightLabel = new JLabel("Find Mine:"+user.getRight());
     	rightLabel.setForeground(new Color(255, 255, 255));
     	rightLabel.setFont(new Font("Arial", Font.BOLD, 13));
-    	rightLabel.setBounds(69, 4, 78, 15);
+    	rightLabel.setBounds(72, 5, 88, 15);
     	userGameInfoPanel.add(rightLabel);
         
         rateLabel = new JLabel("("+String.format("%.2f", user.getFindRate())+"%)");
     	rateLabel.setForeground(new Color(255, 255, 255));
     	rateLabel.setFont(new Font("Arial", Font.BOLD, 13));
-    	rateLabel.setBounds(161, 4, 59, 15);
+    	rateLabel.setBounds(166, 4, 65, 15);
     	userGameInfoPanel.add(rateLabel);
         
         JLabel userIdLabel = new JLabel("(id:"+user.getId()+")");

@@ -29,6 +29,7 @@ public class SubmarineServer {
 	static int userCnt=0;
 
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
+	private java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
 	private ArrayList<GameStart> gameStartList;
 	private java.util.Map<Long, GameScreen> gameScreenList;
 
@@ -50,6 +51,7 @@ public class SubmarineServer {
 		mainScreen = new MainScreen();
 		gameStartList = new ArrayList<>();
 		gameScreenList = new HashMap<>();
+		gameRecordClientsMap = new HashMap<>();
 
 	    numPlayer=0;
 
@@ -71,7 +73,6 @@ public class SubmarineServer {
 			userCnt++;
 
 			//시작버튼을 눌렀을때,
-			System.out.println("   대기중");
 
         }
 
@@ -280,7 +281,7 @@ public class SubmarineServer {
 						System.out.println("서버가 받은것:"+msg);
 						processCommand(msg);
 					}
-					System.out.println("나와선 안될 곳");
+					System.out.println("메세지가 null");
 
             	}
 			}
@@ -321,6 +322,9 @@ public class SubmarineServer {
 
 				case "joinedRoomDelete":
 					break;
+				case "acceptCreateRoom":
+					commandMap.put("createRoom",sendObject);
+					break;
 
 				case "acceptJoinRoom":
 					commandMap.put("joinRoom", sendObject);
@@ -342,6 +346,10 @@ public class SubmarineServer {
 
 				case "acceptNickName":
 					commandMap.put("newNickName",sendObject);
+					break;
+
+				case "giveGameRecords":
+					commandMap.put("gameRecordList",sendObject);
 					break;
             }
 
@@ -377,16 +385,11 @@ public class SubmarineServer {
 
 					//서버의 게임방 목록 관리 위해 추가함
 					System.out.println("방장 = "+gameRoom.getChairmanId());
-					for(Client c : clients) {
-						if (c.getId() == gameRoom.getChairmanId()){
-							c.setReady(true);
-							// 해당 룸 ID에 대한 ArrayList가 없으면 새로 생성하여 value로 추가
-							ArrayList<Client> roomClients = gameRoomClientsMap.computeIfAbsent(gameRoom.getId(), k -> new ArrayList<>());
-                            // 클라이언트를 해당 룸 ID의 ArrayList에 추가
-							roomClients.add(c);
-							System.out.println("   멤버 추가"+c.getId());
-						}
-					}
+					Client chairman = findClient(gameRoom.getChairmanId());
+					chairman.setReady(true);
+					chairman.sendCommand("acceptCreateRoom",gameRoom);
+					ArrayList<Client> roomClients = gameRoomClientsMap.computeIfAbsent(gameRoom.getId(), k -> new ArrayList<>());
+					roomClients.add(chairman);
 
 					//모든 클라이언트에게 갱신된 roomList전송
 					sendAllRoomList();
@@ -504,8 +507,6 @@ public class SubmarineServer {
 					System.out.println("               끝");
 					//////////////////////////////
 
-
-
 					ArrayList<Client> roomClientList = gameRoomClientsMap.get(targetRoomId);
 					if (roomClientList!=null) {
 						Client removeClient=null;
@@ -587,14 +588,8 @@ public class SubmarineServer {
 
 					if (gameStart!=null){
 						System.out.println("게임방 아이디 : "+gameStart.getId());
-						user = null;
 						ArrayList<User> gamerList = gameStart.getGameUserList();
-						for(User u : gamerList){
-							if (u.getId()==userId){
-								user=u;
-							}
-						}
-
+						user = findUserById(userId,gamerList);
 						if (user != null) {
 							Map map = gameStart.getMap();
 							//해당 게임에서 마인을 찾았는지 확인
@@ -628,6 +623,7 @@ public class SubmarineServer {
 							c.sendCommand("updateGameInfo",gameStart);
 						}
 
+						// 마지막 지뢰를 찾았을때,
 						if (gameStart.getMap().getFindMineList().size() >= gameStart.getGameRoom().getMineNum()){
 							// 승자 도출
 							double max=0.0;
@@ -645,6 +641,13 @@ public class SubmarineServer {
 								else c.setLose(c.getLose()+1);
 								c.setTotal(c.getTotal()+1);
 								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
+							}
+							
+							// 참여자의 경기 기록 저장
+							for(User u : gamerList){
+								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(u.getId(), k -> new ArrayList<>());
+								if (u.getId() == winUser.getId()) targetClientRecord.add(new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true));
+								else targetClientRecord.add(new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false));
 							}
 
 
@@ -719,19 +722,27 @@ public class SubmarineServer {
 								targetClient.setLose(targetClient.getLose()+1);
 								targetClient.setTotal(targetClient.getTotal()+1);
 								targetClient.setRating( (targetClient.getWin()*1.0)/targetClient.getTotal()*100);
+								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(targetClient.getId(), k -> new ArrayList<>());
+								targetClientRecord.add(new GameRecord(tmpUser,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false));
 								System.out.println("ookokoko");
 							}
 
 							if (clientList.size()==1){
 								System.out.println(" 남은 인원 1명일 때, ");
 								Client c = clientList.get(0);
+								System.out.println("남은 1명 : "+c.getUserName());
 								c.sendCommand("endGame",c.ClientToUser());
-
+								System.out.println("endGame 보냈음");
 								// 승리자 통계 변경 적용
 								c.setWin(c.getWin()+1);
 								c.setTotal(c.getTotal()+1);
 								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
 								
+								// 승리자의 게임 기록 저장
+								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(c.getId(), k -> new ArrayList<>());
+								targetClientRecord.add(new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false));
+
+
 								// 게임방 제거
 								long roomid = gameStart.getGameRoom().getId();
 								GameRoom g = findRoomById(roomid,roomList);
@@ -800,6 +811,15 @@ public class SubmarineServer {
 						mainScreen.updateClientList(clients);
 					} else {
 						c.sendCommand("rejectNickName",newNickName);
+					}
+					break;
+
+				case "getGameRecord":
+					clientId = commandJson.get("UserId").getAsLong();
+					Client client = findClient(clientId);
+					if (client != null) {
+						ArrayList<GameRecord> gameRecords = gameRecordClientsMap.computeIfAbsent(clientId, k -> new ArrayList<>());
+						client.sendCommand("giveGameRecords",gameRecords);
 					}
 					break;
 

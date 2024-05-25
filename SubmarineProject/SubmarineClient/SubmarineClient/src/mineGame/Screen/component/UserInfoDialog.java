@@ -26,7 +26,7 @@ public class UserInfoDialog extends JDialog {
 	
 	public UserInfoDialog(User user) {
 		bp = new BackgroundPanel("/mineGame/Screen/icon/infoBackground.png");
-		getContentPane().add(bp);
+		add(bp);
 		bp.setLayout(null);
 		
 		JPanel bottomPanel = new JPanel();

@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import mineGame.Screen.GameScreen;
 import mineGame.Screen.MainScreen;
 import mineGame.Screen.RoomScreen;
+import mineGame.Screen.component.GameRecordDialog;
 
 import java.io.*;
 import java.net.*; 
@@ -172,6 +173,7 @@ public class SubmarineClient {
 				for (int i = 0; i < userListJsonArray.size(); i++) {
 					JsonObject userObject = userListJsonArray.get(i).getAsJsonObject();
 					User user = gson.fromJson(userObject, User.class);
+					if (user.getId() == myUser.getId()) myUser = user;
 					userList.add(user);
 					System.out.println("유저 : "+user.getUserName());
 				}
@@ -219,9 +221,16 @@ public class SubmarineClient {
 			case "endGame":
 				jsonObject = jsonObject.getAsJsonObject("winUser");
 				User winUser = gson.fromJson(jsonObject, User.class);
+
+				// gameScreen의 타이머 종료함
+				gameScreen.timerStop();
+				System.out.println("타이머 종료 완료함");
+
 				// 승자 알림 및 게임 화면 종료
 				gameScreen.showInfo("Winner : "+winUser.getUserName()+"\n(id:"+winUser.getId()+")");
+				System.out.println("park2");
 				gameScreen.dispose();
+				System.out.println("park3");
 				mainScreen.setVisible(true);
 				break;
 
@@ -250,6 +259,33 @@ public class SubmarineClient {
 				mainScreen.userInfoDialog.showInfo("중복된 닉네임입니다.");
 				mainScreen.userInfoDialog.clearTextField();
 				break;
+
+			case "acceptCreateRoom":
+				jsonObject = jsonObject.getAsJsonObject("createRoom");
+				GameRoom createRoom = gson.fromJson(jsonObject, GameRoom.class);
+
+				mainScreen.createRoomDialog.dispose();
+				mainScreen.roomScreen = new RoomScreen(mainScreen,createRoom,myUser);// 새로운 창 생성
+				mainScreen.roomScreen.setVisible(true);
+
+				// 방 생성자 준비상태 완료로 전환
+				System.out.println(" 준비상태 true로 전환");
+				myUser.setReady(true);
+				mainScreen.roomScreen.addUser(myUser);
+				break;
+
+			case "giveGameRecords":
+				JsonArray gameRecordJsonArray = jsonObject.getAsJsonArray("gameRecordList");
+				ArrayList<GameRecord> gameRecordList = new ArrayList<>();
+				for (int i = 0; i < gameRecordJsonArray.size(); i++) {
+					JsonObject gameRecordObject = gameRecordJsonArray.get(i).getAsJsonObject();
+					gameRecordList.add(gson.fromJson(gameRecordObject, GameRecord.class));
+				}
+				
+				// 얻은 전적 리스트로 화면 띄우기
+				System.out.println(" 전적 조회 시, 나의 정보 : "+myUser);
+				mainScreen.gameRecordDialog = new GameRecordDialog(gameRecordList,myUser);
+				break;
 		}
 
 
@@ -266,7 +302,7 @@ public class SubmarineClient {
 				commandMap.put("GameRoom", sendObject);
 				break;
 
-            case "deleteClient":
+            case "deleteClient","getGameRecord":
 				commandMap.put("UserId", sendObject);
 				break;
 

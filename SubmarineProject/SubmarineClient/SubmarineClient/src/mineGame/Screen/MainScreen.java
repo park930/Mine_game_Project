@@ -30,6 +30,8 @@ public class MainScreen extends JFrame{
 	private JList<UserPanel> panelList;
     private DefaultListModel<UserPanel> panelListModel;
     public UserInfoDialog userInfoDialog;
+    public CreateRoomDialog createRoomDialog;
+    public GameRecordDialog gameRecordDialog;
     ////////////////////////////////////////////
 
 	public void myInfoUpdate(User myUser){
@@ -192,12 +194,11 @@ public class MainScreen extends JFrame{
     private void initialMenuPanel(JPanel panel) {
         JLabel createRoom = new JLabel("");
         createRoom.setBounds(35, 4, 153, 41);
-//        createRoom.addActionListener(new CreateRoomListener());
-        
         createRoom.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new CreateRoomListener().actionPerformed(null);
+//                new CreateRoomListener().actionPerformed(null);
+                createRoomDialog = new CreateRoomDialog(myUser);
             }
         });
         
@@ -212,6 +213,14 @@ public class MainScreen extends JFrame{
         
         JLabel statistics = new JLabel("");
         statistics.setBounds(351, 4, 153, 41);
+        statistics.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                // 서버에 전적 조회한다고 메세지 보내기
+                SubmarineClient.sendCommand("getGameRecord",myUser.getId());
+            }
+        });
+
         statistics.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/statistics.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
         panel.add(statistics);
         
@@ -246,119 +255,5 @@ public class MainScreen extends JFrame{
     }
 
 
-    private class CreateRoomListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // 새로운 창 생성
-            JDialog createRoomDialog = new JDialog(MainScreen.this, "방 생성", true);
-            createRoomDialog.setSize(400, 300);
-            createRoomDialog.setLocationRelativeTo(null);
-            createRoomDialog.setLayout(new BorderLayout());
-
-            // 컴포넌트 생성
-            JPanel centerPanel = new JPanel(new GridLayout(5, 1));
-            centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
-
-            JPanel roomNamePanel = new JPanel(new BorderLayout());
-            JLabel roomNameLabel = new JLabel("방 이름:");
-            JTextField roomNameField = new JTextField(10);
-            roomNamePanel.add(roomNameLabel, BorderLayout.WEST);
-            roomNamePanel.add(roomNameField, BorderLayout.CENTER);
-
-            // 플레이어 수 패널
-            JPanel playerCountPanel = new JPanel(new BorderLayout());
-            JLabel playerCountLabel = new JLabel("플레이어 수:");
-            JSpinner playerCountSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 4, 1));
-            playerCountPanel.add(playerCountLabel, BorderLayout.WEST);
-            playerCountPanel.add(playerCountSpinner, BorderLayout.CENTER);
-
-            JPanel visiblePanel = new JPanel(new BorderLayout());
-            JLabel visibleLabel = new JLabel("공개 여부 :");
-            JCheckBox visibleCheckBox = new JCheckBox("",true);
-            visiblePanel.add(visibleLabel, BorderLayout.WEST);
-            visiblePanel.add(visibleCheckBox,BorderLayout.CENTER);
-
-            JPanel mapWidthPanel = new JPanel(new BorderLayout());
-            JLabel mapWidthLabel = new JLabel("맵 크기:");
-            JSpinner mapWidthSpinner = new JSpinner(new SpinnerNumberModel(10, 5, 50, 1));
-            JLabel mapSizeLabel = new JLabel("(10 x 10)");
-            mapWidthPanel.add(mapWidthLabel, BorderLayout.WEST);
-            mapWidthPanel.add(mapWidthSpinner, BorderLayout.CENTER);
-            mapWidthPanel.add(mapSizeLabel, BorderLayout.EAST);
-
-
-            JPanel mineCountPanel = new JPanel(new BorderLayout());
-            JLabel mineCountLabel = new JLabel("마인 수:");
-            JComboBox<Integer> mineCountComboBox = new JComboBox<>();
-            mineCountComboBox.addItem(20); // 기본 값 20 설정
-            mineCountPanel.add(mineCountLabel, BorderLayout.WEST);
-            mineCountPanel.add(mineCountComboBox, BorderLayout.CENTER);
-
-            // 초기 마인 수 설정
-            mineCountComboBox.addItem(20);
-
-            // "맵 너비" 변경 시 "마인 수" 값 업데이트
-            mapWidthSpinner.addChangeListener(event -> {
-                int mapWidth = (int) mapWidthSpinner.getValue();
-                int maxMines = mapWidth * mapWidth - 1;
-                mineCountComboBox.removeAllItems();
-                for (int i = 1; i < maxMines; i++) {
-                    mineCountComboBox.addItem(i);
-                }
-                int midValue = maxMines / 2;
-                mineCountComboBox.setSelectedItem(midValue);
-
-                // 맵 크기 라벨 업데이트
-                mapSizeLabel.setText("(" + mapWidth + "x" + mapWidth + ")");
-            });
-
-            centerPanel.add(roomNamePanel);
-            centerPanel.add(playerCountPanel);
-            centerPanel.add(visiblePanel);
-            centerPanel.add(mapWidthPanel);
-            centerPanel.add(mineCountPanel);
-
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            JButton createButton = new JButton("생성");
-            JButton cancelButton = new JButton("취소");
-
-            createButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String roomName = roomNameField.getText();
-                    int playerCount = (int) playerCountSpinner.getValue();
-                    boolean visible = visibleCheckBox.isSelected();
-                    int mapWidth = (int) mapWidthSpinner.getValue();
-                    int mineCount = (int) mineCountComboBox.getSelectedItem();
-                    long roomId = System.currentTimeMillis();
-
-                    // GameRoom 객체 생성 및 gameRoomListModel에 추가
-                    GameRoom newRoom = new GameRoom(roomName, playerCount, visible,roomId,mapWidth,mineCount,myUser);
-                    if (visible) gameRoomListModel.addElement(new GameRoomPanel(newRoom));
-
-                    createRoomDialog.dispose();
-                    SubmarineClient.sendCommand("createRoom",newRoom);
-
-                    roomScreen = new RoomScreen(MainScreen.this,newRoom,myUser);// 새로운 창 생성
-                    roomScreen.setVisible(true);
-                    
-                    // 방 생성자 준비상태 완료로 전환
-                    System.out.println(" 준비상태 true로 전환");
-                    myUser.setReady(true);
-                    roomScreen.addUser(myUser);
-                }
-            });
-
-            buttonPanel.add(createButton);
-            buttonPanel.add(cancelButton);
-
-            createRoomDialog.add(centerPanel, BorderLayout.CENTER);
-            createRoomDialog.add(buttonPanel, BorderLayout.SOUTH);
-
-            createRoomDialog.setVisible(true);
-
-        }
-    }
 
 }

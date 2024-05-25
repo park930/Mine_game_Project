@@ -5,15 +5,20 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -61,6 +66,7 @@ public class tmpGameRoom2 extends JFrame {
     private HashMap<Long, JLabel> turnUserMap;
     private Timer timer;
     private BackgroundPanel gameInfoPanel;
+    private BufferedImage buttonImage;
 
     //////////////////////////////////////////////////////
     private JList<InGameUserPanel> panelList;
@@ -79,8 +85,8 @@ public class tmpGameRoom2 extends JFrame {
 					ArrayList<User> userList = new ArrayList<>();
 					userList.add(user);
 					GameStart gameStart = new GameStart(true, 10L, gameRoom, 1, map, userList);
-//					tmpGameRoom frame = new tmpGameRoom(roomScreen);
-//					frame.setVisible(true);
+					tmpGameRoom2 frame = new tmpGameRoom2();
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -193,36 +199,57 @@ public class tmpGameRoom2 extends JFrame {
                         timerIcon.setIcon(new ImageIcon(new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/timer.png")).getImage().getScaledInstance(57, 42, Image.SCALE_SMOOTH)));
                         timerIcon.setBounds(21, 11, 57, 42);
                         gameInfoPanel.add(timerIcon);
-                        JPanel panel = new JPanel(new GridLayout(3, 3, 1, 1));
-                        panel.setBounds(64, 84, 376, 376);
-                        mainPanel.add(panel);
-                        JButton button1 = new JButton();
-                        JButton button2 = new JButton();
-                        JButton button3 = new JButton();
-                        JButton button4 = new JButton();
-                        JButton button5 = new JButton();
-                        JButton button6 = new JButton();
-                        JButton button7 = new JButton();
-                        JButton button8 = new JButton();
-                        JButton button9 = new JButton();
-                        button1.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button2.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button3.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button4.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button5.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button6.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button7.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button8.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                        button9.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+                        
+                        
+
+                        BackgroundPanel panel_1 = new BackgroundPanel("/mineGame/Screen/icon/minePanelBackground.png");
+                        JPanel panel = new JPanel(new GridLayout(5, 5, 1, 1));
+                        panel.setBounds(0, 0, 376, 376);
+                        panel_1.add(panel);
+                        panel.setOpaque(false);
+                        /////////////////////////////////////////////////////////////////////////////////////
+                        buttonImage = loadImage("/mineGame/Screen/icon/mineButton_default.png");
+                        for(int i=0;i<25;i++) {
+                        JButton button1 = new JButton(){
+                            @Override
+                            protected void paintComponent(Graphics g) {
+                                super.paintComponent(g);
+                                if (buttonImage != null) {
+                                    // 버튼의 크기에 맞춰 이미지를 그립니다.
+                                    g.drawImage(buttonImage, 0, 0, getWidth(), getHeight(), this);
+                                }
+
+                                // 버튼이 비활성화되었을 때의 처리
+                                if (!isEnabled()) {
+                                    g.setColor(new Color(0, 0, 0, 100)); // 반투명한 검정색
+                                    g.fillRect(0, 0, getWidth(), getHeight());
+                                }
+                            }
+                        };
+                        
+                        button1.setBorder(null);
+                        button1.setOpaque(false);
+                        button1.setContentAreaFilled(false);
                         panel.add(button1);
-                        panel.add(button2);
-                        panel.add(button3);
-                        panel.add(button4);
-                        panel.add(button5);
-                        panel.add(button6);
-                        panel.add(button7);
-                        panel.add(button8);
-                        panel.add(button9);
+                        }
+                       
+                        
+//                        JButton button2 = new JButton();
+//                        JButton button3 = new JButton();
+//                        JButton button4 = new JButton();
+//                        JButton button5 = new JButton();
+//                        JButton button6 = new JButton();
+//                        JButton button7 = new JButton();
+//                        JButton button8 = new JButton();
+//                        JButton button9 = new JButton();
+//                        panel.add(button2);
+//                        panel.add(button3);
+//                        panel.add(button4);
+//                        panel.add(button5);
+//                        panel.add(button6);
+//                        panel.add(button7);
+//                        panel.add(button8);
+//                        panel.add(button9);
                         
                                 
                                 
@@ -255,6 +282,10 @@ public class tmpGameRoom2 extends JFrame {
                                 remainMineLabel_1_1.setFont(new Font("Arial", Font.BOLD, 34));
                                 remainMineLabel_1_1.setBounds(85, 13, 62, 42);
                                 mineNumPanel.add(remainMineLabel_1_1);
+                                
+                                panel_1.setBounds(64, 87, 376, 376);
+                                mainPanel.add(panel_1);
+                                panel_1.setLayout(null);
         setVisible(true);
     }
 	
@@ -384,5 +415,14 @@ public class tmpGameRoom2 extends JFrame {
             panel.add(button);
         }
         return panel;
+    }
+    
+    private BufferedImage loadImage(String path) {
+        try {
+            return ImageIO.read(getClass().getResourceAsStream(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -12,6 +12,7 @@ import mineGame.Screen.component.UserPanel;
 import mineGame.SubmarineClient;
 import mineGame.User;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -21,6 +22,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.*;
 
 public class GameScreen extends JFrame {
@@ -162,8 +165,12 @@ public class GameScreen extends JFrame {
         createTablePanel(gameStart.getGameUserList());
 
         // 10x10 버튼인 마인 맵이 들어갈 패널
+        BackgroundPanel mineBackground = new BackgroundPanel("/mineGame/Screen/icon/minePanelBackground.png");
+        mineBackground.setBounds(64, 87, 376, 376);
+        mineBackground.setLayout(null);
         mineMapPanel = createButtonGridPanel(gameStart.getGameRoom().getMapSize(), gameStart.getGameRoom().getMapSize());
-        mainPanel.add(mineMapPanel); // 5
+        mineBackground.add(mineMapPanel);
+        mainPanel.add(mineBackground); // 5
 
 
 
@@ -184,6 +191,7 @@ public class GameScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int response = JOptionPane.showConfirmDialog(null, "정말 나가시겠습니까?", "경고", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (response == JOptionPane.YES_OPTION) {
+                    timerStop();
                     SubmarineClient.sendGameCommand("gameExitClient", gameStart.getId(), -1,userId);
                 }
             }
@@ -193,20 +201,19 @@ public class GameScreen extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 // 창이 닫히기 전에 수행할 작업 작성
                 int response = JOptionPane.showConfirmDialog(null, "프로그램을 종료하겠습니까?", "경고", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (response == JOptionPane.YES_OPTION) {
+                    timerStop();
                     SubmarineClient.sendGameCommand("gameExitClient", gameStart.getId(), -1,userId);
                     SubmarineClient.sendCommand("deleteClient",userId);
                     System.out.println("프로그램 나가겠다고 메세지 보냄");
                 }
             }
         });
-        /////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     }
@@ -229,14 +236,38 @@ public class GameScreen extends JFrame {
 
     // 마인 맵 버튼 그리드를 생성하는 메소드
     private JPanel createButtonGridPanel(int rows, int cols) {
+        BufferedImage initialImage = loadImage("/mineGame/Screen/icon/mineButton_default.png");
+        
         mineButtonList = new ArrayList<>();
         JPanel panel = new JPanel(new GridLayout(rows, cols, 1, 1)); // 간격을 거의 없도록 설정
+        panel.setOpaque(false);
+        panel.setBounds(0, 0, 376, 376);
         for (int i = 0; i < rows * cols; i++) {
-            JButton button = new JButton();
+            JButton button = new JButton() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    BufferedImage buttonImage = (BufferedImage) getClientProperty("buttonImage");
+                    if (buttonImage != null) {
+                        // 버튼의 크기에 맞춰 이미지를 그립니다.
+                        g.drawImage(buttonImage, 0, 0, getWidth(), getHeight(), this);
+                    }
+
+                    // 버튼이 비활성화되었을 때의 처리
+//                    if (!isEnabled()) {
+//                        g.setColor(new Color(0, 0, 0, 100)); // 반투명한 검정색
+//                        g.fillRect(0, 0, getWidth(), getHeight());
+//                    }
+                }
+            };
+            button.putClientProperty("buttonImage", initialImage);
             button.putClientProperty("id", i); // 버튼에 고유 ID 설정
             button.setMargin(new Insets(0, 0, 0, 0)); // 버튼 여백 제거
             button.setFont(new Font("Arial", Font.BOLD, 9)); // 폰트 크기 줄이고 Bold로 설정
             button.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
+            button.setBorder(null);
+            button.setOpaque(false);
+            button.setContentAreaFilled(false);
 
             button.addActionListener(new ActionListener() {
                 @Override
@@ -263,8 +294,16 @@ public class GameScreen extends JFrame {
             mineButtonList.add(button);
             panel.add(button);
         }
-        panel.setBounds(64, 84, 376, 376);
         return panel;
+    }
+
+    private BufferedImage loadImage(String path) {
+        try {
+            return ImageIO.read(getClass().getResourceAsStream(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void start() {
@@ -316,6 +355,14 @@ public class GameScreen extends JFrame {
     }
 
 
+    public void timerStop(){
+        System.out.println("타이머 stop하려고 함");
+        if (timer!=null) {
+            timer.stop();
+            timerOn = false;
+        }
+        System.out.println("타이머 종료 완료함");
+    }
 
     public void updateGameState(GameStart gameStart) {
         System.out.println("------게임 스크린 처리 과정 ------");
@@ -336,16 +383,20 @@ public class GameScreen extends JFrame {
         // 선택한 버튼들에 대해서 결과를 화면에 표시
         ArrayList<Integer> disableButton = gameStart.getMap().getDisableButton();
         ArrayList<Integer> findMineList = gameStart.getMap().getFindMineList();
+        BufferedImage mineImage = loadImage("/mineGame/Screen/icon/mineButton_mine.png"); // 새로운 이미지 파일을 불러옵니다.
+        BufferedImage notMineImage = loadImage("/mineGame/Screen/icon/mineButton_none.png"); // 새로운 이미지 파일을 불러옵니다.
 
         for(JButton button : mineButtonList){
             int id = (Integer) button.getClientProperty("id"); // 설정된 ID 가져오기
             if (disableButton.contains(id)){
                 if (findMineList.contains(id)){
-                    button.setText("O");
+                    button.putClientProperty("buttonImage", mineImage);
+                    button.repaint(); // 버튼을 다시 그리도록 repaint()를 호출합니다.
                 } else {
-                    button.setText("X");
+                    button.putClientProperty("buttonImage", notMineImage);
+                    button.repaint(); // 버튼을 다시 그리도록 repaint()를 호출합니다.
                 }
-                button.setForeground(Color.red);
+//                button.setForeground(Color.red);
                 button.setEnabled(false);
             }
         }
