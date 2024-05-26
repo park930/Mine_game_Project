@@ -44,6 +44,7 @@ import mineGame.Screen.MainScreen;
 import mineGame.Screen.RoomScreen;
 import mineGame.Screen.component.BackgroundPanel;
 import mineGame.Screen.component.InGameUserPanel;
+import mineGame.Screen.component.RoundPanel;
 import mineGame.Screen.component.RoundedBorder;
 import mineGame.Screen.component.UserPanel;
 
@@ -84,8 +85,12 @@ public class tmpGameScreen2 extends JFrame {
 					RoomScreen roomScreen = new RoomScreen(mainScreen, gameRoom, user);
 					ArrayList<User> userList = new ArrayList<>();
 					userList.add(user);
+					userList.add(user);
+					userList.add(user);
+					userList.add(user);
 					GameStart gameStart = new GameStart(true, 10L, gameRoom, 1, map, userList);
 					tmpGameScreen2 frame = new tmpGameScreen2();
+					frame.createTablePanel(userList);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -142,30 +147,35 @@ public class tmpGameScreen2 extends JFrame {
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        JPanel userPanel = new JPanel();
+        RoundPanel userPanel = new RoundPanel(15,"/mineGame/Screen/icon/background.png");
         userPanel.setBounds(531, 10, 372, 515);
         userPanel.setBackground(new Color(104, 99, 74));
         userPanel.setLayout(null);
-        userPanel.setBorder(new RoundedBorder(7, 2, Color.BLACK, 1));
+        userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
 
-        JLabel lblNewLabel = new JLabel("User List");
+        JLabel lblNewLabel = new JLabel("");
+        lblNewLabel.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/userLabelIcon.png"))).getImage().getScaledInstance(62, 23, Image.SCALE_SMOOTH)));
+        lblNewLabel.setBounds(12, 10, 67, 31);
         lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        lblNewLabel.setBounds(12, 10, 97, 15);
         userPanel.add(lblNewLabel);
 
 
         panelListModel = new DefaultListModel<>();
         panelList = new JList<>(panelListModel);
-        panelList.setBackground(new Color(104, 99, 74));
+        panelList.setBackground(new Color(104, 99, 74)); 
         panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panelList.setOpaque(false);
         panelList.setCellRenderer(new InGamePanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 44, 322, 449);
+        panelListScrollPane.setBounds(12, 44, 322, 430);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
  
+        panelListModel.addElement(new InGameUserPanel(user));
+        panelListModel.addElement(new InGameUserPanel(user));
+        panelListModel.addElement(new InGameUserPanel(user));
         panelListModel.addElement(new InGameUserPanel(user));
         mainPanel.setLayout(null);
         

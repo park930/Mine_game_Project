@@ -135,10 +135,12 @@ public class GameScreen extends JFrame {
         userPanel.setLayout(null);
         userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
 
-        JLabel lblNewLabel = new JLabel("User List");
+        
+        JLabel lblNewLabel = new JLabel("");
+        lblNewLabel.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/userLabelIcon.png"))).getImage().getScaledInstance(62, 23, Image.SCALE_SMOOTH)));
+        lblNewLabel.setBounds(12, 10, 67, 31);
         lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        lblNewLabel.setBounds(12, 10, 97, 15);
         userPanel.add(lblNewLabel);
 
 
@@ -150,7 +152,7 @@ public class GameScreen extends JFrame {
         panelList.setCellRenderer(new InGamePanelListCellRenderer());
 
         JScrollPane panelListScrollPane = new JScrollPane(panelList);
-        panelListScrollPane.setBounds(12, 44, 322, 449);
+        panelListScrollPane.setBounds(12, 44, 322, 430);
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
