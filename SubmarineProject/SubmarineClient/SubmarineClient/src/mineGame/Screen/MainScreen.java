@@ -39,6 +39,8 @@ public class MainScreen extends JFrame{
     private DefaultListModel<ChatInfo> chatListModel;
     private JTextField chatField;
     private JLabel writerNameLabel;
+    private JScrollPane scrollPane_1;
+    private JScrollPane chatScrollPane;
     ////////////////////////////////////////////
 
 	public void myInfoUpdate(User myUser){
@@ -91,7 +93,7 @@ public class MainScreen extends JFrame{
         initialMenuPanel(menuPanel);
         centerPanel.add(menuPanel);
         
-        JScrollPane scrollPane_1 = new JScrollPane(gameRoomList);
+        scrollPane_1 = new JScrollPane(gameRoomList);
         scrollPane_1.setBounds(12, 53, 605, 206);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
@@ -129,7 +131,7 @@ public class MainScreen extends JFrame{
         chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 입장하셨습니다.>","",0L,0L,"#FFA500"));
         chatList = new JList<>(chatListModel);
         chatList.setCellRenderer(new ChatInfoListCellRenderer());
-        JScrollPane chatScrollPane = new JScrollPane(chatList);
+        chatScrollPane = new JScrollPane(chatList);
         chatScrollPane.setBounds(12, 266, 605, 158);
         centerPanel.add(chatScrollPane);
         
@@ -322,5 +324,11 @@ public class MainScreen extends JFrame{
             chatInfo.setColor("#FFA500");
         }
         chatListModel.addElement(chatInfo);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JScrollBar verticalBar = chatScrollPane.getVerticalScrollBar();
+                verticalBar.setValue(verticalBar.getMaximum());
+            }
+        });
     }
 }

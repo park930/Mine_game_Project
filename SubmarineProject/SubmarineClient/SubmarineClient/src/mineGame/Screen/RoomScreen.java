@@ -31,6 +31,7 @@ public class RoomScreen extends JFrame {
     private JTextField textField;
     private JList<ChatInfo> chatList;
     private DefaultListModel<ChatInfo> chatListModel;
+    private JScrollPane chatScrollPane;
     
     public RoomScreen(MainScreen ms,GameRoom gr,User user) {
         System.out.println(" 방 주인으로써 생성");
@@ -245,9 +246,7 @@ public class RoomScreen extends JFrame {
         sendButton.setContentAreaFilled(false);
         chatPanel.add(sendButton);
         
-        JScrollPane chatScrollPane = new JScrollPane((Component) null);
-        chatScrollPane.setBounds(12, 0, 526, 133);
-        chatPanel.add(chatScrollPane);
+
 
 
         System.out.println("여기 주의1");
@@ -257,7 +256,6 @@ public class RoomScreen extends JFrame {
         System.out.println("여기 주의2");
         chatList.setCellRenderer(new ChatInfoListCellRenderer());
         chatList.setBounds(13, 0, 525, 133);
-        chatScrollPane.setViewportView(chatList);
         System.out.println("여기 주의3");
         
         textField = new JTextField();
@@ -267,7 +265,10 @@ public class RoomScreen extends JFrame {
         textField.setFont(new Font("Arial", Font.BOLD, 12));
         textField.setColumns(10);
         textField.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
-        
+
+        chatScrollPane = new JScrollPane(chatList);
+        chatScrollPane.setBounds(12, 0, 526, 133);
+        chatPanel.add(chatScrollPane);
         
         ActionListener sendAction = new ActionListener() {
             @Override
@@ -438,11 +439,6 @@ public class RoomScreen extends JFrame {
         sendButton.setContentAreaFilled(false);
         chatPanel.add(sendButton);
 
-        JScrollPane chatScrollPane = new JScrollPane((Component) null);
-        chatScrollPane.setBounds(12, 0, 526, 133);
-        chatPanel.add(chatScrollPane);
-
-
         System.out.println("여기 주의1");
         chatListModel = new DefaultListModel<>();
         chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 방에 입장하였습니다.>","",0L,0L,"#FFA500"));
@@ -450,7 +446,6 @@ public class RoomScreen extends JFrame {
         System.out.println("여기 주의2");
         chatList.setCellRenderer(new ChatInfoListCellRenderer());
         chatList.setBounds(13, 0, 525, 133);
-        chatScrollPane.setViewportView(chatList);
         System.out.println("여기 주의3");
 
         textField = new JTextField();
@@ -461,6 +456,9 @@ public class RoomScreen extends JFrame {
         textField.setColumns(10);
         textField.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
 
+        chatScrollPane = new JScrollPane(chatList);
+        chatScrollPane.setBounds(12, 0, 526, 133);
+        chatPanel.add(chatScrollPane);
 
         ActionListener sendAction = new ActionListener() {
             @Override
@@ -572,5 +570,11 @@ public class RoomScreen extends JFrame {
 
     public void addChatInfo(ChatInfo chatInfo) {
         chatListModel.addElement(chatInfo);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JScrollBar verticalBar = chatScrollPane.getVerticalScrollBar();
+                verticalBar.setValue(verticalBar.getMaximum());
+            }
+        });
     }
 }
