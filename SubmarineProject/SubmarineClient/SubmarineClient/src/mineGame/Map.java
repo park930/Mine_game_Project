@@ -12,6 +12,7 @@ public class Map {
 	private ArrayList<Integer> enableButton;
 	private ArrayList<Integer> disableButton;
 	private ArrayList<Integer> findMineList;
+	private HashMap<Integer, Integer> mineHintMap;
 
 	public Map(int width, int num_mine) {
 		this.width = width;
@@ -20,6 +21,7 @@ public class Map {
 		enableButton = new ArrayList<>();
 		disableButton = new ArrayList<>();
 		findMineList = new ArrayList<>();
+		mineHintMap = new HashMap<>();
 
 		// create map
 		System.out.println("Create  "+ width+" X "+ width + "  map");
@@ -88,4 +90,11 @@ public class Map {
 		this.findMineList = findMineList;
 	}
 
+	public HashMap<Integer, Integer> getMineHintMap() {
+		return mineHintMap;
+	}
+
+	public void setMineHintMap(HashMap<Integer, Integer> mineHintMap) {
+		this.mineHintMap = mineHintMap;
+	}
 }

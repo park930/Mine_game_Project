@@ -50,7 +50,7 @@ public class GameScreen extends JFrame {
     private BackgroundPanel gameInfoPanel;
     private BackgroundPanel mineNumPanel;
 
-
+    private HashMap<Integer, Integer> mineHintMap;
 
 
     //////////////////////////////////////////////////////
@@ -68,6 +68,7 @@ public class GameScreen extends JFrame {
         this.userId = userId;
         userGameTableMap=new HashMap<>();
         turnUserMap=new HashMap<>();
+        mineHintMap = new HashMap<>();
 
         roomScreen.setVisible(false);
 
@@ -386,7 +387,9 @@ public class GameScreen extends JFrame {
         ArrayList<Integer> disableButton = gameStart.getMap().getDisableButton();
         ArrayList<Integer> findMineList = gameStart.getMap().getFindMineList();
         BufferedImage mineImage = loadImage("/mineGame/Screen/icon/mineButton_mine.png"); // 새로운 이미지 파일을 불러옵니다.
-        BufferedImage notMineImage = loadImage("/mineGame/Screen/icon/mineButton_none.png"); // 새로운 이미지 파일을 불러옵니다.
+//        BufferedImage notMineImage = loadImage("/mineGame/Screen/icon/mineButton_none.png"); // 새로운 이미지 파일을 불러옵니다.
+        System.out.println("   확인 부분");
+        mineHintMap = gameStart.getMap().getMineHintMap();
 
         for(JButton button : mineButtonList){
             int id = (Integer) button.getClientProperty("id"); // 설정된 ID 가져오기
@@ -395,13 +398,16 @@ public class GameScreen extends JFrame {
                     button.putClientProperty("buttonImage", mineImage);
                     button.repaint(); // 버튼을 다시 그리도록 repaint()를 호출합니다.
                 } else {
-                    button.putClientProperty("buttonImage", notMineImage);
+                    int surroundMineNum = mineHintMap.get(id);
+                    String path = "/mineGame/Screen/icon/"+"hint"+surroundMineNum+".png";
+                    button.putClientProperty("buttonImage", loadImage(path));
                     button.repaint(); // 버튼을 다시 그리도록 repaint()를 호출합니다.
                 }
 //                button.setForeground(Color.red);
                 button.setEnabled(false);
             }
         }
+        System.out.println("   확인 부분2");
 
         remainMineLabel.setText((gameStart.getGameRoom().getMineNum()-findMineList.size())+"");
 

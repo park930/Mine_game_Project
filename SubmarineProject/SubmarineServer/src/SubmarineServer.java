@@ -621,6 +621,9 @@ public class SubmarineServer {
 								System.out.println("마인 찾음");
 								map.getFindMineList().add(choice);
 								user.setRight(user.getRight()+1);
+							} else {
+								// 못 찾은 곳 마인 힌트 넣기
+								map.putMineHint(choice);
 							}
 							user.setTotalChoice(user.getTotalChoice()+1);
 							user.setFindRate( ((user.getRight()*1.0)/user.getTotalChoice())*100 );
