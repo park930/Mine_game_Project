@@ -37,18 +37,14 @@ public class Map {
 		
 	}
 		
-	public int checkMine(int x, int y) {
-		int pos = (x*width) + y;
-		
+	public int checkMine(int pos) {
 		if (minePosition.containsValue(pos)) {
-			System.out.println("   Find mine at ("+x+", "+y+")");		
 			return pos;
 		}
-		else { 
-			System.out.println("   No mine at ("+x+", "+y+")");
+		else {
 			return -1;
 		}
-		
+
 	}
 
 	public void printMap(int[][] a) {
@@ -97,4 +93,14 @@ public class Map {
 	public void setMineHintMap(HashMap<Integer, Integer> mineHintMap) {
 		this.mineHintMap = mineHintMap;
 	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getMineNum() {
+		return num_mine;
+	}
+
+
 }

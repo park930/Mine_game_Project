@@ -41,6 +41,7 @@ public class MainScreen extends JFrame{
     private JLabel writerNameLabel;
     private JScrollPane scrollPane_1;
     private JScrollPane chatScrollPane;
+    private PracticeGameScreen practiceGameScreen;
     ////////////////////////////////////////////
 
 	public void myInfoUpdate(User myUser){
@@ -271,6 +272,15 @@ public class MainScreen extends JFrame{
         JLabel noUserRoom = new JLabel("");
         noUserRoom.setBounds(193, 4, 153, 41);
         noUserRoom.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/practice.png"))).getImage().getScaledInstance(153, 41, Image.SCALE_SMOOTH)));
+        noUserRoom.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                // 서버에 전적 조회한다고 메세지 보내기
+                practiceGameScreen = new PracticeGameScreen(myUser,10,20,MainScreen.this);
+                practiceGameScreen.start();
+            }
+        });
+
         panel.add(noUserRoom);
         
         JLabel statistics = new JLabel("");
@@ -330,5 +340,11 @@ public class MainScreen extends JFrame{
                 verticalBar.setValue(verticalBar.getMaximum());
             }
         });
+    }
+
+    public void exitPractice() {
+        practiceGameScreen.dispose();
+        practiceGameScreen = null;
+        setVisible(true);
     }
 }
