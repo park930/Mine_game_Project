@@ -1,6 +1,8 @@
 package mineGame.Screen;
 
+import mineGame.ChatInfo;
 import mineGame.GameRoom;
+import mineGame.ListCallRenderer.ChatInfoListCellRenderer;
 import mineGame.ListCallRenderer.RoomListCellRenderer;
 import mineGame.Listener.DoubleClickListener;
 import mineGame.Screen.component.*;
@@ -33,16 +35,19 @@ public class MainScreen extends JFrame{
     public UserInfoDialog userInfoDialog;
     public CreateRoomDialog createRoomDialog;
     public GameRecordDialog gameRecordDialog;
+    private JList<ChatInfo> chatList;
+    private DefaultListModel<ChatInfo> chatListModel;
+    private JTextField chatField;
     ////////////////////////////////////////////
 
 	public void myInfoUpdate(User myUser){
         this.myUser = myUser;
     }
 	
-    public MainScreen(User myUser) {
+    public MainScreen(User user) {
         System.out.println("내 정보 = "+myUser);
         System.out.println("main 생성");
-        this.myUser = myUser;
+        this.myUser = user;
 
         BackgroundPanel mainPanel = new BackgroundPanel("/mineGame/Screen/icon/backgroundIMG.png");
         RoundPanel centerPanel = new RoundPanel(1,"/mineGame/Screen/icon/background.png");
@@ -85,7 +90,7 @@ public class MainScreen extends JFrame{
         centerPanel.add(menuPanel);
         
         JScrollPane scrollPane_1 = new JScrollPane(gameRoomList);
-        scrollPane_1.setBounds(12, 53, 606, 206);
+        scrollPane_1.setBounds(12, 53, 605, 206);
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
         mainPanel.add(centerPanel);
@@ -98,13 +103,13 @@ public class MainScreen extends JFrame{
         mainPanel.add(infoManagePanel);
         infoManagePanel.setLayout(null);
         
-        // 닉네임 변경 버튼//////////////////////////////////////////////////////////////////////////////////////////
         JLabel infoButton = new JLabel("");
         infoButton.setBounds(240, 6, 40, 40);
         infoButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/roundUserImg.png"))).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
         infoButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
+                System.out.println("정보창 열기 전, 내 정보 : "+myUser);
                 userInfoDialog = new UserInfoDialog(myUser);
                 userInfoDialog.setVisible(true);
                 userInfoDialog.setLocationRelativeTo(null);
@@ -112,8 +117,58 @@ public class MainScreen extends JFrame{
         });
         infoManagePanel.add(infoButton);
 
+        	
+        
+        
 
-
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        chatListModel = new DefaultListModel<>();
+        chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 입장하셨습니다.>","",0L,0L,"#FFA500"));
+        chatList = new JList<>(chatListModel);
+        chatList.setCellRenderer(new ChatInfoListCellRenderer());
+        JScrollPane chatScrollPane = new JScrollPane(chatList);
+        chatScrollPane.setBounds(12, 266, 605, 158);
+        centerPanel.add(chatScrollPane);
+        
+        chatField = new JTextField();
+        chatField.setForeground(new Color(71, 71, 71));
+        chatField.setFont(new Font("Arial", Font.BOLD, 14));
+        chatField.setText("asasd");
+        chatField.setBounds(91, 423, 460, 24);
+        chatField.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        centerPanel.add(chatField);
+        chatField.setColumns(10);
+        
+        JLabel writerNameLabel = new JLabel("["+myUser.getUserName()+"]");
+        writerNameLabel.setForeground(new Color(71, 71, 71));
+        writerNameLabel.setBackground(new Color(255, 255, 255));
+        writerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        writerNameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        writerNameLabel.setBounds(12, 423, 79, 24);
+        writerNameLabel.setOpaque(true);
+        writerNameLabel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        centerPanel.add(writerNameLabel);
+        
+        
+        JButton sendButton = new JButton("New button");
+        sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance(66, 23, Image.SCALE_SMOOTH)));
+        sendButton.setBounds(551, 424, 66, 23);
+        centerPanel.add(sendButton);
+        
+        // 채팅에서 엔터 누르면 동작할 것
+        chatField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String roomName = chatField.getText();
+                SubmarineClient.sendCommand("mainChatSend",new ChatInfo(roomName, myUser.getUserName(), myUser.getId(), 0L,"#000000"));
+                chatField.setText("");
+            }
+        });
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        
+        
 
         
 
@@ -256,5 +311,12 @@ public class MainScreen extends JFrame{
     }
 
 
-
+    public void addMainChat(ChatInfo chatInfo,String type) {
+        if(type.equals("userChat")){
+            chatInfo.setColor("#000000");
+        } else {
+            chatInfo.setColor("#FA500");
+        }
+        chatListModel.addElement(chatInfo);
+    }
 }

@@ -32,7 +32,7 @@ public class SubmarineServer {
 	private java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
 	private ArrayList<GameStart> gameStartList;
 	private java.util.Map<Long, GameScreen> gameScreenList;
-
+	private ArrayList<ChatInfo> mainChatList;
 	//닉네임 저장 배열
 	HashSet<String> nicknameSet = new HashSet<>();
 
@@ -52,6 +52,7 @@ public class SubmarineServer {
 		gameStartList = new ArrayList<>();
 		gameScreenList = new HashMap<>();
 		gameRecordClientsMap = new HashMap<>();
+		mainChatList = new ArrayList<>();
 
 	    numPlayer=0;
 
@@ -174,6 +175,13 @@ public class SubmarineServer {
 	public void sendAllRoomList() {
 		for(Client c : clients)
 			sendRoomList(c);
+	}
+
+
+	private void sendAllMainChat(ChatInfo chatInfo) {
+		for(Client c : clients){
+			c.sendCommand("addMainChat",chatInfo);
+		}
 	}
 
 	public void sendAllRoomUser(ArrayList<Client> clients,long roomId) {
@@ -351,6 +359,11 @@ public class SubmarineServer {
 				case "giveGameRecords":
 					commandMap.put("gameRecordList",sendObject);
 					break;
+
+				case "addMainChat":
+					commandMap.put("chatInfo",sendObject);
+					break;
+
             }
 
 			Gson gson = new Gson();
@@ -823,6 +836,13 @@ public class SubmarineServer {
 					}
 					break;
 
+				case "mainChatSend":
+					ChatInfo chatInfo = gson.fromJson(commandJson.getAsJsonObject("mainChatInfo"), ChatInfo.class);
+					// 해당 chat을 메인 채팅 리스트에 넣고 모든 유저에게 보내야함
+					mainChatList.add(chatInfo);
+					sendAllMainChat(chatInfo);
+
+					break;
 			}
 		}
 
@@ -915,6 +935,7 @@ public class SubmarineServer {
 		}
 
 	}
+
 
 	private boolean checkNewNick(String tmpUserName) {
 		return nicknameSet.add(tmpUserName);

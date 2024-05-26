@@ -35,6 +35,7 @@ public class SubmarineClient {
 	static ArrayList<User> userList;
 	private User myUser;
 	private GameScreen gameScreen=null;
+	private ArrayList<ChatInfo> mainChatList;
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineClient().createClient();
@@ -65,6 +66,7 @@ public class SubmarineClient {
 			mainScreen = new MainScreen(myUser);
 			roomList = new ArrayList<>();
 			userList = new ArrayList<>();
+			mainChatList = new ArrayList<>();
 
 			while (true) {
 				System.out.println("메세지 받길 대기 중");
@@ -243,18 +245,15 @@ public class SubmarineClient {
 				break;
 
 			case "acceptNickName":
-				System.out.println("여기부터");
 				String newName = jsonObject.get("newNickName").getAsString();
 				System.out.println("바뀔 닉네임 = " + newName);
 				myUser.setUserName(newName);
+				System.out.println("바뀐 정보 : "+myUser);
 				mainScreen.myInfoUpdate(myUser);
 
-				System.out.println("여기 부분1");
 				// userinfoDialog에 알림창 띄우고, 해당 창 닫기
 				mainScreen.userInfoDialog.showInfo("변경이 완료되었습니다.");
-				System.out.println("여기 부분2");
 				mainScreen.userInfoDialog.dispose();
-				System.out.println("여기 부분3");
 				break;
 
 			case "rejectNickName":
@@ -292,6 +291,14 @@ public class SubmarineClient {
 				System.out.println(" 전적 조회 시, 나의 정보 : "+myUser);
 				mainScreen.gameRecordDialog = new GameRecordDialog(gameRecordList,myUser);
 				break;
+
+			case "addMainChat":
+				// 전달 받은 채팅 내용을 리스트에 저장하고 메인 화면에 띄우기
+				ChatInfo chatInfo = gson.fromJson(jsonObject.getAsJsonObject("chatInfo"), ChatInfo.class);
+				mainChatList.add(chatInfo);
+				mainScreen.addMainChat(chatInfo,"userChat");
+				
+				break;
 		}
 
 
@@ -316,6 +323,9 @@ public class SubmarineClient {
 				commandMap.put("User", sendObject);
 				break;
 
+			case "mainChatSend":
+				commandMap.put("mainChatInfo",sendObject);
+				break;
         }
 
 		Gson gson = new Gson();

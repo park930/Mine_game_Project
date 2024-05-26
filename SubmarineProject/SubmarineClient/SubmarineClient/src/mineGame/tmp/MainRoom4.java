@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,6 +30,9 @@ import mineGame.Screen.component.UserPanel;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Component;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class MainRoom4 extends JFrame {
 	private JList<GameRoomPanel> gameRoomList;
@@ -42,7 +46,12 @@ public class MainRoom4 extends JFrame {
     private JList<InGameUserPanel> panelList;
     private DefaultListModel<InGameUserPanel> panelListModel;
 	////////////////////////////////////////////
-	
+
+	////////////////////////////////////////////
+    private JList<String> chatList;
+    private DefaultListModel<String> chatListModel;
+    private JTextField txtAsasd;
+	////////////////////////////////////////////
 
 
 	/**
@@ -98,6 +107,43 @@ public class MainRoom4 extends JFrame {
         centerPanel.add(scrollPane_1);
         mainPanel.setLayout(null);
         mainPanel.add(centerPanel);
+        
+        
+        
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        chatListModel = new DefaultListModel<>();
+        chatListModel.addElement("somdos");
+        chatList = new JList<>(chatListModel);
+        JScrollPane chatScrollPane = new JScrollPane(chatList);
+        chatScrollPane.setBounds(12, 266, 605, 158);
+        centerPanel.add(chatScrollPane);
+        
+        txtAsasd = new JTextField();
+        txtAsasd.setForeground(new Color(71, 71, 71));
+        txtAsasd.setFont(new Font("Arial", Font.BOLD, 14));
+        txtAsasd.setText("asasd");
+        txtAsasd.setBounds(91, 423, 460, 24);
+        txtAsasd.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        centerPanel.add(txtAsasd);
+        txtAsasd.setColumns(10);
+        
+        JLabel writerNameLabel = new JLabel("New label");
+        writerNameLabel.setForeground(new Color(71, 71, 71));
+        writerNameLabel.setBackground(new Color(255, 255, 255));
+        writerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        writerNameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        writerNameLabel.setBounds(12, 423, 79, 24);
+        writerNameLabel.setOpaque(true);
+        writerNameLabel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        centerPanel.add(writerNameLabel);
+        
+        JButton sendButton = new JButton("New button");
+        sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance(66, 23, Image.SCALE_SMOOTH)));
+        sendButton.setBounds(551, 424, 66, 23);
+        centerPanel.add(sendButton);
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
         
         
 
