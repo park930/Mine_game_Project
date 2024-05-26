@@ -38,10 +38,12 @@ public class MainScreen extends JFrame{
     private JList<ChatInfo> chatList;
     private DefaultListModel<ChatInfo> chatListModel;
     private JTextField chatField;
+    private JLabel writerNameLabel;
     ////////////////////////////////////////////
 
 	public void myInfoUpdate(User myUser){
         this.myUser = myUser;
+        writerNameLabel.setText("["+myUser.getUserName()+"]");
     }
 	
     public MainScreen(User user) {
@@ -134,13 +136,12 @@ public class MainScreen extends JFrame{
         chatField = new JTextField();
         chatField.setForeground(new Color(71, 71, 71));
         chatField.setFont(new Font("Arial", Font.BOLD, 14));
-        chatField.setText("asasd");
         chatField.setBounds(91, 423, 460, 24);
         chatField.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         centerPanel.add(chatField);
         chatField.setColumns(10);
         
-        JLabel writerNameLabel = new JLabel("["+myUser.getUserName()+"]");
+        writerNameLabel = new JLabel("["+myUser.getUserName()+"]");
         writerNameLabel.setForeground(new Color(71, 71, 71));
         writerNameLabel.setBackground(new Color(255, 255, 255));
         writerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -151,20 +152,23 @@ public class MainScreen extends JFrame{
         centerPanel.add(writerNameLabel);
         
         
-        JButton sendButton = new JButton("New button");
+        JButton sendButton = new JButton("");
         sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance(66, 23, Image.SCALE_SMOOTH)));
         sendButton.setBounds(551, 424, 66, 23);
         centerPanel.add(sendButton);
         
-        // 채팅에서 엔터 누르면 동작할 것
-        chatField.addActionListener(new ActionListener() {
+        ActionListener sendAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String roomName = chatField.getText();
-                SubmarineClient.sendCommand("mainChatSend",new ChatInfo(roomName, myUser.getUserName(), myUser.getId(), 0L,"#000000"));
+                String content = chatField.getText();
+                SubmarineClient.sendCommand("mainChatSend", new ChatInfo(content, myUser.getUserName(), myUser.getId(), 0L, "#000000"));
                 chatField.setText("");
             }
-        });
+        };
+        
+        // 채팅에서 엔터 누르면 동작할 것
+        chatField.addActionListener(sendAction);
+        sendButton.addActionListener(sendAction);
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         
         
@@ -315,7 +319,7 @@ public class MainScreen extends JFrame{
         if(type.equals("userChat")){
             chatInfo.setColor("#000000");
         } else {
-            chatInfo.setColor("#FA500");
+            chatInfo.setColor("#FFA500");
         }
         chatListModel.addElement(chatInfo);
     }

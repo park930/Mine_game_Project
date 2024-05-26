@@ -1,6 +1,8 @@
 package mineGame.Screen;
 
+import mineGame.ChatInfo;
 import mineGame.GameRoom;
+import mineGame.ListCallRenderer.ChatInfoListCellRenderer;
 import mineGame.ListCallRenderer.GameRoomUserCellRenderer;
 import mineGame.ListCallRenderer.UserListCellRenderer;
 import mineGame.Screen.component.BackgroundPanel;
@@ -25,11 +27,15 @@ public class RoomScreen extends JFrame {
     private GameRoom gameRoom;
     private User myUser;
     private ArrayList<User> users;
-
-    public RoomScreen(MainScreen mainScreen,GameRoom gameRoom,User user) {
+    
+    private JTextField textField;
+    private JList<ChatInfo> chatList;
+    private DefaultListModel<ChatInfo> chatListModel;
+    
+    public RoomScreen(MainScreen ms,GameRoom gr,User user) {
         System.out.println(" 방 주인으로써 생성");
-        this.mainScreen = mainScreen;
-        this.gameRoom = gameRoom;
+        this.mainScreen = ms;
+        this.gameRoom = gr;
         this.myUser = user;
         users = new ArrayList<>();
 
@@ -214,6 +220,71 @@ public class RoomScreen extends JFrame {
         userScrollPane.getViewport().setOpaque(false);
 
 
+        //////////////////////////////////////////////////////////////////////
+        System.out.println(" 채팅 관련 생성 부분");
+        JPanel chatPanel = new JPanel();
+        chatPanel.setBounds(0, 332, 559, 159);
+        centerPanel.add(chatPanel);
+        chatPanel.setLayout(null);
+        chatPanel.setOpaque(false);
+        
+        JLabel writerNameLabel = new JLabel("["+myUser.getUserName()+"]");
+        writerNameLabel.setBounds(12, 132, 68, 24);
+        chatPanel.add(writerNameLabel);
+        writerNameLabel.setOpaque(true);
+        writerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        writerNameLabel.setForeground(new Color(71, 71, 71));
+        writerNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        writerNameLabel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        writerNameLabel.setBackground(Color.WHITE);
+        
+        JButton sendButton = new JButton("");
+        sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance( 48, 23, Image.SCALE_SMOOTH)));
+        sendButton.setBounds(490, 132, 48, 23);
+        sendButton.setOpaque(false);
+        sendButton.setContentAreaFilled(false);
+        chatPanel.add(sendButton);
+        
+        JScrollPane chatScrollPane = new JScrollPane((Component) null);
+        chatScrollPane.setBounds(12, 0, 526, 133);
+        chatPanel.add(chatScrollPane);
+
+
+        System.out.println("여기 주의1");
+        chatListModel = new DefaultListModel<>();
+        chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 방에 입장하였습니다.>","",0L,0L,"#FFA500"));
+        chatList = new JList<>(chatListModel);
+        System.out.println("여기 주의2");
+        chatList.setCellRenderer(new ChatInfoListCellRenderer());
+        chatList.setBounds(13, 0, 525, 133);
+        chatScrollPane.setViewportView(chatList);
+        System.out.println("여기 주의3");
+        
+        textField = new JTextField();
+        textField.setBounds(80, 132, 411, 24);
+        chatPanel.add(textField);
+        textField.setForeground(new Color(71, 71, 71));
+        textField.setFont(new Font("Arial", Font.BOLD, 12));
+        textField.setColumns(10);
+        textField.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        
+        
+        ActionListener sendAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String content = textField.getText();
+                SubmarineClient.sendCommand("roomChatSend", new ChatInfo(content, myUser.getUserName(), myUser.getId(),gameRoom.getId() , "#000000"));
+                textField.setText("");
+            }
+        };
+        textField.addActionListener(sendAction);
+        sendButton.addActionListener(sendAction);
+        
+        /////////////////////////////////////////////////////////////////////////////////
+        
+        
+        
+        
 
         // 컨테이너를 프레임에 올림.
         getContentPane().add(mainPanel);
@@ -225,11 +296,11 @@ public class RoomScreen extends JFrame {
     }
 
 
-    public RoomScreen(User user,MainScreen mainScreen,GameRoom gameRoom) {
+    public RoomScreen(User user,MainScreen ms,GameRoom gm) {
         // 방장이 아닌 제 3자가 참여한 경우
         System.out.println("-------- 참가하는 방 화면 생성");
-        this.mainScreen = mainScreen;
-        this.gameRoom = gameRoom;
+        this.mainScreen = ms;
+        this.gameRoom = gm;
         this.myUser = user;
 
         mainScreen.setVisible(false); // MainScreen 숨기기
@@ -342,6 +413,71 @@ public class RoomScreen extends JFrame {
         mapPanel.setLayout(null);
 
 
+        //////////////////////////////////////////////////////////////////////
+        System.out.println(" 채팅 관련 생성 부분");
+        JPanel chatPanel = new JPanel();
+        chatPanel.setBounds(0, 332, 559, 159);
+        centerPanel.add(chatPanel);
+        chatPanel.setLayout(null);
+        chatPanel.setOpaque(false);
+
+        JLabel writerNameLabel = new JLabel("["+myUser.getUserName()+"]");
+        writerNameLabel.setBounds(12, 132, 68, 24);
+        chatPanel.add(writerNameLabel);
+        writerNameLabel.setOpaque(true);
+        writerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        writerNameLabel.setForeground(new Color(71, 71, 71));
+        writerNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        writerNameLabel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+        writerNameLabel.setBackground(Color.WHITE);
+
+        JButton sendButton = new JButton("");
+        sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance( 48, 23, Image.SCALE_SMOOTH)));
+        sendButton.setBounds(490, 132, 48, 23);
+        sendButton.setOpaque(false);
+        sendButton.setContentAreaFilled(false);
+        chatPanel.add(sendButton);
+
+        JScrollPane chatScrollPane = new JScrollPane((Component) null);
+        chatScrollPane.setBounds(12, 0, 526, 133);
+        chatPanel.add(chatScrollPane);
+
+
+        System.out.println("여기 주의1");
+        chatListModel = new DefaultListModel<>();
+        chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 방에 입장하였습니다.>","",0L,0L,"#FFA500"));
+        chatList = new JList<>(chatListModel);
+        System.out.println("여기 주의2");
+        chatList.setCellRenderer(new ChatInfoListCellRenderer());
+        chatList.setBounds(13, 0, 525, 133);
+        chatScrollPane.setViewportView(chatList);
+        System.out.println("여기 주의3");
+
+        textField = new JTextField();
+        textField.setBounds(80, 132, 411, 24);
+        chatPanel.add(textField);
+        textField.setForeground(new Color(71, 71, 71));
+        textField.setFont(new Font("Arial", Font.BOLD, 12));
+        textField.setColumns(10);
+        textField.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+
+
+        ActionListener sendAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String content = textField.getText();
+                SubmarineClient.sendCommand("roomChatSend", new ChatInfo(content, myUser.getUserName(), myUser.getId(),gameRoom.getId() , "#000000"));
+                textField.setText("");
+            }
+        };
+        textField.addActionListener(sendAction);
+        sendButton.addActionListener(sendAction);
+
+        /////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
         ////////////////////////////////////////////
         JLabel mapLabel = new JLabel("10 X 10");
@@ -432,5 +568,9 @@ public class RoomScreen extends JFrame {
 
     public void showInfo(String s) {
         JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void addChatInfo(ChatInfo chatInfo) {
+        chatListModel.addElement(chatInfo);
     }
 }

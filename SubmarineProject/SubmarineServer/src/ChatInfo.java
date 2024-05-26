@@ -3,12 +3,22 @@ public class ChatInfo {
     private String writerName;
     private long writerId;
     private long roomId;
+    private String colorString;
 
-    public ChatInfo(String content, String writerName, long writerId, long roomId) {
+    public ChatInfo(String content, String writerName, long writerId, long roomId, String color) {
         this.content = content;
         this.writerName = writerName;
         this.writerId = writerId;
         this.roomId = roomId;
+        this.colorString = color;
+    }
+
+    public void setColor(String color) {
+        this.colorString = color;
+    }
+
+    public String getColor() {
+        return colorString;
     }
 
     public void setContent(String content) {

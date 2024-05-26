@@ -138,9 +138,11 @@ public class MainRoom4 extends JFrame {
         writerNameLabel.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         centerPanel.add(writerNameLabel);
         
-        JButton sendButton = new JButton("New button");
-        sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance(66, 23, Image.SCALE_SMOOTH)));
+        JButton sendButton = new JButton("");
+        sendButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/sendButton.png"))).getImage().getScaledInstance(72, 23, Image.SCALE_SMOOTH)));
         sendButton.setBounds(551, 424, 66, 23);
+        sendButton.setOpaque(false);
+        sendButton.setContentAreaFilled(false);
         centerPanel.add(sendButton);
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////

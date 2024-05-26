@@ -297,8 +297,15 @@ public class SubmarineClient {
 				ChatInfo chatInfo = gson.fromJson(jsonObject.getAsJsonObject("chatInfo"), ChatInfo.class);
 				mainChatList.add(chatInfo);
 				mainScreen.addMainChat(chatInfo,"userChat");
-				
 				break;
+
+			case "addRoomChat":
+				// 전달 받은 채팅 내용을 리스트에 저장하고 메인 화면에 띄우기
+				chatInfo = gson.fromJson(jsonObject.getAsJsonObject("chatInfo"), ChatInfo.class);
+				mainScreen.roomScreen.addChatInfo(chatInfo);
+				break;
+
+
 		}
 
 
@@ -323,7 +330,7 @@ public class SubmarineClient {
 				commandMap.put("User", sendObject);
 				break;
 
-			case "mainChatSend":
+			case "mainChatSend","roomChatSend":
 				commandMap.put("mainChatInfo",sendObject);
 				break;
         }

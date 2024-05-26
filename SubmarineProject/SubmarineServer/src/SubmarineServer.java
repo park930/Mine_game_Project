@@ -33,6 +33,7 @@ public class SubmarineServer {
 	private ArrayList<GameStart> gameStartList;
 	private java.util.Map<Long, GameScreen> gameScreenList;
 	private ArrayList<ChatInfo> mainChatList;
+	private java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
 	//닉네임 저장 배열
 	HashSet<String> nicknameSet = new HashSet<>();
 
@@ -53,6 +54,7 @@ public class SubmarineServer {
 		gameScreenList = new HashMap<>();
 		gameRecordClientsMap = new HashMap<>();
 		mainChatList = new ArrayList<>();
+		roomChatListMap = new HashMap<>();
 
 	    numPlayer=0;
 
@@ -181,6 +183,14 @@ public class SubmarineServer {
 	private void sendAllMainChat(ChatInfo chatInfo) {
 		for(Client c : clients){
 			c.sendCommand("addMainChat",chatInfo);
+		}
+	}
+
+	private void sendAllRoomChat(ArrayList<Client> roomClientList, ChatInfo chatInfo) {
+		System.out.println(" 참여자에게 추가된 메세지 보냄");
+		for(Client c : roomClientList){
+			System.out.println("보내는 c : "+c.getUserName());
+			c.sendCommand("addRoomChat",chatInfo);
 		}
 	}
 
@@ -360,7 +370,7 @@ public class SubmarineServer {
 					commandMap.put("gameRecordList",sendObject);
 					break;
 
-				case "addMainChat":
+				case "addMainChat","addRoomChat":
 					commandMap.put("chatInfo",sendObject);
 					break;
 
@@ -841,6 +851,17 @@ public class SubmarineServer {
 					// 해당 chat을 메인 채팅 리스트에 넣고 모든 유저에게 보내야함
 					mainChatList.add(chatInfo);
 					sendAllMainChat(chatInfo);
+					break;
+
+				case "roomChatSend":
+					chatInfo = gson.fromJson(commandJson.getAsJsonObject("mainChatInfo"), ChatInfo.class);
+					// 해당 chat을 메인 채팅 리스트에 넣고 모든 유저에게 보내야함
+					ArrayList<ChatInfo> chatList = roomChatListMap.computeIfAbsent(chatInfo.getRoomId(), k -> new ArrayList<>());
+					chatList.add(chatInfo);
+					roomClientList = gameRoomClientsMap.get(chatInfo.getRoomId());
+					System.out.println("보낼때, chatInfo의 색:"+chatInfo.getColor());
+					sendAllRoomChat(roomClientList,chatInfo);
+
 
 					break;
 			}
@@ -935,6 +956,7 @@ public class SubmarineServer {
 		}
 
 	}
+
 
 
 	private boolean checkNewNick(String tmpUserName) {
