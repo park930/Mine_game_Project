@@ -256,12 +256,16 @@ public class tmpGameScreen2 extends JFrame {
                         
                                 //////////////////////////// bottom 패널 생성 //////////////////
                                 JPanel bottomPanel = new JPanel();
-                                bottomPanel.setBounds(116, 473, 280, 41);
+                                bottomPanel.setBounds(74, 466, 366, 59);
                                 mainPanel.add(bottomPanel);
                                 bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                                 bottomPanel.setLayout(null);
-                                JButton giveupButton = new JButton("Give Up");
-                                giveupButton.setBounds(10, 10, 260, 23);
+                                bottomPanel.setOpaque(false);
+                                
+                                
+                                JLabel giveupButton = new JLabel("");
+                                giveupButton.setBounds(93, 10, 165, 54);
+                                giveupButton.setIcon(new ImageIcon((new ImageIcon(UserPanel.class.getResource("/mineGame/Screen/icon/giveUpButton.png"))).getImage().getScaledInstance(165, 54, Image.SCALE_SMOOTH)));
                                 bottomPanel.add(giveupButton);
                                 
                                 BackgroundPanel mineNumPanel = new BackgroundPanel("/mineGame/Screen/icon/timerBackground.png");
