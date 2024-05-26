@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Map {
 	int width;	
@@ -9,10 +6,12 @@ public class Map {
 	int[][] mineMap;
 	int[][] displayMap;
 	HashMap<Integer, Integer> minePosition;
+	HashMap<Integer, Integer> notMinePosition;
 
 	private ArrayList<Integer> enableButton;
 	private ArrayList<Integer> disableButton;
 	private ArrayList<Integer> findMineList;
+	private HashSet<Integer> mineCheck;
 
 	public Map(int width, int num_mine) {
 		this.width = width;
@@ -21,6 +20,8 @@ public class Map {
 		enableButton = new ArrayList<>();
 		disableButton = new ArrayList<>();
 		findMineList = new ArrayList<>();
+		notMinePosition = new HashMap<>();
+		mineCheck = new HashSet<>();
 
 		// create map
 		System.out.println("Create  "+ width+" X "+ width + "  map");
@@ -41,6 +42,37 @@ public class Map {
 			while (minePosition.containsValue(position))   // check repetition
 				position = r.nextInt(width * width);			
 			minePosition.put(i, position);
+			mineCheck.add(position);
+		}
+
+		// 지뢰 없는 곳은 자신 기준으로 8x8 주변에 몇개의 지뢰가 있는지 확인
+		for (int i=0; i<width; i++) {
+			for(int j=0;j<width;j++){
+				if (mineCheck.contains(i*width+j))continue;
+				// 8x8 범위 확인
+				int cnt=0;
+				System.out.print("주변 확인 : ");
+				for(int a=-1;a<2;a++){
+					for(int b=-1;b<2;b++){
+						int x = i+a; int y = j+b;
+						if (x<0 || y<0 || x>=width || y>=width) continue;
+						int check = x*width+y;
+						if (mineCheck.contains(check)){
+							System.out.print(check+"="+"o ");
+							cnt++;
+						} else {
+							System.out.print(check+"="+"x ");
+						}
+					}
+				}
+
+				System.out.println("\n"+(i*width+j)+"번쨰에 주변 마인은 "+cnt+"개");
+				// 다 셋으면, map에 넣기
+				notMinePosition.put(i*width+j,cnt);
+
+			}
+
+
 		}
 		
 		// deploy mines
@@ -72,11 +104,9 @@ public class Map {
 
 	public int checkMine(int pos) {
 		if (minePosition.containsValue(pos)) {
-			//System.out.println("   Find mine at ("+x+", "+y+")");
 			return pos;
 		}
 		else {
-			//System.out.println("   No mine at ("+x+", "+y+")");
 			return -1;
 		}
 
