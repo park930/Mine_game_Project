@@ -1,7 +1,7 @@
 package mineGame.Screen.component;
 
 import mineGame.User;
-import mineGame.Listener.tmpUserPanel;
+import mineGame.tmp.tmpUserPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

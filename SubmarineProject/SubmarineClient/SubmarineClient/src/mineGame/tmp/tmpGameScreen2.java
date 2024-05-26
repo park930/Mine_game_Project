@@ -1,4 +1,4 @@
-package mineGame.Listener;
+package mineGame.tmp;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -49,7 +49,7 @@ import mineGame.Screen.component.UserPanel;
 
 import javax.swing.ImageIcon;
 
-public class tmpGameRoom2 extends JFrame {
+public class tmpGameScreen2 extends JFrame {
 
 	private LinkedHashMap<Long, JPanel> userInfoPanelMap;
     private ArrayList<JPanel> userInfoPanelList;
@@ -85,7 +85,7 @@ public class tmpGameRoom2 extends JFrame {
 					ArrayList<User> userList = new ArrayList<>();
 					userList.add(user);
 					GameStart gameStart = new GameStart(true, 10L, gameRoom, 1, map, userList);
-					tmpGameRoom2 frame = new tmpGameRoom2();
+					tmpGameScreen2 frame = new tmpGameScreen2();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -97,7 +97,7 @@ public class tmpGameRoom2 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public tmpGameRoom2() {
+	public tmpGameScreen2() {
 		//////////////////////////
 		User user = new User();
 		user.setTurn(true);

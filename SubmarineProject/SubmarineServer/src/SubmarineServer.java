@@ -740,7 +740,7 @@ public class SubmarineServer {
 								
 								// 승리자의 게임 기록 저장
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(c.getId(), k -> new ArrayList<>());
-								targetClientRecord.add(new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false));
+								targetClientRecord.add(new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true));
 
 
 								// 게임방 제거

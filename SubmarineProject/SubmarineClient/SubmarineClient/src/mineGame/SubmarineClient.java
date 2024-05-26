@@ -9,6 +9,7 @@ import mineGame.Screen.GameScreen;
 import mineGame.Screen.MainScreen;
 import mineGame.Screen.RoomScreen;
 import mineGame.Screen.component.GameRecordDialog;
+import mineGame.tmp.RoomScreen2;
 
 import java.io.*;
 import java.net.*; 
@@ -161,6 +162,7 @@ public class SubmarineClient {
 				}
 				System.out.println("   멤버 재설정 완료");
 				// 새로운 방 멤버 users를 화면에 반영해야함
+//				mainScreen.roomScreen.setRoomUserList(users);
 				mainScreen.roomScreen.setRoomUserList(users);
 				System.out.println("   아마 막힘");
 
@@ -182,6 +184,7 @@ public class SubmarineClient {
 
 			case "joinedRoomDelete":
 				//todo. 화면 전환하는 과정 필요
+//				mainScreen.roomScreen.dispose();
 				mainScreen.roomScreen.dispose();
 				mainScreen.setVisible(true);
 				mainScreen.showInfo("방장이 방을 닫았습니다.");
@@ -272,6 +275,9 @@ public class SubmarineClient {
 				System.out.println(" 준비상태 true로 전환");
 				myUser.setReady(true);
 				mainScreen.roomScreen.addUser(myUser);
+
+
+
 				break;
 
 			case "giveGameRecords":
