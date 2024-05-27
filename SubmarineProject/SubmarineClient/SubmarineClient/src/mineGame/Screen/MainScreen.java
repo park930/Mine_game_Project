@@ -241,13 +241,6 @@ public class MainScreen extends JFrame{
                     System.out.println("  방 안의 플레이어 :"+u.getUserName());
                 }
                 System.out.println(selectedRoom);
-
-//                roomScreen = new RoomScreen(myUser,MainScreen.this, selectedRoom);
-//                System.out.println("    main화면에서 room에 대한 객체 설정");
-//                roomScreen.setVisible(true);
-
-                ///////////////roomScreen에서 방 참가자 목록 나오게 해야함
-
             }
         }));
 

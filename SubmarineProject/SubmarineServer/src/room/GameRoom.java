@@ -33,7 +33,9 @@ public class GameRoom {
 
     @Override
     public String toString() {
-        String res= id+" | "+roomName+" | "+playerList.size()+"/"+maxPlayer+" | 맵:"+mapSize+"X"+mapSize+" | 마인:"+mineNum;
+        String res= "ID:"+id+"    Room Name:"+roomName+"    Player:"+playerList.size()+"/"+maxPlayer+"    State:";
+        if(isStart) res += "Gaming";
+        else res += "Waiting";
         return res;
     }
 
