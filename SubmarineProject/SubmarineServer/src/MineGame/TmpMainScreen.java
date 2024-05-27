@@ -23,6 +23,8 @@ import room.User;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class TmpMainScreen extends JFrame {
 
@@ -65,10 +67,10 @@ public class TmpMainScreen extends JFrame {
         mainPanel.setLayout(null);
 
         JPanel centerPanel = new JPanel();
-        centerPanel.setBounds(239, 10, 736, 466);
+        centerPanel.setBounds(252, 10, 346, 499);
         centerPanel.setOpaque(false);
         JPanel westPanel = new JPanel();
-        westPanel.setBounds(3, 53, 236, 423);
+        westPanel.setBounds(3, 53, 236, 456);
         westPanel.setOpaque(false);
         clientListModel = new DefaultListModel<>();
         clientList = new JList<>(clientListModel);
@@ -87,11 +89,11 @@ public class TmpMainScreen extends JFrame {
 
 
         JScrollPane clientScrollPane = new JScrollPane(clientList);
-        clientScrollPane.setBounds(12, 31, 220, 382);
+        clientScrollPane.setBounds(12, 31, 220, 413);
         JScrollPane roomScrollPane = new JScrollPane(gameRoomList);
-        roomScrollPane.setBounds(12, 77, 318, 380);
+        roomScrollPane.setBounds(12, 81, 318, 151);
         JScrollPane recordScrollPane = new JScrollPane(gameRecordList);
-        recordScrollPane.setBounds(412, 77, 137, 162);
+        recordScrollPane.setBounds(12, 263, 318, 224);
         westPanel.setLayout(null);
         westPanel.add(clientScrollPane);
         centerPanel.setLayout(null);
@@ -110,14 +112,20 @@ public class TmpMainScreen extends JFrame {
         JLabel roomListLabel = new JLabel("Room List");
         roomListLabel.setForeground(new Color(82, 82, 82));
         roomListLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        roomListLabel.setBounds(12, 54, 67, 18);
+        roomListLabel.setBounds(14, 61, 67, 18);
         centerPanel.add(roomListLabel);
         
         JLabel gameRecordLabel = new JLabel("Game Record");
         gameRecordLabel.setForeground(new Color(82, 82, 82));
         gameRecordLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        gameRecordLabel.setBounds(412, 54, 95, 18);
+        gameRecordLabel.setBounds(13, 242, 95, 18);
         centerPanel.add(gameRecordLabel);
+        
+        JButton btnNewButton = new JButton("Chat Log");
+        btnNewButton.setFont(new Font("Arial", Font.BOLD, 15));
+        btnNewButton.setBackground(new Color(82, 82, 82));
+        btnNewButton.setBounds(12, 10, 134, 36);
+        centerPanel.add(btnNewButton);
 
 
         // 而⑦뀒 씠 꼫瑜   봽 젅 엫 뿉  삱由 .
@@ -126,7 +134,7 @@ public class TmpMainScreen extends JFrame {
         JLabel adminTitleLabel = new JLabel("Admin Main");
         adminTitleLabel.setForeground(new Color(82, 82, 82));
         adminTitleLabel.setFont(new Font("Arial Rounded MT Bold", Font.BOLD, 23));
-        adminTitleLabel.setBounds(7, 3, 150, 37);
+        adminTitleLabel.setBounds(12, 10, 150, 37);
         mainPanel.add(adminTitleLabel);
 
 
@@ -156,7 +164,7 @@ public class TmpMainScreen extends JFrame {
 
 
 
-        setBounds(200,200,1019,523);
+        setBounds(200,200,630,547);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
