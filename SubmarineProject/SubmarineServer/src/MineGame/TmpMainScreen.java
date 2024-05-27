@@ -3,6 +3,7 @@ package MineGame;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
@@ -14,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import MineGame.listCallRenderer.DoubleClickListener;
+import MineGame.listCallRenderer.GameRecordPanelListCellRenderer;
 import MineGame.listCallRenderer.UserPanelListCellRenderer;
 import room.GameRoom;
 import room.User;
@@ -46,9 +48,9 @@ public class TmpMainScreen extends JFrame {
 	private JList<UserInfoPanel> clientList;
 	private DefaultListModel<UserInfoPanel> clientListModel;
 
-    private JList<GameStart> gameRecordList;
+    private JList<GameRecordPanel> gameRecordList;
 
-    private DefaultListModel<GameStart> gameRecordListModel;
+    private DefaultListModel<GameRecordPanel> gameRecordListModel;
 
     private JList<GameRoom> gameRoomList;
     private DefaultListModel<GameRoom> gameRoomListModel;
@@ -74,6 +76,7 @@ public class TmpMainScreen extends JFrame {
 
         gameRecordListModel = new DefaultListModel<>();
         gameRecordList = new JList<>(gameRecordListModel);
+        gameRecordList.setCellRenderer(new GameRecordPanelListCellRenderer());
 
         gameRoomListModel = new DefaultListModel<>();
         gameRoomList = new JList<>(gameRoomListModel);
@@ -177,6 +180,13 @@ public class TmpMainScreen extends JFrame {
         clientListModel.clear();
         for(SubmarineServer.Client client : clients){
             clientListModel.addElement(new UserInfoPanel(client));
+        }
+    }
+
+    public void updateRecord(Map<GameRoom, ArrayList<GameRecord>> roomRecordListMap) {
+        gameRecordListModel.clear();
+        for (GameRoom room : roomRecordListMap.keySet()) {
+            gameRecordListModel.addElement(new GameRecordPanel(room));
         }
     }
 }

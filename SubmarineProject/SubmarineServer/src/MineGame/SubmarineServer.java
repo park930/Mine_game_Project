@@ -39,6 +39,13 @@ public class SubmarineServer {
 	private java.util.Map<Long, GameScreen> gameScreenList;
 	private ArrayList<ChatInfo> mainChatList;
 	private java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
+	
+	
+	
+	///////////////////////////////////////////////////////////////////////
+	private java.util.Map<GameRoom, ArrayList<GameRecord>> roomRecordListMap;
+	///////////////////////////////////////////////////////////////////////
+	
 	//닉네임 저장 배열
 	HashSet<String> nicknameSet = new HashSet<>();
 
@@ -63,6 +70,8 @@ public class SubmarineServer {
 		gameRecordClientsMap = new HashMap<>();
 		mainChatList = new ArrayList<>();
 		roomChatListMap = new HashMap<>();
+		roomRecordListMap = new HashMap<>();
+		
 
 	    numPlayer=0;
 
@@ -640,13 +649,16 @@ public class SubmarineServer {
 						if (user != null) {
 							Map map = gameStart.getMap();
 							//해당 게임에서 마인을 찾았는지 확인
-							if (map.checkMine(choice) > 0){
+							System.out.println(" 유저가 선택한 곳 : "+choice);
+							if (map.checkMine(choice) >= 0){
 								// 마인을 찾음
 								System.out.println("마인 찾음");
 								map.getFindMineList().add(choice);
 								user.setRight(user.getRight()+1);
 							} else {
 								// 못 찾은 곳 마인 힌트 넣기
+								System.out.println("마인 못찾음");
+								System.out.println("힌트 값 : "+choice);
 								map.putMineHint(choice);
 							}
 							user.setTotalChoice(user.getTotalChoice()+1);
@@ -692,12 +704,26 @@ public class SubmarineServer {
 								c.setTotal(c.getTotal()+1);
 								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
 							}
-							
+
+
+							// 해당 게임방을 경기 완료한 게임방 MAP에 추가 및 세부 GameRecord기록
+							long roomid = gameStart.getGameRoom().getId();
+							GameRoom g = findRoomById(roomid,roomList);
+							ArrayList<GameRecord> roomGameRecordList = roomRecordListMap.computeIfAbsent(g, k -> new ArrayList<>());
+
 							// 참여자의 경기 기록 저장
 							for(User u : gamerList){
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(u.getId(), k -> new ArrayList<>());
-								if (u.getId() == winUser.getId()) targetClientRecord.add(new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true));
-								else targetClientRecord.add(new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false));
+								GameRecord gameRecord=null;
+								if (u.getId() == winUser.getId()) {
+									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true);
+									targetClientRecord.add(gameRecord);
+								}
+								else {
+									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false);
+									targetClientRecord.add(gameRecord);
+								}
+								roomGameRecordList.add(gameRecord);
 							}
 
 
@@ -711,11 +737,10 @@ public class SubmarineServer {
 							// 전체 유저에게 업데이트된 유저 정보 전달
 							sendAllUserList();
 
-							// 게임방 목록에서 제거
-							long roomid = gameStart.getGameRoom().getId();
-							GameRoom g = findRoomById(roomid,roomList);
+							// 게임 완료한 것을 게임방 목록에서 제거
 							if (g != null) roomList.remove(g);
 							gameRoomClientsMap.remove(roomid);
+							mainScreen.updateRecord(roomRecordListMap);
 							mainScreen.updateRoomList(roomList);
 
 							// 전체 유저에게 업데이트 된 게임방 목록 전달
@@ -777,8 +802,14 @@ public class SubmarineServer {
 								targetClient.setLose(targetClient.getLose()+1);
 								targetClient.setTotal(targetClient.getTotal()+1);
 								targetClient.setRating( (targetClient.getWin()*1.0)/targetClient.getTotal()*100);
+								GameRecord gameRecord = new GameRecord(tmpUser,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false);
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(targetClient.getId(), k -> new ArrayList<>());
-								targetClientRecord.add(new GameRecord(tmpUser,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false));
+								targetClientRecord.add(gameRecord);
+
+								ArrayList<GameRecord> roomRecordList = roomRecordListMap.computeIfAbsent(gameStart.getGameRoom(), k -> new ArrayList<>());
+								roomRecordList.add(gameRecord);
+
+
 								System.out.println("ookokoko");
 							}
 
@@ -792,11 +823,14 @@ public class SubmarineServer {
 								c.setWin(c.getWin()+1);
 								c.setTotal(c.getTotal()+1);
 								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
-								
+
+								GameRecord gameRecord = new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true);
 								// 승리자의 게임 기록 저장
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(c.getId(), k -> new ArrayList<>());
-								targetClientRecord.add(new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true));
+								targetClientRecord.add(gameRecord);
 
+								ArrayList<GameRecord> roomRecordList = roomRecordListMap.computeIfAbsent(gameStart.getGameRoom(), k -> new ArrayList<>());
+								roomRecordList.add(gameRecord);
 
 								// 게임방 제거
 								long roomid = gameStart.getGameRoom().getId();
@@ -804,6 +838,7 @@ public class SubmarineServer {
 								if (g != null) roomList.remove(g);
 								gameRoomClientsMap.remove(roomid);
 								mainScreen.updateRoomList(roomList);
+								mainScreen.updateRecord(roomRecordListMap);
 								sendAllRoomList();
 
 								gameScreenList.get(roomid).dispose();
@@ -824,6 +859,7 @@ public class SubmarineServer {
 								gameScreenList.get(roomid).dispose();
 								System.out.println("여기4");
 								mainScreen.updateClientList(clients);
+								mainScreen.updateRecord(roomRecordListMap);
 								System.out.println("여기5");
 
 

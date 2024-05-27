@@ -91,7 +91,8 @@ public class Map {
 		printMap(mineMap);
 		
 	}
-		
+
+
 	public int checkMine(int x, int y) {
 		int pos = (x*width) + y;
 		
