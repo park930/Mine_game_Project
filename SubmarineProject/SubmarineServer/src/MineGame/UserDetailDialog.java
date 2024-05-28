@@ -15,6 +15,7 @@ import room.User;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.util.ArrayList;
 
 public class UserDetailDialog extends JDialog {
 
@@ -31,7 +32,7 @@ public class UserDetailDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public UserDetailDialog(SubmarineServer.Client user) {
+    public UserDetailDialog(SubmarineServer.Client user, ArrayList<ChatInfo> chatList) {
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(null);

@@ -1,6 +1,5 @@
 package MineGame;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Map;
@@ -12,24 +11,23 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
 
 import MineGame.listCallRenderer.DoubleClickListener;
 import MineGame.listCallRenderer.GameRecordPanelListCellRenderer;
 import MineGame.listCallRenderer.UserPanelListCellRenderer;
 import room.GameRoom;
-import room.User;
 
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Color;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class TmpMainScreen extends JFrame {
 
-   
-   public static void main(String[] args) {
+
+    private ArrayList<ChatInfo> mainChatList;
+    private Map<Long, ArrayList<ChatInfo>> roomChatListMap;
+
+    public static void main(String[] args) {
       EventQueue.invokeLater(new Runnable() {
          public void run() {
             try {
@@ -59,7 +57,8 @@ public class TmpMainScreen extends JFrame {
 
     private ArrayList<GameRoom> roomList;
 
-    private java.util.Map<Long, ArrayList<SubmarineServer.Client>> gameRoomClientMap;
+    private Map<Long, ArrayList<SubmarineServer.Client>> gameRoomClientMap;
+    private Map<GameRoom, ArrayList<GameRecord>> roomRecordListMap;
 
     public TmpMainScreen(java.util.Map<Long, ArrayList<SubmarineServer.Client>> gameRoomClientMap) {
         this.gameRoomClientMap = gameRoomClientMap;
@@ -143,7 +142,7 @@ public class TmpMainScreen extends JFrame {
             System.out.println("------- 유저 더블 클릭 함");
             SubmarineServer.Client client = clientList.getSelectedValue().getClient();
             if (client != null) {
-                UserDetailDialog userDetailDialog = new UserDetailDialog(client);
+                UserDetailDialog userDetailDialog = new UserDetailDialog(client,filterChatList(client.getId()));
             }
         }));
 
@@ -154,6 +153,15 @@ public class TmpMainScreen extends JFrame {
             if (selectGameRoom != null) {
                 ArrayList<SubmarineServer.Client> clients = gameRoomClientMap.get(selectGameRoom.getId());
                 GameRoomDetailDialog gameRoomDetailDialog = new GameRoomDetailDialog(selectGameRoom,clients);
+            }
+        }));
+
+        gameRecordList.addMouseListener(new DoubleClickListener(() -> {
+            System.out.println("------- 경기 기록 더블 클릭 함");
+            GameRoom gameRoom = gameRecordList.getSelectedValue().getGameRoom();
+            if (gameRoom != null) {
+                ArrayList<GameRecord> gameRecordList = roomRecordListMap.get(gameRoom);
+                GameRecordDetailDialog gameRecordDetailDialog = new GameRecordDetailDialog(gameRoom,gameRecordList);
             }
         }));
         ////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +175,14 @@ public class TmpMainScreen extends JFrame {
         setBounds(200,200,630,547);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+    }
+
+    private ArrayList<ChatInfo> filterChatList(long userId) {
+        ArrayList<ChatInfo> chatList = new ArrayList<>();
+        for(ChatInfo chatInfo : mainChatList){
+            if(chatInfo.getWriterId() == userId) chatList.add(chatInfo);
+        }
+        return chatList;
     }
 
     public void updateRoomList(ArrayList<GameRoom> gameRoom) {
@@ -192,9 +208,19 @@ public class TmpMainScreen extends JFrame {
     }
 
     public void updateRecord(Map<GameRoom, ArrayList<GameRecord>> roomRecordListMap) {
+        this.roomRecordListMap = roomRecordListMap;
         gameRecordListModel.clear();
         for (GameRoom room : roomRecordListMap.keySet()) {
             gameRecordListModel.addElement(new GameRecordPanel(room));
         }
+    }
+
+
+    public void updateMainChat(ArrayList<ChatInfo> mainChatList) {
+        this.mainChatList = mainChatList;
+    }
+
+    public void updateRoomChat(Map<Long, ArrayList<ChatInfo>> roomChatListMap) {
+        this.roomChatListMap = roomChatListMap;
     }
 }

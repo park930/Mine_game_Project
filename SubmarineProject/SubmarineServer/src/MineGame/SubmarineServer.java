@@ -919,6 +919,7 @@ public class SubmarineServer {
 					// 해당 chat을 메인 채팅 리스트에 넣고 모든 유저에게 보내야함
 					mainChatList.add(chatInfo);
 					sendAllMainChat(chatInfo);
+					mainScreen.updateMainChat(mainChatList);
 					break;
 
 				case "roomChatSend":
@@ -929,7 +930,7 @@ public class SubmarineServer {
 					roomClientList = gameRoomClientsMap.get(chatInfo.getRoomId());
 					System.out.println("보낼때, chatInfo의 색:"+chatInfo.getColor());
 					sendAllRoomChat(roomClientList,chatInfo);
-
+					mainScreen.updateRoomChat(roomChatListMap);
 
 					break;
 			}
@@ -1064,7 +1065,7 @@ public class SubmarineServer {
 		return null;
 	}
 
-	private Client findClient(long userId) {
+	public static Client findClient(long userId) {
 		for( Client c : clients){
 			if (c.getId() == userId){
 				return c;

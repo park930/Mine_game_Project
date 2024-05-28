@@ -7,6 +7,14 @@ public class ChatInfo {
     private long roomId;
     private String colorString;
 
+    @Override
+    public String toString() {
+        String res = "";
+        if (roomId==0L) res += "["+writerName+"] "+content;
+        else res += "["+writerId+"]"+content;
+        return res;
+    }
+
     public ChatInfo(String content, String writerName, long writerId, long roomId, String color) {
         this.content = content;
         this.writerName = writerName;
