@@ -37,7 +37,7 @@ public class SubmarineServer {
 	private java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
 	private ArrayList<GameStart> gameStartList;
 	private java.util.Map<Long, GameScreen> gameScreenList;
-	private ArrayList<ChatInfo> mainChatList;
+	private static ArrayList<ChatInfo> mainChatList;
 	private java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
 	
 	
@@ -52,6 +52,14 @@ public class SubmarineServer {
 
 	public static void main(String[] args) throws Exception {
 		new SubmarineServer().createServer();
+	}
+
+	public static ArrayList<ChatInfo> filterUserChatList(long id) {
+		ArrayList<ChatInfo> chatList = new ArrayList<>();
+		for(ChatInfo chatInfo : mainChatList){
+			if (chatInfo.getWriterId() == id) chatList.add(chatInfo);
+		}
+		return chatList;
 	}
 
 

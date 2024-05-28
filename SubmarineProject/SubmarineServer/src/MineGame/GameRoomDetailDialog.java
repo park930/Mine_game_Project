@@ -131,7 +131,7 @@ public class GameRoomDetailDialog extends JDialog {
         userList.addMouseListener(new DoubleClickListener(() -> {
             SubmarineServer.Client client = userList.getSelectedValue();
             if (client != null) {
-                UserDetailDialog userDetailDialog = new UserDetailDialog(client);
+                UserDetailDialog userDetailDialog = new UserDetailDialog(client,SubmarineServer.filterUserChatList(client.getId()));
             }
         }));
         ////////////////////////////////////////////////////////////

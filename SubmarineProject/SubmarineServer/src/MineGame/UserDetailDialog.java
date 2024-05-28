@@ -15,6 +15,8 @@ import room.User;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class UserDetailDialog extends JDialog {
@@ -106,6 +108,12 @@ public class UserDetailDialog extends JDialog {
         JButton chatLogButton = new JButton("Chat Log");
         chatLogButton.setFont(new Font("Arial", Font.BOLD, 12));
         chatLogButton.setBounds(328, 103, 149, 40);
+        chatLogButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UserChatLogDialog userChatLogDialog = new UserChatLogDialog(user,chatList);
+            }
+        });
         panel.add(chatLogButton);
         
         JLabel rateLabel = new JLabel("Statistics");

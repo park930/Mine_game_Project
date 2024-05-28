@@ -112,7 +112,7 @@ public class GameRecordDetailDialog extends JDialog {
         userList.addMouseListener(new DoubleClickListener(() -> {
             GameRecord gameRecord = userList.getSelectedValue().getGameRecord();
             if (gameRecord != null) {
-                UserDetailDialog userDetailDialog = new UserDetailDialog(SubmarineServer.findClient(gameRecord.getUser().getId()));
+                UserDetailDialog userDetailDialog = new UserDetailDialog(SubmarineServer.findClient(gameRecord.getUser().getId()),SubmarineServer.filterUserChatList(gameRecord.getUser().getId()));
             }
         }));
         ////////////////////////////////////////////////////////////
