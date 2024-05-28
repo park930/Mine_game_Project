@@ -36,7 +36,8 @@ public class SubmarineServer {
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
 	private java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
 	private ArrayList<GameStart> gameStartList;
-	private java.util.Map<Long, GameScreen> gameScreenList;
+//	private java.util.Map<Long, GameScreen> gameScreenList;
+	private java.util.Map<Long, TmpGameScreen> gameScreenList;
 	private static ArrayList<ChatInfo> mainChatList;
 	private java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
 	
@@ -617,7 +618,9 @@ public class SubmarineServer {
 						sendCommand("yourTurn",null);
 
 						// 서버의 게임 화면 생성
-						GameScreen gameScreen = new GameScreen(gameStart);
+//						GameScreen gameScreen = new GameScreen(gameStart);
+						TmpGameScreen gameScreen = new TmpGameScreen(gameStart);
+//						gameScreenList.put(targetRoom.getId(),gameScreen);
 						gameScreenList.put(targetRoom.getId(),gameScreen);
 						gameScreen.setVisible(true);
 						targetRoom.setStart(true);
