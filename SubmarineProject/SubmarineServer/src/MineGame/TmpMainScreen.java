@@ -1,6 +1,8 @@
 package MineGame;
 
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
@@ -26,23 +28,6 @@ public class TmpMainScreen extends JFrame {
 
     private ArrayList<ChatInfo> mainChatList;
     private Map<Long, ArrayList<ChatInfo>> roomChatListMap;
-
-    public static void main(String[] args) {
-      EventQueue.invokeLater(new Runnable() {
-         public void run() {
-            try {
-//               TmpMainScreen frame = new TmpMainScreen();
-//               frame.setVisible(true);
-            } catch (Exception e) {
-               e.printStackTrace();
-            }
-         }
-      });
-   }
-
-   
-//	private JList<SubmarineServer.Client> clientList;
-//    private DefaultListModel<SubmarineServer.Client> clientListModel;
 
     
 	private JList<UserInfoPanel> clientList;
@@ -82,9 +67,6 @@ public class TmpMainScreen extends JFrame {
         gameRoomListModel = new DefaultListModel<>();
         gameRoomList = new JList<>(gameRoomListModel);
         gameRoomList.setFont(new Font("Arial", Font.PLAIN, 10));
-//        JButton jb3 = new JButton("East");
-        JButton jb4 = new JButton("West");
-        JButton jb5 = new JButton("Center");
 
 
         JScrollPane clientScrollPane = new JScrollPane(clientList);
@@ -126,8 +108,15 @@ public class TmpMainScreen extends JFrame {
         btnNewButton.setBounds(12, 10, 134, 36);
         centerPanel.add(btnNewButton);
 
+        ////////////////////////////////////////////////////////////
+        btnNewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ChatLogDialog chatLogDialog = new ChatLogDialog(SubmarineServer.getMainChat());
+            }
+        });
+        ////////////////////////////////////////////////
 
-        // 而⑦뀒 씠 꼫瑜   봽 젅 엫 뿉  삱由 .
         getContentPane().add(mainPanel);
         
         JLabel adminTitleLabel = new JLabel("Admin Main");

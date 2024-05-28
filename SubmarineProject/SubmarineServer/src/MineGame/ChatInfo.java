@@ -11,7 +11,7 @@ public class ChatInfo {
     public String toString() {
         String res = "";
         if (roomId==0L) res += "["+writerName+"] "+content;
-        else res += "["+writerId+"]"+content;
+        else res += "["+writerId+" / "+writerName+"] "+content;
         return res;
     }
 

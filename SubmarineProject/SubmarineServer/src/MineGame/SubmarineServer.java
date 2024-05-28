@@ -39,7 +39,7 @@ public class SubmarineServer {
 //	private java.util.Map<Long, GameScreen> gameScreenList;
 	private java.util.Map<Long, TmpGameScreen> gameScreenList;
 	private static ArrayList<ChatInfo> mainChatList;
-	private java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
+	private static java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
 	
 	
 	
@@ -61,6 +61,14 @@ public class SubmarineServer {
 			if (chatInfo.getWriterId() == id) chatList.add(chatInfo);
 		}
 		return chatList;
+	}
+
+	public static ArrayList<ChatInfo> getMainChat() {
+		return mainChatList;
+	}
+
+	public static java.util.Map<Long, ArrayList<ChatInfo>> getRoomChatMap() {
+		return roomChatListMap;
 	}
 
 
@@ -936,6 +944,7 @@ public class SubmarineServer {
 				case "roomChatSend":
 					chatInfo = gson.fromJson(commandJson.getAsJsonObject("mainChatInfo"), ChatInfo.class);
 					// 해당 chat을 메인 채팅 리스트에 넣고 모든 유저에게 보내야함
+					System.out.println("   room chat의 map에 저장할 방 아이디:"+chatInfo.getRoomId());
 					ArrayList<ChatInfo> chatList = roomChatListMap.computeIfAbsent(chatInfo.getRoomId(), k -> new ArrayList<>());
 					chatList.add(chatInfo);
 					roomClientList = gameRoomClientsMap.get(chatInfo.getRoomId());
