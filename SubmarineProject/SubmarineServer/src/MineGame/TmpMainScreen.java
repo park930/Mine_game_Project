@@ -168,8 +168,10 @@ public class TmpMainScreen extends JFrame {
 
     private ArrayList<ChatInfo> filterChatList(long userId) {
         ArrayList<ChatInfo> chatList = new ArrayList<>();
-        for(ChatInfo chatInfo : mainChatList){
-            if(chatInfo.getWriterId() == userId) chatList.add(chatInfo);
+        if (mainChatList != null) {
+            for (ChatInfo chatInfo : mainChatList) {
+                if (chatInfo.getWriterId() == userId) chatList.add(chatInfo);
+            }
         }
         return chatList;
     }

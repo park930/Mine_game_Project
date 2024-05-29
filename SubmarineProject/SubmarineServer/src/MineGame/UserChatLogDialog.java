@@ -88,6 +88,8 @@ public class UserChatLogDialog extends JDialog {
 
 
 	private void updateChatList(ArrayList<ChatInfo> chatInfoList) {
+        if (chatInfoList.isEmpty()) return;
+
 		chatListModel.clear();
 		for(ChatInfo chat : chatInfoList) {
 			chatListModel.addElement(chat);
