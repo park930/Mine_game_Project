@@ -3,22 +3,19 @@ package MineGame;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import MineGame.Component.RoomChatDetailDialog;
 import MineGame.listCallRenderer.DoubleClickListener;
 import MineGame.listCallRenderer.RecordinUserListCellRenderer;
 import room.GameRoom;
 import java.awt.Color;
+import java.util.Map;
 
 public class GameRecordDetailDialog extends JDialog {
 
@@ -115,6 +112,25 @@ public class GameRecordDetailDialog extends JDialog {
                 UserDetailDialog userDetailDialog = new UserDetailDialog(SubmarineServer.findClient(gameRecord.getUser().getId()),SubmarineServer.filterUserChatList(gameRecord.getUser().getId()));
             }
         }));
+
+        chatLogButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Map<Long, ArrayList<ChatInfo>> roomChatMap = SubmarineServer.getRoomChatMap();
+                if (roomChatMap.containsKey(gameRoom.getId())) {
+                    ArrayList<ChatInfo> chatInfos = roomChatMap.get(gameRoom.getId());
+                    if (chatInfos.isEmpty()){
+                        // 대화내용 없다고 알림
+                        showInfo("해당 Room의 대화 내용은 없습니다.");
+                    } else {
+                        RoomChatDetailDialog roomChatDetailDialog = new RoomChatDetailDialog(gameRoom.getId(),chatInfos);
+                    }
+                } else {
+                    showInfo("해당 Room의 대화 내용은 없습니다.");
+                }
+            }
+        });
+
         ////////////////////////////////////////////////////////////
 
       setVisible(true);
@@ -132,4 +148,8 @@ public class GameRecordDetailDialog extends JDialog {
             userListModel.addElement(new RecordInUserPanel(gameRecord));
         }
     }
+    public void showInfo(String s) {
+        JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 }
