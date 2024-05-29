@@ -577,4 +577,8 @@ public class RoomScreen extends JFrame {
             }
         });
     }
+
+    public GameRoom getGameRoom() {
+        return gameRoom;
+    }
 }

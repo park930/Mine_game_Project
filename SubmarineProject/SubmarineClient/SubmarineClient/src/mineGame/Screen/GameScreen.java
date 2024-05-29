@@ -1,7 +1,6 @@
 package mineGame.Screen;
 
-import mineGame.GameStart;
-import mineGame.GameTimer;
+import mineGame.*;
 import mineGame.ListCallRenderer.InGamePanelListCellRenderer;
 import mineGame.ListCallRenderer.PanelListCellRenderer;
 import mineGame.Screen.component.BackgroundPanel;
@@ -9,8 +8,6 @@ import mineGame.Screen.component.InGameUserPanel;
 import mineGame.Screen.component.RoundPanel;
 import mineGame.Screen.component.RoundedBorder;
 import mineGame.Screen.component.UserPanel;
-import mineGame.SubmarineClient;
-import mineGame.User;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -62,10 +59,10 @@ public class GameScreen extends JFrame {
 
 
 
-    public GameScreen(GameStart gameStart,RoomScreen roomScreen,long userId) {
-        this.gameStart = gameStart;
-        this.roomScreen = roomScreen;
-        this.userId = userId;
+    public GameScreen(GameStart gs,RoomScreen rs,long ui) {
+        this.gameStart = gs;
+        this.roomScreen = rs;
+        this.userId = ui;
         userGameTableMap=new HashMap<>();
         turnUserMap=new HashMap<>();
         mineHintMap = new HashMap<>();
@@ -431,4 +428,7 @@ public class GameScreen extends JFrame {
     }
 
 
+    public GameStart getGameStart() {
+        return gameStart;
+    }
 }

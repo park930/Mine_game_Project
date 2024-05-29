@@ -31,7 +31,6 @@ public class SubmarineClient {
 	static int num_mine=10;
 	static int width=9;
 	static ArrayList<GameRoom> roomList;
-	static long userId;
 	static ArrayList<User> userList;
 	private User myUser;
 	private GameScreen gameScreen=null;
@@ -185,9 +184,8 @@ public class SubmarineClient {
 				break;
 
 			case "joinedRoomDelete":
-				//todo. 화면 전환하는 과정 필요
-//				mainScreen.roomScreen.dispose();
 				mainScreen.roomScreen.dispose();
+				mainScreen.roomScreen = null;
 				mainScreen.setVisible(true);
 				mainScreen.showInfo("방장이 방을 닫았습니다.");
 				break;
@@ -237,11 +235,13 @@ public class SubmarineClient {
 				gameScreen.dispose();
 				System.out.println("park3");
 				mainScreen.setVisible(true);
+				mainScreen.roomScreen=null;
 				break;
 
 			case "acceptGiveup":
 				gameScreen.dispose();
 				mainScreen.setVisible(true);
+				mainScreen.roomScreen=null;
 				break;
 
 			case "acceptNickName":
@@ -305,7 +305,27 @@ public class SubmarineClient {
 				mainScreen.roomScreen.addChatInfo(chatInfo);
 				break;
 
+			case "forceQuitInGameUser":
+				System.out.println("게임 중에 강제퇴장 당함");
+				gameScreen.showInfo("관리자에 의해 강제 종료되었습니다.");
+				gameScreen.timerStop();
+				SubmarineClient.sendGameCommand("gameExitClient", gameScreen.getGameStart().getId(), -1,myUser.getId());
+				SubmarineClient.sendCommand("deleteClient",myUser.getId());
+				System.exit(0);
+				break;
 
+			case "forceQuitWaitingUser":
+				if (mainScreen.roomScreen==null){
+					System.out.println("대기방 열려있지 않음");
+					mainScreen.showInfo("관리자에 의해 강제 종료되었습니다.");
+				} else {
+					System.out.println("대기방 열려있음");
+					mainScreen.roomScreen.showInfo("관리자에 의해 강제 종료되었습니다.");
+					SubmarineClient.sendCommand("deleteRoom",mainScreen.roomScreen.getGameRoom());
+				}
+				SubmarineClient.sendCommand("deleteClient",myUser.getId());
+				System.exit(0);
+				break;
 		}
 
 

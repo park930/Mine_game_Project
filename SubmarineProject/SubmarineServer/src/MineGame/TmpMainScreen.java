@@ -104,7 +104,7 @@ public class TmpMainScreen extends JFrame {
         
         JButton btnNewButton = new JButton("Chat Log");
         btnNewButton.setFont(new Font("Arial", Font.BOLD, 15));
-        btnNewButton.setBackground(new Color(82, 82, 82));
+        btnNewButton.setBackground(new Color(211, 211, 211));
         btnNewButton.setBounds(12, 10, 134, 36);
         centerPanel.add(btnNewButton);
 

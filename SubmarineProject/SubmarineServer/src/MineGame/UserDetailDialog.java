@@ -18,6 +18,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.awt.Color;
 
 public class UserDetailDialog extends JDialog {
 
@@ -51,7 +52,7 @@ public class UserDetailDialog extends JDialog {
         panel.add(userNameLabel);
         
         JLabel userIconLabel = new JLabel("");
-        userIconLabel.setBounds(9, 27, 50, 50);
+        userIconLabel.setBounds(18, 28, 50, 50);
         userIconLabel.setIcon(new ImageIcon(new ImageIcon(UserDetailDialog.class.getResource("/MineGame/icon/roundUserImg.png")).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
         panel.add(userIconLabel);
         
@@ -96,37 +97,59 @@ public class UserDetailDialog extends JDialog {
         panel.add(userIPLabel_1);
         
         JButton gameRecordButton = new JButton("GameRecord");
+        gameRecordButton.setBackground(new Color(211, 211, 211));
         gameRecordButton.setFont(new Font("Arial", Font.BOLD, 12));
         gameRecordButton.setBounds(9, 103, 149, 40);
         panel.add(gameRecordButton);
         
         JButton btnDelete = new JButton("Delete");
+        btnDelete.setBackground(new Color(211, 211, 211));
         btnDelete.setFont(new Font("Arial", Font.BOLD, 12));
         btnDelete.setBounds(170, 103, 149, 40);
         panel.add(btnDelete);
         
         JButton chatLogButton = new JButton("Chat Log");
+        chatLogButton.setBackground(new Color(211, 211, 211));
         chatLogButton.setFont(new Font("Arial", Font.BOLD, 12));
         chatLogButton.setBounds(328, 103, 149, 40);
+        panel.add(chatLogButton);
+
+
+
+        JLabel rateLabel = new JLabel("Statistics");
+        rateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        rateLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        rateLabel.setBounds(276, 40, 61, 32);
+        panel.add(rateLabel);
+
+        JLabel userIPLabel_1_1 = new JLabel(user.getStatistics());
+        userIPLabel_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
+        userIPLabel_1_1.setBounds(346, 40, 140, 32);
+        panel.add(userIPLabel_1_1);
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         chatLogButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 UserChatLogDialog userChatLogDialog = new UserChatLogDialog(user,chatList);
             }
         });
-        panel.add(chatLogButton);
-        
-        JLabel rateLabel = new JLabel("Statistics");
-        rateLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        rateLabel.setFont(new Font("Arial", Font.BOLD, 13));
-        rateLabel.setBounds(276, 40, 61, 32);
-        panel.add(rateLabel);
-        
-        JLabel userIPLabel_1_1 = new JLabel(user.getStatistics());
-        userIPLabel_1_1.setFont(new Font("Arial", Font.PLAIN, 12));
-        userIPLabel_1_1.setBounds(346, 40, 140, 32);
-        panel.add(userIPLabel_1_1);
 
+        btnDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("해당 유저의 인게임 상태:"+user.inGame);
+                if (user.inGame) {
+                    System.out.println("  forceQuitInGameUser 보냄");
+                    user.sendCommand("forceQuitInGameUser",null);
+                } else {
+                    System.out.println("  forceQuitWaitingUser 보냄");
+                    user.sendCommand("forceQuitWaitingUser",null);
+                }
+            }
+        });
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         setBounds(100, 100, 508, 193);
         setVisible(true);

@@ -412,6 +412,10 @@ public class SubmarineServer {
 					commandMap.put("chatInfo",sendObject);
 					break;
 
+				case "forceQuitInGameUser", "forceQuitWaitingUser":
+					commandMap.put("null",sendObject);
+					break;
+
             }
 
 			Gson gson = new Gson();
