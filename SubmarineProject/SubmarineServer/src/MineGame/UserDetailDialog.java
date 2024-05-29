@@ -4,38 +4,23 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Image;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import room.User;
 
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.Color;
+import java.util.Map;
 
 public class UserDetailDialog extends JDialog {
 
-    public static void main(String[] args) {
-        try {
-//            UserDetailDialog dialog = new UserDetailDialog(new User());
-//            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//            dialog.setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Create the dialog.
-     */
-    public UserDetailDialog(SubmarineServer.Client user, ArrayList<ChatInfo> chatList) {
+    private SubmarineServer.Client user;
+    public UserDetailDialog(SubmarineServer.Client client, ArrayList<ChatInfo> chatList) {
+        this.user = client;
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(null);
@@ -149,6 +134,13 @@ public class UserDetailDialog extends JDialog {
                 }
             }
         });
+
+        gameRecordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                 filterClientGameRecord(user.getId());
+            }
+        });
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         setBounds(100, 100, 508, 193);
@@ -159,6 +151,24 @@ public class UserDetailDialog extends JDialog {
         mainPanel.revalidate();
         mainPanel.repaint();
     }
+
+    private void filterClientGameRecord(long id) {
+        Map<Long, ArrayList<GameRecord>> gameRecordClientsMap = SubmarineServer.getGameRecordClientsMap();
+
+        if (!gameRecordClientsMap.containsKey(id)){
+            showInfo("게임 기록이 없습니다.");
+        } else {
+            ArrayList<GameRecord> gameRecords = gameRecordClientsMap.get(id);
+            
+            // 유저의 게임기록 화면 생성
+            UserGameRecordDialog userGameRecordDialog = new UserGameRecordDialog(user,gameRecords);
+        }
+    }
+
+    public void showInfo(String s) {
+        JOptionPane.showMessageDialog(this, s, "알림", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 }
 
 

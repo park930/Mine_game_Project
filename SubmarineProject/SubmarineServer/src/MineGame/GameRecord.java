@@ -13,8 +13,9 @@ public class GameRecord {
     private int mapSize;
     private int mineNum;
     private boolean isWin;
+    private long roomId;
 
-    public GameRecord(User user, int mapSize, int mineNum, boolean isWin) {
+    public GameRecord(User user, int mapSize, int mineNum, boolean isWin,long roomId) {
         if (user!=null) {
             this.user = user;
             this.choiceTotal = user.getTotalChoice();
@@ -24,6 +25,7 @@ public class GameRecord {
         this.mapSize = mapSize;
         this.mineNum = mineNum;
         this.isWin = isWin;
+        this.roomId = roomId;
     }
 
     public User getUser() {
@@ -80,5 +82,9 @@ public class GameRecord {
 
     public void setWin(boolean win) {
         isWin = win;
+    }
+
+    public long getRoomId() {
+        return roomId;
     }
 }

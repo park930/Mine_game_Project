@@ -45,16 +45,7 @@ public class tmpRecordDialog extends JDialog {
     private JLabel winValue;
     private JLabel loseValue;
     private JLabel titleLogo;
-    
-    public static void main(String[] args) {
-		try {
-			tmpRecordDialog dialog = new tmpRecordDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+
     
 	
 	public tmpRecordDialog() {
@@ -168,8 +159,7 @@ public class tmpRecordDialog extends JDialog {
 		titleLogo.setBounds(-2, 1, 219, 44);
 		userInfoPanel.add(titleLogo);
 		
-		
-		gameRecordListModel.addElement(new GameRecordPanel(new GameRecord(user, 10, 20, true)));
+
 		
 		
 		

@@ -34,7 +34,7 @@ public class SubmarineServer {
 	static int userCnt=0;
 
 	private java.util.Map<Long, ArrayList<Client>> gameRoomClientsMap;
-	private java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
+	private static java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
 	private ArrayList<GameStart> gameStartList;
 //	private java.util.Map<Long, GameScreen> gameScreenList;
 	private java.util.Map<Long, TmpGameScreen> gameScreenList;
@@ -71,6 +71,9 @@ public class SubmarineServer {
 		return roomChatListMap;
 	}
 
+	public static java.util.Map<Long, ArrayList<GameRecord>> getGameRecordClientsMap() {
+		return gameRecordClientsMap;
+	}
 
 	public void createServer() throws Exception {
 		System.out.println("Server start running ..");
@@ -739,12 +742,14 @@ public class SubmarineServer {
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(u.getId(), k -> new ArrayList<>());
 								GameRecord gameRecord=null;
 								if (u.getId() == winUser.getId()) {
-									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true);
+									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true,roomid);
 									targetClientRecord.add(gameRecord);
+									System.out.println("유저별 게임기록 저장");
 								}
 								else {
-									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false);
+									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false,roomid);
 									targetClientRecord.add(gameRecord);
+									System.out.println("유저별 게임기록 저장");
 								}
 								roomGameRecordList.add(gameRecord);
 							}
@@ -826,10 +831,11 @@ public class SubmarineServer {
 								targetClient.setTotal(targetClient.getTotal()+1);
 								targetClient.setRating( (targetClient.getWin()*1.0)/targetClient.getTotal()*100);
 								targetClient.setInGame(false);
-								GameRecord gameRecord = new GameRecord(tmpUser,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false);
+								GameRecord gameRecord = new GameRecord(tmpUser,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false,gameStart.getGameRoom().getId());
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(targetClient.getId(), k -> new ArrayList<>());
 								targetClientRecord.add(gameRecord);
-
+								System.out.println("유저별 게임기록 저장");
+								
 								ArrayList<GameRecord> roomRecordList = roomRecordListMap.computeIfAbsent(gameStart.getGameRoom(), k -> new ArrayList<>());
 								roomRecordList.add(gameRecord);
 
@@ -849,7 +855,7 @@ public class SubmarineServer {
 								c.setRating( (c.getWin()*1.0)/c.getTotal()*100 );
 								c.setInGame(false);
 
-								GameRecord gameRecord = new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true);
+								GameRecord gameRecord = new GameRecord(findUserById(c.getId(),gameStart.getGameUserList()),gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true,gameStart.getGameRoom().getId());
 								// 승리자의 게임 기록 저장
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(c.getId(), k -> new ArrayList<>());
 								targetClientRecord.add(gameRecord);
