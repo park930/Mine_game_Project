@@ -172,10 +172,10 @@ public class SubmarineServer {
 		for(GameRoom g : roomList){
 			if (g.getId()==gameRoom.getId()){
 				g.addPlayer(user);
+				System.out.println(" 수정 인원 = "+g.getPlayerList().size());
 			}
 		}
 
-		System.out.println(" 수정 인원 = "+gameRoom.getPlayerList().size());
 		//화면의 유저 목록 갱신 필요
 
 	}
@@ -419,6 +419,9 @@ public class SubmarineServer {
 					commandMap.put("null",sendObject);
 					break;
 
+				case "maxPlayer","GameIsStarted":
+					commandMap.put("null",sendObject);
+					break;
             }
 
 			Gson gson = new Gson();
@@ -517,9 +520,15 @@ public class SubmarineServer {
 					}
 
 					// 방 인원 초과할 경우,
-					if (joinRoom.getPlayerList().size()>=joinRoom.getMaxPlayer()){
+					if (gameRoomClientsMap.get(joinRoomId).size() >= joinRoom.getMaxPlayer()){
                         assert joinClient != null;
                         joinClient.sendCommand("maxPlayer",null);
+						return;
+					}
+
+					if (joinRoom.isStart()){
+						assert joinClient != null;
+						joinClient.sendCommand("GameIsStarted",null);
 						return;
 					}
 
@@ -535,6 +544,7 @@ public class SubmarineServer {
 
 						// 방 참가자들에게 수정된 참여자 목록 전송
 						sendAllRoomUser(roomClientList, joinRoom.getId());
+						sendAllRoomList();
 					}
 
 					mainScreen.updateRoomList(roomList);
@@ -626,16 +636,18 @@ public class SubmarineServer {
 						GameStart gameStart = new GameStart(true,gameClientList,targetRoom.getId(),targetRoom,0);
 						gameStartList.add(gameStart);
 
+						findRoomById(targetRoom.getId(), roomList).setIsStart(true);
+
 						// 게임방의 유저들에게 게임 시작하는 메세지 보냄
 						sendGameStartCommand(gameClientList,gameStart);
 						
 						// 게임방의 유저 중 첫번째 유저(방장)에게 자신의 차례라는 것을 알림
 						sendCommand("yourTurn",null);
+						sendAllRoomList();
 
 						// 서버의 게임 화면 생성
 //						GameScreen gameScreen = new GameScreen(gameStart);
 						TmpGameScreen gameScreen = new TmpGameScreen(gameStart);
-//						gameScreenList.put(targetRoom.getId(),gameScreen);
 						gameScreenList.put(targetRoom.getId(),gameScreen);
 						gameScreen.setVisible(true);
 						targetRoom.setStart(true);
@@ -822,10 +834,24 @@ public class SubmarineServer {
 							gamerList.remove(tmpUser);
 							ArrayList<Client> clientList = gameRoomClientsMap.get(gameStart.getGameRoom().getId());
 							Client targetClient = findClientById(tmpUser.getId(), clientList);
+							int nextTurn=-1;
 							if (targetClient != null) {
+
 								// 해당 유저에게 게임방 나가는거 승인하는 메세지 보냄
 								clientList.remove(targetClient);
 								targetClient.sendCommand("acceptGiveup", null);
+
+								// 다음 차례의 유저 계산
+								System.out.println("clientList 사이즈:"+clientList.size());
+								gameStart.setTurnIndex((gameStart.getTurnIndex())%clientList.size());
+								for(int i=0;i<gamerList.size();i++){
+									if (i==gameStart.getTurnIndex()) gamerList.get(i).setTurn(true);
+									else gamerList.get(i).setTurn(false);
+								}
+								nextTurn = gameStart.getTurnIndex();
+								System.out.println("계산한 다음 차례 = "+nextTurn);
+
+
 								// 탈주자 통계 변경 적용
 								targetClient.setLose(targetClient.getLose()+1);
 								targetClient.setTotal(targetClient.getTotal()+1);
@@ -895,8 +921,18 @@ public class SubmarineServer {
 							} else {
 								for (Client c : clientList) {
 									// 남은 유저에게 참여자 바뀌었다고 메세지 보냄
+									System.out.println("남은 참여자:"+c.getUserName());
 									c.sendCommand("updateGameInfo", gameStart);
 								}
+
+								System.out.println("nextTurn ="+nextTurn);
+								if (nextTurn!=-1) {
+									Client nextClient = clientList.get(nextTurn);
+									System.out.println("다른 차례인 클라이언트 닉네임"+nextClient.getUserName());
+									nextClient.sendCommand("yourTurn",null);
+								}
+
+
 							}
 
 							// 전체 유저에게 업데이트된 유저 정보 전달

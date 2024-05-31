@@ -326,6 +326,14 @@ public class SubmarineClient {
 				SubmarineClient.sendCommand("deleteClient",myUser.getId());
 				System.exit(0);
 				break;
+
+			case "maxPlayer":
+				mainScreen.showInfo("해당 방은 가득 찼습니다.");
+				break;
+
+			case "GameIsStarted":
+				mainScreen.showInfo("해당 방은 이미 게임 중입니다.");
+				break;
 		}
 
 

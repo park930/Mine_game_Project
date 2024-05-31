@@ -113,4 +113,8 @@ public class GameRoom {
     public void setChairmanId(long chairmanId) {
         this.chairmanId = chairmanId;
     }
+
+    public void setIsStart(boolean b) {
+        this.isStart = b;
+    }
 }
