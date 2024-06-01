@@ -478,7 +478,7 @@ public class RoomScreen extends JFrame {
 
 
         ////////////////////////////////////////////
-        JLabel mapLabel = new JLabel("10 X 10");
+        JLabel mapLabel = new JLabel(gameRoom.getMapSize()+" X "+gameRoom.getMapSize());
         mapLabel.setForeground(new Color(255, 255, 255));
         mapLabel.setFont(new Font("Nirmala UI", Font.BOLD, 30));
         mapLabel.setHorizontalAlignment(SwingConstants.CENTER);
