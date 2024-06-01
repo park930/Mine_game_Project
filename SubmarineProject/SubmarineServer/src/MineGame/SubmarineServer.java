@@ -843,14 +843,15 @@ public class SubmarineServer {
 
 								// 다음 차례의 유저 계산
 								System.out.println("clientList 사이즈:"+clientList.size());
-								gameStart.setTurnIndex((gameStart.getTurnIndex())%clientList.size());
-								for(int i=0;i<gamerList.size();i++){
-									if (i==gameStart.getTurnIndex()) gamerList.get(i).setTurn(true);
-									else gamerList.get(i).setTurn(false);
+								if (!clientList.isEmpty()) {
+									gameStart.setTurnIndex((gameStart.getTurnIndex()) % clientList.size());
+									for (int i = 0; i < gamerList.size(); i++) {
+										if (i == gameStart.getTurnIndex()) gamerList.get(i).setTurn(true);
+										else gamerList.get(i).setTurn(false);
+									}
+									nextTurn = gameStart.getTurnIndex();
+									System.out.println("계산한 다음 차례 = " + nextTurn);
 								}
-								nextTurn = gameStart.getTurnIndex();
-								System.out.println("계산한 다음 차례 = "+nextTurn);
-
 
 								// 탈주자 통계 변경 적용
 								targetClient.setLose(targetClient.getLose()+1);
