@@ -74,28 +74,6 @@ public class SubmarineClient {
 				System.out.println("여기까지");
 			}
 
-
-//           	while(score<=num_mine) {
-//    			msg = guess(in);
-//
-//    			if(msg.equalsIgnoreCase("ok")) {
-//    				msg = in.readLine();
-//    				int result = Integer.parseInt(msg);
-//    				if (result>=0) {
-//    					score++;
-//    					System.out.println("hit , score = "+score);
-//    				}
-//    				else
-//    					System.out.println("miss , score = "+score);
-//
-//    			}
-//
-//    		}
-
-//        	in.close();
-//            out.close();
-//            socket.close();
-
         }
         catch (Exception e) {}
     }
@@ -251,15 +229,33 @@ public class SubmarineClient {
 				System.out.println("바뀐 정보 : "+myUser);
 				mainScreen.myInfoUpdate(myUser);
 
-				// userinfoDialog에 알림창 띄우고, 해당 창 닫기
-				mainScreen.userInfoDialog.showInfo("변경이 완료되었습니다.");
-				mainScreen.userInfoDialog.dispose();
+				if (mainScreen.changeNickNamePanel != null){
+					mainScreen.changeNickNamePanel.showInfo("변경이 완료되었습니다.");
+					mainScreen.changeNickNamePanel.dispose();
+					mainScreen.changeNickNamePanel = null;
+
+				} else {
+					// userinfoDialog에 알림창 띄우고, 해당 창 닫기
+					mainScreen.userInfoDialog.showInfo("변경이 완료되었습니다.");
+					mainScreen.userInfoDialog.dispose();
+					mainScreen.userInfoDialog = null;
+
+				}
+
+
+
 				break;
 
 			case "rejectNickName":
 				// userinfoDialog에 거부 알림창 띄우기
-				mainScreen.userInfoDialog.showInfo("중복된 닉네임입니다.");
-				mainScreen.userInfoDialog.clearTextField();
+				if (mainScreen.changeNickNamePanel != null){
+					mainScreen.changeNickNamePanel.showInfo("중복된 닉네임입니다.");
+					mainScreen.changeNickNamePanel.clearTextField();
+
+				} else {
+					mainScreen.userInfoDialog.showInfo("중복된 닉네임입니다.");
+					mainScreen.userInfoDialog.clearTextField();
+				}
 				break;
 
 			case "acceptCreateRoom":

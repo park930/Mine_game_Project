@@ -32,7 +32,7 @@ public class MainScreen extends JFrame{
 	////////////////////////////////////////////
 	private JList<UserPanel> panelList;
     private DefaultListModel<UserPanel> panelListModel;
-    public UserInfoDialog userInfoDialog;
+    public UserInfoDialog userInfoDialog=null;
     public CreateRoomDialog createRoomDialog;
     public GameRecordDialog gameRecordDialog;
     private JList<ChatInfo> chatList;
@@ -42,6 +42,7 @@ public class MainScreen extends JFrame{
     private JScrollPane scrollPane_1;
     private JScrollPane chatScrollPane;
     private PracticeGameScreen practiceGameScreen;
+    public ChangeNickNamePanel changeNickNamePanel=null;
     ////////////////////////////////////////////
 
 	public void myInfoUpdate(User myUser){
@@ -218,7 +219,8 @@ public class MainScreen extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
-        
+
+        startNickNameUpdate();
         
         addWindowListener(new WindowAdapter() {
             @Override
@@ -245,6 +247,12 @@ public class MainScreen extends JFrame{
         }));
 
 
+    }
+
+    private void startNickNameUpdate() {
+        changeNickNamePanel = new ChangeNickNamePanel(myUser);
+        changeNickNamePanel.setVisible(true);
+        changeNickNamePanel.setLocationRelativeTo(null);
     }
 
     private void initialMenuPanel(JPanel panel) {

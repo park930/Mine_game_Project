@@ -141,16 +141,20 @@ public class CreateRoomDialog extends JDialog {
                 liseparator.setBounds(102, 33, 216, 3);
                 roomNamePanel.add(liseparator);
                 liseparator.setBackground(new Color(255, 255, 255));
+
         mainPanel.add(playerCountPanel);
-        JCheckBox visibleCheckBox = new JCheckBox("",true); 
-        visibleCheckBox.setBounds(277, 9, 26, 27);
-        playerCountPanel.add(visibleCheckBox);
-        visibleCheckBox.setOpaque(false);
-        JLabel visibleLabel = new JLabel("Visible");
-        visibleLabel.setBounds(231, 0, 43, 45);
-        playerCountPanel.add(visibleLabel);
-        visibleLabel.setFont(new Font("Arial", Font.BOLD, 13));
-        visibleLabel.setForeground(new Color(255, 255, 255));
+
+
+//        JCheckBox visibleCheckBox = new JCheckBox("",true);
+//        visibleCheckBox.setBounds(277, 9, 26, 27);
+//        playerCountPanel.add(visibleCheckBox);
+//        visibleCheckBox.setOpaque(false);
+//        JLabel visibleLabel = new JLabel("Visible");
+//        visibleLabel.setBounds(231, 0, 43, 45);
+//            visibleLabel.setFont(new Font("Arial", Font.BOLD, 13));
+//            visibleLabel.setForeground(new Color(255, 255, 255));
+//            playerCountPanel.add(visibleLabel);
+
         mainPanel.add(mapWidthPanel);
         
         // 맵 크기 라벨 업데이트
@@ -175,7 +179,7 @@ public class CreateRoomDialog extends JDialog {
                     public void mouseClicked(java.awt.event.MouseEvent evt) {
                             String roomName = roomNameField.getText();
                             int playerCount = (int) playerCountSpinner.getValue();
-                            boolean visible = visibleCheckBox.isSelected();
+                            boolean visible = true;
                             int mapWidth = (int) mapWidthSpinner.getValue();
                             int mineCount = (int) mineCountComboBox.getSelectedItem();
                             long roomId = System.currentTimeMillis();
