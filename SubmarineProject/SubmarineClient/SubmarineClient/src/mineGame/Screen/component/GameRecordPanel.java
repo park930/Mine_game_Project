@@ -28,7 +28,6 @@ public class GameRecordPanel extends JPanel {
     private JLabel mineNumLabel;
 
     public GameRecordPanel(GameRecord gameRecord) {
-        System.out.println("새로운 room 생성 : "+gameRoom);
         this.gameRecord = gameRecord;
 
     	setBackground(new Color(23, 30, 43));
