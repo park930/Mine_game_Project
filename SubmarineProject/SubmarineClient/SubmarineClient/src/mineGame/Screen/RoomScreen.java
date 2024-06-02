@@ -34,7 +34,6 @@ public class RoomScreen extends JFrame {
     private JScrollPane chatScrollPane;
     
     public RoomScreen(MainScreen ms,GameRoom gr,User user) {
-        System.out.println(" 방 주인으로써 생성");
         this.mainScreen = ms;
         this.gameRoom = gr;
         this.myUser = user;
@@ -169,7 +168,7 @@ public class RoomScreen extends JFrame {
         centerPanel.add(mapPanel);
         mapPanel.setLayout(null);
 
-        JLabel mapLabel = new JLabel("10 X 10");
+        JLabel mapLabel = new JLabel(gameRoom.getMapSize()+" X "+gameRoom.getMapSize());
         mapLabel.setForeground(new Color(255, 255, 255));
         mapLabel.setFont(new Font("Nirmala UI", Font.BOLD, 30));
         mapLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -222,7 +221,6 @@ public class RoomScreen extends JFrame {
 
 
         //////////////////////////////////////////////////////////////////////
-        System.out.println(" 채팅 관련 생성 부분");
         JPanel chatPanel = new JPanel();
         chatPanel.setBounds(0, 332, 559, 159);
         centerPanel.add(chatPanel);
@@ -249,14 +247,12 @@ public class RoomScreen extends JFrame {
 
 
 
-        System.out.println("여기 주의1");
         chatListModel = new DefaultListModel<>();
         chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 방에 입장하였습니다.>","",0L,0L,"#FFA500"));
         chatList = new JList<>(chatListModel);
-        System.out.println("여기 주의2");
         chatList.setCellRenderer(new ChatInfoListCellRenderer());
         chatList.setBounds(13, 0, 525, 133);
-        System.out.println("여기 주의3");
+
         
         textField = new JTextField();
         textField.setBounds(80, 132, 411, 24);
@@ -299,7 +295,6 @@ public class RoomScreen extends JFrame {
 
     public RoomScreen(User user,MainScreen ms,GameRoom gm) {
         // 방장이 아닌 제 3자가 참여한 경우
-        System.out.println("-------- 참가하는 방 화면 생성");
         this.mainScreen = ms;
         this.gameRoom = gm;
         this.myUser = user;
@@ -415,7 +410,6 @@ public class RoomScreen extends JFrame {
 
 
         //////////////////////////////////////////////////////////////////////
-        System.out.println(" 채팅 관련 생성 부분");
         JPanel chatPanel = new JPanel();
         chatPanel.setBounds(0, 332, 559, 159);
         centerPanel.add(chatPanel);
@@ -439,14 +433,11 @@ public class RoomScreen extends JFrame {
         sendButton.setContentAreaFilled(false);
         chatPanel.add(sendButton);
 
-        System.out.println("여기 주의1");
         chatListModel = new DefaultListModel<>();
         chatListModel.addElement(new ChatInfo("<"+myUser.getUserName()+"님이 방에 입장하였습니다.>","",0L,0L,"#FFA500"));
         chatList = new JList<>(chatListModel);
-        System.out.println("여기 주의2");
         chatList.setCellRenderer(new ChatInfoListCellRenderer());
         chatList.setBounds(13, 0, 525, 133);
-        System.out.println("여기 주의3");
 
         textField = new JTextField();
         textField.setBounds(80, 132, 411, 24);
@@ -552,7 +543,6 @@ public class RoomScreen extends JFrame {
 
     public void setRoomUserList(ArrayList<User> users) {
         this.users = users;
-        System.out.println("    화면의 방 참여자 목록 재설정");
         userListModel.clear();
         for(User user : users){
             userListModel.addElement(new GameRoomUserPanel(user));

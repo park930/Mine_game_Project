@@ -1,205 +1,224 @@
 package MineGame;
 
-import room.User;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import MineGame.Component.InGameUserPanel;
+import MineGame.listCallRenderer.InGameUserPanelListCellRenderer;
+import room.User;
+
 public class GameScreen extends JFrame {
 
-    private LinkedHashMap<Long, JPanel> userInfoPanelMap;
+	private LinkedHashMap<Long, InGameUserPanel> userInfoPanelMap;
     private ArrayList<JPanel> userInfoPanelList;
 
     private JPanel mineMapPanel;
-    private JPanel gameInfoPanel;
+    private JPanel mainPanel;
+    private JPanel userPanel;
     private GameStart gameStart;
-
-    private ArrayList<JButton> mineButtonList;
-
     private JLabel timerLabel;
     private JLabel remainMineLabel;
     private JLabel turnLabel;
+    private ArrayList<JButton> mineButtonList;
     private HashMap<Long, JTable> userGameTableMap;
     private HashMap<Long, JLabel> turnUserMap;
-    private JPanel mainPanel;
+    
+    private JPanel gameInfoPanel;
+    private JPanel mineNumPanel;
 
-    public GameScreen(GameStart gameStart) {
-        this.gameStart = gameStart;
+    private HashMap<Integer, Integer> mineHintMap;
+
+
+    //////////////////////////////////////////////////////
+    private JList<InGameUserPanel> panelList;
+    private DefaultListModel<InGameUserPanel> panelListModel;
+    //////////////////////////////////////////////////////
+
+
+
+
+
+    public GameScreen(GameStart gs) {
+        this.gameStart = gs;
         userGameTableMap=new HashMap<>();
         turnUserMap=new HashMap<>();
+        mineHintMap = new HashMap<>();
 
-        Map map = gameStart.getMap();
 
         setTitle("Game Screen");
+        setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 800);
+        setSize(927, 582);
         setLocationRelativeTo(null);
 
         // 메인 패널 설정
         // 3x3으로 나눈다.
-        mainPanel = new JPanel(new GridLayout(3, 3, 0, 0));
+        mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 빈 패널
-        gameInfoPanel = new JPanel();
-        JPanel emptyPanel2 = new JPanel();
-        JPanel emptyPanel3 = new JPanel();
-        JPanel emptyPanel4 = new JPanel();
-
-
-        // 타이머 라벨 초기화 및 emptyPanel1에 추가
-        timerLabel = new JLabel("", SwingConstants.CENTER);
-        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        remainMineLabel = new JLabel("remain Mine:"+gameStart.getGameRoom().getMineNum(), SwingConstants.CENTER);
-        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        gameInfoPanel.setLayout(new BorderLayout());
-        gameInfoPanel.add(timerLabel, BorderLayout.CENTER);
-        gameInfoPanel.add(remainMineLabel, BorderLayout.SOUTH);
-
-
-        // JTable이 들어갈 패널
+        // 각 유저의 정보 패널
         userInfoPanelMap = new LinkedHashMap<>();
         userInfoPanelList = new ArrayList<>();
+
+
+        // 타이머, 잔여 마인 등 패널
+
+        mineNumPanel = new JPanel();
+        mineNumPanel.setLayout(null);
+        mineNumPanel.setBounds(262, 15, 178, 66);
+        mineNumPanel.setBackground(new Color(84, 84, 84));
+        mainPanel.add(mineNumPanel);
+        
+        JLabel lblMine = new JLabel("", SwingConstants.CENTER);
+        lblMine.setIcon(new ImageIcon(new ImageIcon(UserInfoPanel.class.getResource("/MineGame/icon/mineImg.png")).getImage().getScaledInstance(57, 42, Image.SCALE_SMOOTH)));
+        lblMine.setForeground(Color.WHITE);
+        lblMine.setFont(new Font("Arial", Font.BOLD, 13));
+        lblMine.setBounds(25, 11, 57, 42);
+        mineNumPanel.add(lblMine);
+       
+        
+        remainMineLabel = new JLabel("30", SwingConstants.CENTER);
+        remainMineLabel.setForeground(Color.WHITE);
+        remainMineLabel.setFont(new Font("Arial", Font.BOLD, 34));
+        remainMineLabel.setBounds(85, 13, 62, 42);
+        mineNumPanel.add(remainMineLabel);
+       
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        userPanel = new JPanel();
+        userPanel.setBounds(531, 10, 372, 515);
+        userPanel.setBackground(new Color(84, 84, 84));
+        userPanel.setLayout(null);
+//        userPanel.setBorder(new RoundedBorder(15, 0, new Color(217, 214, 200), 3));
+
+        
+        JLabel lblNewLabel = new JLabel("User");
+        lblNewLabel.setBounds(12, 10, 67, 31);
+        lblNewLabel.setForeground(new Color(255, 255, 255));
+        lblNewLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        userPanel.add(lblNewLabel);
+
+
+        panelListModel = new DefaultListModel<>();
+        panelList = new JList<>(panelListModel);
+        panelList.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panelList.setBackground(new Color(84, 84, 84));
+        panelList.setOpaque(false);
+        panelList.setCellRenderer(new InGameUserPanelListCellRenderer());
+
+        JScrollPane panelListScrollPane = new JScrollPane(panelList);
+        panelListScrollPane.setBounds(12, 44, 322, 430);
+        panelListScrollPane.setOpaque(false);
+        panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        userPanel.add(panelListScrollPane);
+        //////////////////////////////////////////////////////////////////////////////////////////
+        System.out.println("여기까지1");
+        mainPanel.setLayout(null);
+        mainPanel.add(userPanel);
+        
+        
+        
+        
         createTablePanel(gameStart.getGameUserList());
 
+        // 10x10 버튼인 마인 맵이 들어갈 패널
+        JPanel mineBackground = new JPanel();
+        mineBackground.setBounds(64, 87, 376, 376);
+        mineBackground.setLayout(null);
+        mineMapPanel = createButtonGridPanel(gameStart.getMap());
+        mineBackground.add(mineMapPanel);
+        mainPanel.add(mineBackground); // 5
 
-        // W x W 버튼인 마인 맵이 들어갈 패널
-        mineMapPanel = createButtonGridPanel(map);
 
 
-        // 패널 추가
-        mainPanel.add(userInfoPanelList.get(0)); // 1
-        mainPanel.add(gameInfoPanel); // 2
-        mainPanel.add(userInfoPanelList.get(1)); // 3
-        mainPanel.add(emptyPanel2); // 4
-        mainPanel.add(mineMapPanel); // 5
-        mainPanel.add(emptyPanel3); // 6
-        mainPanel.add(userInfoPanelList.get(2)); // 7
-        mainPanel.add(emptyPanel4); // 8
-        mainPanel.add(userInfoPanelList.get(3)); // 9
+        //////////////////////////// bottom 패널 생성 //////////////////
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBounds(74, 466, 366, 59);
+        mainPanel.add(bottomPanel);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        bottomPanel.setLayout(null);
+        bottomPanel.setOpaque(false);
 
-        add(mainPanel);
+
+
+        add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
+
+
+
     }
 
     // JTable이 들어갈 패널을 생성하는 메소드
     private void createTablePanel(ArrayList<User> users) {
-
         for (User user : users){
-            JPanel panel = new JPanel(new BorderLayout());
-
-            JLabel nameLabel = new JLabel(user.getUserName(), SwingConstants.CENTER);
-            JLabel userIdLabel = new JLabel("id:"+user.getId(), SwingConstants.CENTER);
-            JLabel userRatingLabel = new JLabel(user.getTotal()+"전 "+user.getWin()+"승 "+ user.getLose()+"패 ("+String.format("%.2f", user.getFindRate()) + "%)", SwingConstants.CENTER);
-            nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-            userRatingLabel.setFont(new Font("Arial", Font.BOLD, 14));
-            userIdLabel.setFont(new Font("Arial", Font.BOLD, 10));
-
-            JPanel userNamePanel = new JPanel();
-            userNamePanel.setLayout(new BorderLayout());
-            userNamePanel.add(nameLabel, BorderLayout.NORTH);
-            userNamePanel.add(userRatingLabel, BorderLayout.CENTER);
-            userNamePanel.add(userIdLabel, BorderLayout.SOUTH);
-            panel.add(userNamePanel, BorderLayout.NORTH);
-
-
-            System.out.println(" 테이블 생성 1");
-            String[] columnNames = {"선택 횟수", "찾은 지뢰","성공률"};
-            Object[][] data = {
-                    {user.getTotalChoice(), user.getRight(),String.format("%.2f",user.getFindRate())+"%"}
-            };
-
-            DefaultTableModel model = new DefaultTableModel(data, columnNames);
-            JTable table = new JTable(model);
-
-//            JTable table = new JTable(data, columnNames);
-            JScrollPane scrollPane = new JScrollPane(table);
-            scrollPane.setBorder(null);
-            panel.add(scrollPane, BorderLayout.CENTER);
-
-
-            turnLabel = new JLabel("", SwingConstants.CENTER);
-            if (user.isTurn()) turnLabel.setText("Turn");
-            else turnLabel.setText("");
-            turnLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            panel.add(turnLabel, BorderLayout.SOUTH);
-
-            userInfoPanelMap.put(user.getId(),panel);
-            userInfoPanelList.add(panel);
-            userGameTableMap.put(user.getId(),table);
-            turnUserMap.put(user.getId(),turnLabel);
-
+            InGameUserPanel inGameUserPanel = new InGameUserPanel(user);
+            inGameUserPanel.showTurnLabel(user.isTurn());
+            userInfoPanelMap.put(user.getId(),inGameUserPanel);
+            panelListModel.addElement(inGameUserPanel);
         }
-
-        if (users.size()!=4){
-            int now = users.size();
-            while (now!=4){
-                userInfoPanelList.add(new JPanel(new BorderLayout()));
-                now++;
-            }
-        }
-
     }
 
-    // 10x10 버튼 그리드를 생성하는 메소드
+    // 마인 맵 버튼 그리드를 생성하는 메소드
     private JPanel createButtonGridPanel(Map map) {
-        int rows = map.width,cols=map.width;
         mineButtonList = new ArrayList<>();
+        int rows = map.width,cols=map.width;
 
         JPanel panel = new JPanel(new GridLayout(rows, cols, 1, 1)); // 간격을 거의 없도록 설정
-        for(int i=0;i<rows;i++){
-            for(int j=0;j<rows;j++){
+        panel.setOpaque(false);
+        panel.setBounds(0, 0, 376, 376);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < rows; j++) {
                 JButton button = new JButton();
 
-                if(map.mineMap[i][j]==1) button.setText("O");
+                if (map.mineMap[i][j] == 1) button.setText("O");
                 else button.setText("X");
 
                 button.setMargin(new Insets(0, 0, 0, 0)); // 버튼 여백 제거
                 button.setFont(new Font("Arial", Font.BOLD, 9)); // 폰트 크기 줄이고 Bold로 설정
                 button.setPreferredSize(new Dimension(30, 30)); // 버튼 크기 조정
-                button.putClientProperty("id", (i*rows+j)); // 버튼에 고유 ID 설정
+                button.putClientProperty("id", (i * rows + j)); // 버튼에 고유 ID 설정
                 panel.add(button);
                 mineButtonList.add(button);
-
             }
         }
         return panel;
     }
 
+
     public void updateGameState(GameStart gameStart) {
         System.out.println("------게임 스크린 처리 과정 ------");
         this.gameStart = gameStart;
 
-        ArrayList<Long> tmp = new ArrayList<>();
-        for(java.util.Map.Entry<Long,JPanel> entry : userInfoPanelMap.entrySet()){
-            if (!validUser(gameStart,entry.getKey())){
+        // 유저 인원에 변동 적용
+        panelListModel.clear();
+        for(User user : gameStart.getGameUserList()){
+            InGameUserPanel inGameUserPanel = new InGameUserPanel(user);
+            inGameUserPanel.showTurnLabel(user.isTurn());
 
-                tmp.add(entry.getKey());
-            }
+            userInfoPanelMap.put(user.getId(),inGameUserPanel);
+            panelListModel.addElement(inGameUserPanel);
         }
-        for(long id : tmp){
-            System.out.println(" 제거하려는 유저 : "+id);
-            JPanel targetPanel = userInfoPanelMap.get(id);
-            userInfoPanelMap.remove(id);
-            userInfoPanelList.remove(targetPanel);
-            userInfoPanelList.add(new JPanel(new BorderLayout()));
-        }
-
-        mainPanel.removeAll(); // 기존 패널 모두 제거
-        mainPanel.add(userInfoPanelList.get(0)); // 1
-        mainPanel.add(gameInfoPanel); // 2
-        mainPanel.add(userInfoPanelList.get(1)); // 3
-        mainPanel.add(new JPanel(new BorderLayout())); // 4
-        mainPanel.add(mineMapPanel); // 5
-        mainPanel.add(new JPanel(new BorderLayout())); // 6
-        mainPanel.add(userInfoPanelList.get(2)); // 7
-        mainPanel.add(new JPanel(new BorderLayout())); // 8
-        mainPanel.add(userInfoPanelList.get(3)); // 9
-
 
 
 
@@ -212,32 +231,10 @@ public class GameScreen extends JFrame {
             }
         }
 
-        remainMineLabel.setText("remain Mine:"+(gameStart.getGameRoom().getMineNum()-gameStart.getMap().getFindMineList().size()));
 
-        // 유저들의 정보도 업데이트 ( 총 몇번  눌렀고, 각 유저는 몇개의 지뢰를 찾았는지, 누구의 차례인지)
-        for (User u : gameStart.getGameUserList()) {
-            JTable table = userGameTableMap.get(u.getId());
-            JLabel turnLabel = turnUserMap.get(u.getId());
-            if (table != null) {
-                DefaultTableModel model = (DefaultTableModel) table.getModel();
-                model.setValueAt(u.getTotalChoice(), 0, 0);
-                model.setValueAt(u.getRight(), 0, 1);
-                model.setValueAt(String.format("%.2f", u.getFindRate()) + "%", 0, 2);
-            }
-            if (turnLabel!= null) {
-                if (u.isTurn()) turnLabel.setText("Turn");
-                else turnLabel.setText("");
-            }
-        }
-
+        remainMineLabel.setText(""+(gameStart.getGameRoom().getMineNum()-gameStart.getMap().getFindMineList().size()));
 
     }
 
-    private boolean validUser(GameStart gameStart, Long key) {
-        for(User u : gameStart.getGameUserList()){
-            if (u.getId() == key) return true;
-        }
-        return false;
-    }
 
 }

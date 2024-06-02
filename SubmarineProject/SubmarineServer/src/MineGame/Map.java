@@ -55,22 +55,17 @@ public class Map {
 				if (mineCheck.contains(i*width+j))continue;
 				// 8x8 범위 확인
 				int cnt=0;
-				System.out.print("주변 확인 : ");
 				for(int a=-1;a<2;a++){
 					for(int b=-1;b<2;b++){
 						int x = i+a; int y = j+b;
 						if (x<0 || y<0 || x>=width || y>=width) continue;
 						int check = x*width+y;
 						if (mineCheck.contains(check)){
-							System.out.print(check+"="+"o ");
 							cnt++;
-						} else {
-							System.out.print(check+"="+"x ");
 						}
 					}
 				}
 
-				System.out.println("\n"+(i*width+j)+"번쨰에 주변 마인은 "+cnt+"개");
 				// 다 셋으면, map에 넣기
 				notMinePosition.put(i*width+j,cnt);
 

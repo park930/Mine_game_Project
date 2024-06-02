@@ -21,7 +21,7 @@ public class SubmarineServer {
 
 
 	//	public MainScreen mainScreen;
-	public TmpMainScreen mainScreen;
+	public MainScreen mainScreen;
 
 
 	public static int maxPlayer=4;
@@ -37,7 +37,7 @@ public class SubmarineServer {
 	private static java.util.Map<Long, ArrayList<GameRecord>> gameRecordClientsMap;
 	private ArrayList<GameStart> gameStartList;
 //	private java.util.Map<Long, GameScreen> gameScreenList;
-	private java.util.Map<Long, TmpGameScreen> gameScreenList;
+	private java.util.Map<Long, GameScreen> gameScreenList;
 	private static ArrayList<ChatInfo> mainChatList;
 	private static java.util.Map<Long, ArrayList<ChatInfo>> roomChatListMap;
 	
@@ -83,7 +83,7 @@ public class SubmarineServer {
 		gameRoomClientsMap = new HashMap<>();
 
 //		mainScreen = new MainScreen();
-		mainScreen = new TmpMainScreen(gameRoomClientsMap);
+		mainScreen = new MainScreen(gameRoomClientsMap);
 
 		gameStartList = new ArrayList<>();
 		gameScreenList = new HashMap<>();
@@ -100,7 +100,6 @@ public class SubmarineServer {
         	Socket socket = server.accept();
             Client c = new Client(socket);
 			nicknameSet.add(c.userName);
-			System.out.println("---clinet id = "+c.getId());
 			c.sendCommand("User",c.ClientToUser());
 			clients.add(c);
 			
@@ -116,7 +115,6 @@ public class SubmarineServer {
 
         }
 
-        System.out.println("\n"+numPlayer+" players join");
         for(Client c:clients) {
         	c.turn = true;
         	System.out.println("  - "+c.userName);
@@ -154,7 +152,6 @@ public class SubmarineServer {
 				index = i;
 			}
 		}
-		System.out.println("제거하려는 클라이언트 인덱스 : "+index);
 		if (index!=-1) clients.remove(index);
 
 		//화면의 유저 목록 갱신 필요
@@ -168,11 +165,9 @@ public class SubmarineServer {
 	private void joinRoomClient(User user,GameRoom gameRoom) {
 		
 		//서버의 사용자가 어느 방에 들어갔는지 표시해야함
-		System.out.println(" 기존 인원 = "+gameRoom.getPlayerList().size());
 		for(GameRoom g : roomList){
 			if (g.getId()==gameRoom.getId()){
 				g.addPlayer(user);
-				System.out.println(" 수정 인원 = "+g.getPlayerList().size());
 			}
 		}
 
@@ -224,9 +219,7 @@ public class SubmarineServer {
 	}
 
 	private void sendAllRoomChat(ArrayList<Client> roomClientList, ChatInfo chatInfo) {
-		System.out.println(" 참여자에게 추가된 메세지 보냄");
 		for(Client c : roomClientList){
-			System.out.println("보내는 c : "+c.getUserName());
 			c.sendCommand("addRoomChat",chatInfo);
 		}
 	}
@@ -275,7 +268,6 @@ public class SubmarineServer {
 	}
 
 	private boolean checkGameReady(ArrayList<Client> clients, GameRoom gameRoom) {
-		System.out.println("   게임 시작하려는 방 정보:"+gameRoom);
 		if (clients.size()!=gameRoom.getMaxPlayer()) return false;
 		for(Client c : clients){
 			if(!c.isReady) return false;
@@ -334,13 +326,11 @@ public class SubmarineServer {
 
         	try {
             	while(true) {
-					System.out.println("--------------대기중------------------");
             		msg = in.readLine();
 					if (msg != null){
 						System.out.println("서버가 받은것:"+msg);
 						processCommand(msg);
 					}
-					System.out.println("메세지가 null");
 
             	}
 			}
@@ -363,7 +353,6 @@ public class SubmarineServer {
 					break;
 
 				case "User":
-					System.out.println("User라는 클라한테 메세지 보냄");
 					commandMap.put("User", sendObject);
 					break;
 
@@ -449,13 +438,11 @@ public class SubmarineServer {
 
 			switch (command) {
 				case "createRoom":
-					System.out.println("------------방 생성");
 					JsonObject gameRoomJson = commandJson.getAsJsonObject("GameRoom");
 					GameRoom gameRoom = gson.fromJson(gameRoomJson, GameRoom.class);
 					roomList.add(gameRoom);
 
 					//서버의 게임방 목록 관리 위해 추가함
-					System.out.println("방장 = "+gameRoom.getChairmanId());
 					Client chairman = findClient(gameRoom.getChairmanId());
 					chairman.setReady(true);
 					chairman.sendCommand("acceptCreateRoom",gameRoom);
@@ -475,18 +462,9 @@ public class SubmarineServer {
 					//ArrayList<GameRoom>에서 게임방 제거
 					int index = findRoomIndex(roomId);
 					if(index!=-1) {
-						System.out.println(" 방제거함:"+index);
 						roomList.remove(index);
 
-						//////////////////////임시
-						System.out.println(" 방삭제한 결과");
-						for(GameRoom gameRoom1 : roomList){
-							System.out.println(gameRoom1.getRoomName());
-						}
-						System.out.println("222222222222");
-						//////////////////////////
-
-					} else System.out.println("이미 없는 방");
+					}
 
 					// 게임방의 참가자들에게 방 삭제됐다고 알림
 					for(Client c : gameRoomClientsMap.get(roomId)){
@@ -510,7 +488,6 @@ public class SubmarineServer {
 
 					long joinRoomId = joinRoom.getId();
 					long userId = user.getId();
-					System.out.println(" 방문하려는 방 번호:"+joinRoomId);
 
 					Client joinClient=null;
 					for(Client c : clients){
@@ -549,17 +526,6 @@ public class SubmarineServer {
 
 					mainScreen.updateRoomList(roomList);
 
-					///////////////////////// 임시 ///////////////////////////////
-					for(int i=0;i<roomList.size();i++){
-						GameRoom g = roomList.get(i);
-						if (g.getId() == joinRoomId){
-							for(User u : g.getPlayerList()){
-								System.out.println("    현재 방의 참여자 : "+u.getUserName()+" | "+u.getId());
-							}
-
-						}
-					}
-					/////////////////////////////////////////////////////////
 
 					break;
 
@@ -570,19 +536,15 @@ public class SubmarineServer {
 					// 방의 해당 인원 제거
 					deleteRoomClient(deleteUser,targetRoom);
 
-					System.out.println(" 인원 제거하려는 방 번호:"+targetRoom.getId());
 					long deleteId = deleteUser.getId();
 					long targetRoomId = targetRoom.getId();
 
 
 					///////////////////임시
-					System.out.println("              출력");
 					for (java.util.Map.Entry<Long, ArrayList<Client>> entry : gameRoomClientsMap.entrySet()) {
 						Long key = entry.getKey();
 						ArrayList<Client> value = entry.getValue();
-						System.out.println("GameRoom ID: " + key + " -> Clients: " + value);
 					}
-					System.out.println("               끝");
 					//////////////////////////////
 
 					ArrayList<Client> roomClientList = gameRoomClientsMap.get(targetRoomId);
@@ -590,15 +552,12 @@ public class SubmarineServer {
 						Client removeClient=null;
 						for(Client c : roomClientList) {
 							if (c.getId() == deleteId) {
-								System.out.println(" 삭제할 멤버 찾기");
 								removeClient = c;
 							}
 						}
 						if(removeClient!=null) roomClientList.remove(removeClient);
 						sendAllRoomUser(roomClientList,targetRoom.getId());
 						mainScreen.updateRoomList(roomList);
-					} else {
-						System.out.println(" 방 참여자 null임");
 					}
 					break;
 
@@ -647,7 +606,7 @@ public class SubmarineServer {
 
 						// 서버의 게임 화면 생성
 //						GameScreen gameScreen = new GameScreen(gameStart);
-						TmpGameScreen gameScreen = new TmpGameScreen(gameStart);
+						GameScreen gameScreen = new GameScreen(gameStart);
 						gameScreenList.put(targetRoom.getId(),gameScreen);
 						gameScreen.setVisible(true);
 						targetRoom.setStart(true);
@@ -681,22 +640,17 @@ public class SubmarineServer {
 					}
 
 					if (gameStart!=null){
-						System.out.println("게임방 아이디 : "+gameStart.getId());
 						ArrayList<User> gamerList = gameStart.getGameUserList();
 						user = findUserById(userId,gamerList);
 						if (user != null) {
 							Map map = gameStart.getMap();
 							//해당 게임에서 마인을 찾았는지 확인
-							System.out.println(" 유저가 선택한 곳 : "+choice);
 							if (map.checkMine(choice) >= 0){
 								// 마인을 찾음
-								System.out.println("마인 찾음");
 								map.getFindMineList().add(choice);
 								user.setRight(user.getRight()+1);
 							} else {
 								// 못 찾은 곳 마인 힌트 넣기
-								System.out.println("마인 못찾음");
-								System.out.println("힌트 값 : "+choice);
 								map.putMineHint(choice);
 							}
 							user.setTotalChoice(user.getTotalChoice()+1);
@@ -726,7 +680,7 @@ public class SubmarineServer {
 						// 마지막 지뢰를 찾았을때,
 						if (gameStart.getMap().getFindMineList().size() >= gameStart.getGameRoom().getMineNum()){
 							// 승자 도출
-							double max=0.0;
+							double max = -1.0;
 							User winUser = null;
 							for(User u : gamerList){
 								if (u.getFindRate() > max){
@@ -756,12 +710,12 @@ public class SubmarineServer {
 								if (u.getId() == winUser.getId()) {
 									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),true,roomid);
 									targetClientRecord.add(gameRecord);
-									System.out.println("유저별 게임기록 저장");
+
 								}
 								else {
 									gameRecord = new GameRecord(u,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false,roomid);
 									targetClientRecord.add(gameRecord);
-									System.out.println("유저별 게임기록 저장");
+
 								}
 								roomGameRecordList.add(gameRecord);
 							}
@@ -801,11 +755,11 @@ public class SubmarineServer {
 						Client turnClient=clientList.get(gameStart.getTurnIndex());
 						if (turnClient!=null) {
 							turnClient.sendCommand("yourTurn",null);
-							System.out.println("얘한테 차례됐다고 보냄 : "+turnClient.getId());
+
 						}
 						else {
 							clientList.get(0).sendCommand("yourTurn",null);
-							System.out.println("얘한테 차례됐다고 보냄 : "+clientList.get(0).getId());
+
 						}
 						gameScreenList.get(gameStart.getGameRoom().getId()).updateGameState(gameStart);
 
@@ -826,7 +780,6 @@ public class SubmarineServer {
 					}
 
 					if (gameStart!=null) {
-						System.out.println("게임방 아이디 : " + gameStart.getId());
 
 						ArrayList<User> gamerList = gameStart.getGameUserList();
 						User tmpUser=findUserById(userId,gamerList);
@@ -842,7 +795,6 @@ public class SubmarineServer {
 								targetClient.sendCommand("acceptGiveup", null);
 
 								// 다음 차례의 유저 계산
-								System.out.println("clientList 사이즈:"+clientList.size());
 								if (!clientList.isEmpty()) {
 									gameStart.setTurnIndex((gameStart.getTurnIndex()) % clientList.size());
 									for (int i = 0; i < gamerList.size(); i++) {
@@ -850,7 +802,6 @@ public class SubmarineServer {
 										else gamerList.get(i).setTurn(false);
 									}
 									nextTurn = gameStart.getTurnIndex();
-									System.out.println("계산한 다음 차례 = " + nextTurn);
 								}
 
 								// 탈주자 통계 변경 적용
@@ -861,21 +812,14 @@ public class SubmarineServer {
 								GameRecord gameRecord = new GameRecord(tmpUser,gameStart.getGameRoom().getMapSize(),gameStart.getGameRoom().getMineNum(),false,gameStart.getGameRoom().getId());
 								ArrayList<GameRecord> targetClientRecord = gameRecordClientsMap.computeIfAbsent(targetClient.getId(), k -> new ArrayList<>());
 								targetClientRecord.add(gameRecord);
-								System.out.println("유저별 게임기록 저장");
 								
 								ArrayList<GameRecord> roomRecordList = roomRecordListMap.computeIfAbsent(gameStart.getGameRoom(), k -> new ArrayList<>());
 								roomRecordList.add(gameRecord);
-
-
-								System.out.println("ookokoko");
 							}
 
 							if (clientList.size()==1){
-								System.out.println(" 남은 인원 1명일 때, ");
 								Client c = clientList.get(0);
-								System.out.println("남은 1명 : "+c.getUserName());
 								c.sendCommand("endGame",c.ClientToUser());
-								System.out.println("endGame 보냈음");
 								// 승리자 통계 변경 적용
 								c.setWin(c.getWin()+1);
 								c.setTotal(c.getTotal()+1);
@@ -902,34 +846,26 @@ public class SubmarineServer {
 								gameScreenList.get(roomid).dispose();
 
 							} else if(clientList.isEmpty()) {
-								System.out.println("남은 인원 0명");
 								// 게임방 제거
 								long roomid = gameStart.getGameRoom().getId();
 								GameRoom g = findRoomById(roomid,roomList);
 								if (g != null) roomList.remove(g);
 								gameRoomClientsMap.remove(roomid);
 								mainScreen.updateRoomList(roomList);
-								System.out.println("여기2");
 								sendAllRoomList();
-								System.out.println("여기3");
 
 								gameScreenList.get(roomid).dispose();
-								System.out.println("여기4");
 								mainScreen.updateRecord(roomRecordListMap);
-								System.out.println("여기5");
 
 
 							} else {
 								for (Client c : clientList) {
 									// 남은 유저에게 참여자 바뀌었다고 메세지 보냄
-									System.out.println("남은 참여자:"+c.getUserName());
 									c.sendCommand("updateGameInfo", gameStart);
 								}
 
-								System.out.println("nextTurn ="+nextTurn);
 								if (nextTurn!=-1) {
 									Client nextClient = clientList.get(nextTurn);
-									System.out.println("다른 차례인 클라이언트 닉네임"+nextClient.getUserName());
 									nextClient.sendCommand("yourTurn",null);
 								}
 
@@ -938,7 +874,6 @@ public class SubmarineServer {
 
 							// 전체 유저에게 업데이트된 유저 정보 전달
 							sendAllUserList();
-							System.out.println("여기6");
 							mainScreen.updateClientList(clients);
 						}
 						
@@ -992,11 +927,9 @@ public class SubmarineServer {
 				case "roomChatSend":
 					chatInfo = gson.fromJson(commandJson.getAsJsonObject("mainChatInfo"), ChatInfo.class);
 					// 해당 chat을 메인 채팅 리스트에 넣고 모든 유저에게 보내야함
-					System.out.println("   room chat의 map에 저장할 방 아이디:"+chatInfo.getRoomId());
 					ArrayList<ChatInfo> chatList = roomChatListMap.computeIfAbsent(chatInfo.getRoomId(), k -> new ArrayList<>());
 					chatList.add(chatInfo);
 					roomClientList = gameRoomClientsMap.get(chatInfo.getRoomId());
-					System.out.println("보낼때, chatInfo의 색:"+chatInfo.getColor());
 					sendAllRoomChat(roomClientList,chatInfo);
 					mainScreen.updateRoomChat(roomChatListMap);
 

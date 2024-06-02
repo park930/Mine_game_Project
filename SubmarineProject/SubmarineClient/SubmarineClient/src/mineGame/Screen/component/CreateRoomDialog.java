@@ -69,7 +69,7 @@ public class CreateRoomDialog extends JDialog {
         playerCountLabel.setBounds(0, 0, 41, 45);
         playerCountLabel.setFont(new Font("Arial", Font.BOLD, 13));
         playerCountLabel.setForeground(new Color(255, 255, 255));
-        JSpinner playerCountSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 4, 1));
+        JSpinner playerCountSpinner = new JSpinner(new SpinnerNumberModel(2, 2, 4, 1));
         playerCountSpinner.setFont(new Font("Arial", Font.BOLD, 14));
         playerCountSpinner.setBounds(103, 3, 56, 35);
         playerCountPanel.setLayout(null);
@@ -145,15 +145,6 @@ public class CreateRoomDialog extends JDialog {
         mainPanel.add(playerCountPanel);
 
 
-//        JCheckBox visibleCheckBox = new JCheckBox("",true);
-//        visibleCheckBox.setBounds(277, 9, 26, 27);
-//        playerCountPanel.add(visibleCheckBox);
-//        visibleCheckBox.setOpaque(false);
-//        JLabel visibleLabel = new JLabel("Visible");
-//        visibleLabel.setBounds(231, 0, 43, 45);
-//            visibleLabel.setFont(new Font("Arial", Font.BOLD, 13));
-//            visibleLabel.setForeground(new Color(255, 255, 255));
-//            playerCountPanel.add(visibleLabel);
 
         mainPanel.add(mapWidthPanel);
         

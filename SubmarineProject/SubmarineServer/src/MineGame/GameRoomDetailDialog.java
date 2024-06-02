@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import MineGame.Component.RoomChatDetailDialog;
 import MineGame.listCallRenderer.DoubleClickListener;
 import room.GameRoom;
 
@@ -87,12 +90,8 @@ public class GameRoomDetailDialog extends JDialog {
         panel.add(chairmanResult);
         System.out.println("여기6");
 
-        JButton btnDelete = new JButton("Delete Room");
-        btnDelete.setBounds(8, 222, 202, 32);
-        panel.add(btnDelete);
-
         JButton chatLogButton = new JButton("Room Chat Log");
-        chatLogButton.setBounds(8, 180, 202, 32);
+        chatLogButton.setBounds(8, 180, 202, 60);
         panel.add(chatLogButton);
 
         userListModel = new DefaultListModel<>();
@@ -130,6 +129,17 @@ public class GameRoomDetailDialog extends JDialog {
                 UserDetailDialog userDetailDialog = new UserDetailDialog(client,SubmarineServer.filterUserChatList(client.getId()));
             }
         }));
+
+        chatLogButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                long roomId = gameRoom.getId();
+                if (roomId != 0) {
+                    ArrayList<ChatInfo> roomChatList = SubmarineServer.getRoomChatMap().computeIfAbsent(roomId, k -> new ArrayList<>());
+                    RoomChatDetailDialog roomChatDetailDialog = new RoomChatDetailDialog(roomId,roomChatList);
+                }
+            }
+        });
         ////////////////////////////////////////////////////////////
 
       setVisible(true);

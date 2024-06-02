@@ -154,8 +154,6 @@ public class GameScreen extends JFrame {
         panelListScrollPane.setOpaque(false);
         panelListScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         userPanel.add(panelListScrollPane);
-        //////////////////////////////////////////////////////////////////////////////////////////
-        System.out.println("여기까지1");
         mainPanel.setLayout(null);
         mainPanel.add(userPanel);
         
@@ -210,7 +208,6 @@ public class GameScreen extends JFrame {
                     timerStop();
                     SubmarineClient.sendGameCommand("gameExitClient", gameStart.getId(), -1,userId);
                     SubmarineClient.sendCommand("deleteClient",userId);
-                    System.out.println("프로그램 나가겠다고 메세지 보냄");
                 }
             }
         });
@@ -220,18 +217,12 @@ public class GameScreen extends JFrame {
 
     // JTable이 들어갈 패널을 생성하는 메소드
     private void createTablePanel(ArrayList<User> users) {
-        System.out.println("여기까지2");
         for (User user : users){
             InGameUserPanel inGameUserPanel = new InGameUserPanel(user);
-            System.out.println("여기까지3");
             inGameUserPanel.showTurnLabel(user.isTurn());
-            System.out.println("여기까지4");
             userInfoPanelMap.put(user.getId(),inGameUserPanel);
-            System.out.println("여기까지5");
             panelListModel.addElement(inGameUserPanel);
-            System.out.println("여기까지6");
         }
-        System.out.println("여기까지7");
     }
 
     // 마인 맵 버튼 그리드를 생성하는 메소드
@@ -274,18 +265,13 @@ public class GameScreen extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     JButton sourceButton = (JButton) e.getSource();
                     int choice = (Integer) sourceButton.getClientProperty("id"); // 설정된 ID 가져오기
-                    System.out.println("버튼의 id = " + choice);
                     
                     if(timerOn && myTurn){
-                        System.out.println("자신의 차례여서 타이머가 돌고 있는 것");
                         SubmarineClient.sendGameCommand("choiceButton",gameStart.getId(),choice,userId);
                         timerLabel.setText("");
                         timer.stop();
-                        System.out.println("서버에 누른 버튼 정보 전달 완료-------");
                         timerOn=false;
                         myTurn=false;
-                    } else {
-                        System.out.println(" 내 차례 아닐 때, 버튼 누름");
                     }
 
 
@@ -326,7 +312,6 @@ public class GameScreen extends JFrame {
                         myTurn = false;
                         timerOn = false;
                         timerLabel.setText("");
-                        System.out.println("Timer has exceeded within start method!");
                         timeOutRandomChoice();
                     }
                 } else {
@@ -356,16 +341,13 @@ public class GameScreen extends JFrame {
 
 
     public void timerStop(){
-        System.out.println("타이머 stop하려고 함");
         if (timer!=null) {
             timer.stop();
             timerOn = false;
         }
-        System.out.println("타이머 종료 완료함");
     }
 
     public void updateGameState(GameStart gameStart) {
-        System.out.println("------게임 스크린 처리 과정 ------");
         this.gameStart = gameStart;
 
         // 유저 인원에 변동 적용
@@ -384,8 +366,6 @@ public class GameScreen extends JFrame {
         ArrayList<Integer> disableButton = gameStart.getMap().getDisableButton();
         ArrayList<Integer> findMineList = gameStart.getMap().getFindMineList();
         BufferedImage mineImage = loadImage("/mineGame/Screen/icon/mineButton_mine.png"); // 새로운 이미지 파일을 불러옵니다.
-//        BufferedImage notMineImage = loadImage("/mineGame/Screen/icon/mineButton_none.png"); // 새로운 이미지 파일을 불러옵니다.
-        System.out.println("   확인 부분");
         mineHintMap = gameStart.getMap().getMineHintMap();
 
         for(JButton button : mineButtonList){
@@ -404,7 +384,6 @@ public class GameScreen extends JFrame {
                 button.setEnabled(false);
             }
         }
-        System.out.println("   확인 부분2");
 
         remainMineLabel.setText((gameStart.getGameRoom().getMineNum()-findMineList.size())+"");
 

@@ -51,8 +51,6 @@ public class MainScreen extends JFrame{
     }
 	
     public MainScreen(User user) {
-        System.out.println("내 정보 = "+myUser);
-        System.out.println("main 생성");
         this.myUser = user;
 
         BackgroundPanel mainPanel = new BackgroundPanel("/mineGame/Screen/icon/backgroundIMG.png");
@@ -115,7 +113,6 @@ public class MainScreen extends JFrame{
         infoButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                System.out.println("정보창 열기 전, 내 정보 : "+myUser);
                 userInfoDialog = new UserInfoDialog(myUser);
                 userInfoDialog.setVisible(true);
                 userInfoDialog.setLocationRelativeTo(null);
@@ -232,7 +229,6 @@ public class MainScreen extends JFrame{
 
         // 게임 방 목록 더블 클릭 이벤트 처리
         gameRoomList.addMouseListener(new DoubleClickListener(() -> {
-            System.out.println("------- 방 더블 클릭 함");
             GameRoom selectedRoom = gameRoomList.getSelectedValue().getGameRoom();
             if (selectedRoom != null) {
 
@@ -240,9 +236,7 @@ public class MainScreen extends JFrame{
                 SubmarineClient.sendRoomCommand("joinRoom",selectedRoom,myUser);
 
                 for(User u : selectedRoom.getPlayerList()){
-                    System.out.println("  방 안의 플레이어 :"+u.getUserName());
                 }
-                System.out.println(selectedRoom);
             }
         }));
 
@@ -311,15 +305,12 @@ public class MainScreen extends JFrame{
     public void setUserList(ArrayList<User> userList) {
         panelListModel.clear();
         for(User user : userList){
-            System.out.println("    다시 유저 채워 넣음");
             panelListModel.addElement(new UserPanel(user));
         }
     }
 
     public void createJoinRoomScreen(GameRoom gameRoom) {
-        System.out.println(" 방 생성하라는 명령 받음");
         roomScreen = new RoomScreen(myUser,MainScreen.this, gameRoom);
-        System.out.println("    main화면에서 room에 대한 객체 설정");
         roomScreen.setVisible(true);
     }
 

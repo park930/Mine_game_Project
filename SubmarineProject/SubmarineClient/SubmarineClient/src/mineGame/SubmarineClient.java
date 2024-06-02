@@ -49,16 +49,12 @@ public class SubmarineClient {
         	out = new PrintWriter(socket.getOutputStream(), true);
            	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-			System.out.println("시작");
 			out.println(userName);		//자신의 이름을 보냄
 			msg= in.readLine();        // roomList message
-			System.out.println("여기서 " +msg);
-			System.out.println("dddd");
 
 			// 해당 클라이언트의 id 받음
 			processCommand(msg);
 
-			System.out.println("1구역");
 			// 접속 중인 유저 목록 받음
 			processCommand(msg);
 
@@ -68,10 +64,8 @@ public class SubmarineClient {
 			mainChatList = new ArrayList<>();
 
 			while (true) {
-				System.out.println("메세지 받길 대기 중");
 				msg = in.readLine();
 				processCommand(msg);
-				System.out.println("여기까지");
 			}
 
         }
@@ -79,28 +73,6 @@ public class SubmarineClient {
     }
 
 
-	public static String guess(BufferedReader in) throws IOException {
-    	Scanner scan = new Scanner (System.in);
-
-    	System.out.print("\n Enter x coordinate:");
-		int x = scan.nextInt();
-		while ((x < 0) || (x >= width)) {
-			System.out.println(" Invalid x, enter a new x coordinate");
-			x = scan.nextInt();
-		}
-		System.out.print(" Enter y coordinate:");
-		int y = scan.nextInt();
-		while ((y < 0) || (y >= width)) {
-			System.out.println(" Invalid y, enter a new y coordinate");
-			y = scan.nextInt();
-		}
-
-		System.out.println("wait for turn");
-		out.println(x+","+y);
-		String msg = in.readLine();
-
-    	return msg;
-    }
 
 	private void processCommand(String msg) {
 		Gson gson = new Gson();
@@ -119,19 +91,15 @@ public class SubmarineClient {
 					GameRoom room = gson.fromJson(roomObject, GameRoom.class);
 					roomList.add(room);
 				}
-				System.out.println("방 목록 받은거 파싱 완료");
 				mainScreen.setRoomList(roomList);
 				break;
 
 			case "User":
-				System.out.println("00000000000000000");
 				JsonObject userJson = jsonObject.getAsJsonObject("User");
 				myUser = gson.fromJson(userJson, User.class);
-				System.out.println("받은 내 정보 = " + myUser);
 				break;
 
 			case "updateRoomUser":
-				System.out.println("-------현재 방 참가한 상태");
 				JsonArray roomUserJsonArray = jsonObject.getAsJsonArray("userList");
 				ArrayList<User> users = new ArrayList<>();
 				for (int i = 0; i < roomUserJsonArray.size(); i++) {
@@ -139,24 +107,19 @@ public class SubmarineClient {
 					User user = gson.fromJson(roomObject, User.class);
 					users.add(user);
 				}
-				System.out.println("   멤버 재설정 완료");
 				// 새로운 방 멤버 users를 화면에 반영해야함
-//				mainScreen.roomScreen.setRoomUserList(users);
 				mainScreen.roomScreen.setRoomUserList(users);
-				System.out.println("   아마 막힘");
 
 				break;
 
 			case "updateClient":
 				JsonArray userListJsonArray = jsonObject.getAsJsonArray("userList");
-				System.out.println("서버한테 유저 목록 받음");
 				userList.clear();
 				for (int i = 0; i < userListJsonArray.size(); i++) {
 					JsonObject userObject = userListJsonArray.get(i).getAsJsonObject();
 					User user = gson.fromJson(userObject, User.class);
 					if (user.getId() == myUser.getId()) myUser = user;
 					userList.add(user);
-					System.out.println("유저 : "+user.getUserName());
 				}
 				mainScreen.setUserList(userList);
 				break;
@@ -177,8 +140,6 @@ public class SubmarineClient {
 			case "startGame":
 				jsonObject = jsonObject.getAsJsonObject("gameStart");
 				GameStart gameStart = gson.fromJson(jsonObject, GameStart.class);
-				System.out.println("------ 게임 정보 받음");
-				System.out.println(gameStart);
 
 				//게임 화면 생성
 				gameScreen = new GameScreen(gameStart, mainScreen.roomScreen,myUser.getId());
@@ -194,9 +155,7 @@ public class SubmarineClient {
 			case "updateGameInfo":
 				jsonObject = jsonObject.getAsJsonObject("gameStart");
 				GameStart updateGame = gson.fromJson(jsonObject, GameStart.class);
-				System.out.println("업데이트된것 : "+updateGame);
 				gameScreen.updateGameState(updateGame);
-				System.out.println("끝남");
 				break;
 
 			case "endGame":
@@ -205,13 +164,10 @@ public class SubmarineClient {
 
 				// gameScreen의 타이머 종료함
 				gameScreen.timerStop();
-				System.out.println("타이머 종료 완료함");
 
 				// 승자 알림 및 게임 화면 종료
 				gameScreen.showInfo("Winner : "+winUser.getUserName()+"\n(id:"+winUser.getId()+")");
-				System.out.println("park2");
 				gameScreen.dispose();
-				System.out.println("park3");
 				mainScreen.setVisible(true);
 				mainScreen.roomScreen=null;
 				break;
@@ -224,9 +180,7 @@ public class SubmarineClient {
 
 			case "acceptNickName":
 				String newName = jsonObject.get("newNickName").getAsString();
-				System.out.println("바뀔 닉네임 = " + newName);
 				myUser.setUserName(newName);
-				System.out.println("바뀐 정보 : "+myUser);
 				mainScreen.myInfoUpdate(myUser);
 
 				if (mainScreen.changeNickNamePanel != null){
@@ -267,7 +221,6 @@ public class SubmarineClient {
 				mainScreen.roomScreen.setVisible(true);
 
 				// 방 생성자 준비상태 완료로 전환
-				System.out.println(" 준비상태 true로 전환");
 				myUser.setReady(true);
 				mainScreen.roomScreen.addUser(myUser);
 
@@ -284,7 +237,6 @@ public class SubmarineClient {
 				}
 				
 				// 얻은 전적 리스트로 화면 띄우기
-				System.out.println(" 전적 조회 시, 나의 정보 : "+myUser);
 				mainScreen.gameRecordDialog = new GameRecordDialog(gameRecordList,myUser);
 				break;
 
@@ -302,7 +254,6 @@ public class SubmarineClient {
 				break;
 
 			case "forceQuitInGameUser":
-				System.out.println("게임 중에 강제퇴장 당함");
 				gameScreen.showInfo("관리자에 의해 강제 종료되었습니다.");
 				gameScreen.timerStop();
 				SubmarineClient.sendGameCommand("gameExitClient", gameScreen.getGameStart().getId(), -1,myUser.getId());
@@ -312,10 +263,8 @@ public class SubmarineClient {
 
 			case "forceQuitWaitingUser":
 				if (mainScreen.roomScreen==null){
-					System.out.println("대기방 열려있지 않음");
 					mainScreen.showInfo("관리자에 의해 강제 종료되었습니다.");
 				} else {
-					System.out.println("대기방 열려있음");
 					mainScreen.roomScreen.showInfo("관리자에 의해 강제 종료되었습니다.");
 					SubmarineClient.sendCommand("deleteRoom",mainScreen.roomScreen.getGameRoom());
 				}
