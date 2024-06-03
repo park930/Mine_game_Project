@@ -294,6 +294,8 @@ public class GameScreen extends JFrame {
 
     public void start() {
 
+        if(myTurn && timerOn) return;
+
         myTurn = true;
         timerOn = true;
 
